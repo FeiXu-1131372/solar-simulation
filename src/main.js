@@ -347,47 +347,74 @@ const GTANGENT = (() => {
 const GBITANGENT = GNORMAL.clone().cross(GTANGENT).normalize();
 const GRADIUS = 52000;
 
-// Star disc — 180k points, exponential radial profile + 4 spiral arms
-const mwCount = 180000;
-const mwPos = new Float32Array(mwCount * 3);
-const mwCol = new Float32Array(mwCount * 3);
-const scaleLen = GRADIUS * 0.28;
-for (let i = 0; i < mwCount; i++) {
-    const r = Math.min(-scaleLen * Math.log(Math.max(1 - Math.random(), 1e-6)), GRADIUS);
-    const normR = r / GRADIUS;
-    const armIdx = Math.floor(Math.random() * 4);
-    const armBase = (armIdx / 4) * Math.PI * 2;
-    const spiralAngle = Math.log(r / 800 + 1) * 1.3;
-    const inArm = Math.random() < 0.32;
-    const theta = inArm
-        ? armBase + spiralAngle + (Math.random() - 0.5) * 0.65
-        : Math.random() * Math.PI * 2;
-    const halfThick = GRADIUS * 0.024 * (1 - normR * 0.65);
-    const h = (Math.random() + Math.random() - 1) * halfThick;
-    const dx = r * Math.cos(theta), dz = r * Math.sin(theta);
-    mwPos[i*3]   = GCENTER.x + GTANGENT.x*dx + GBITANGENT.x*dz + GNORMAL.x*h;
-    mwPos[i*3+1] = GCENTER.y + GTANGENT.y*dx + GBITANGENT.y*dz + GNORMAL.y*h;
-    mwPos[i*3+2] = GCENTER.z + GTANGENT.z*dx + GBITANGENT.z*dz + GNORMAL.z*h;
-    if (inArm && normR > 0.12) {
-        // Spiral arm: blue-white (hot young stars)
-        mwCol[i*3] = 0.72 + Math.random()*0.28; mwCol[i*3+1] = 0.88 + Math.random()*0.12; mwCol[i*3+2] = 1.0;
-    } else if (normR < 0.22) {
-        // Bulge: warm yellow-orange
-        mwCol[i*3] = 1.0; mwCol[i*3+1] = 0.80 + normR*0.9; mwCol[i*3+2] = 0.50 + normR*1.6;
-    } else {
-        // Disc: creamy white
-        const c = 0.72 + Math.random()*0.28;
-        mwCol[i*3] = c; mwCol[i*3+1] = c*0.93; mwCol[i*3+2] = c*0.85;
+// Galaxy disc — baked into a canvas texture (1 quad, no per-frame point cost)
+function createGalaxyTexture(size = 1024) {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, size, size);
+
+    const imgData = ctx.getImageData(0, 0, size, size);
+    const d = imgData.data;
+    const cx = size / 2, cy = size / 2, R = size * 0.46;
+    const sl = R * 0.28; // exponential scale length
+
+    for (let i = 0; i < 90000; i++) {
+        const r = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
+        const normR = r / R;
+        const armIdx = Math.floor(Math.random() * 4);
+        const inArm = Math.random() < 0.35;
+        const theta = inArm
+            ? (armIdx / 4) * Math.PI * 2 + Math.log(r / (R * 0.015) + 1) * 1.3 + (Math.random() - 0.5) * 0.65
+            : Math.random() * Math.PI * 2;
+        const sx = Math.round(cx + r * Math.cos(theta));
+        const sy = Math.round(cy + r * Math.sin(theta));
+        if (sx < 0 || sx >= size || sy < 0 || sy >= size) continue;
+        const idx = (sy * size + sx) * 4;
+
+        let rr, gg, bb;
+        if (inArm && normR > 0.12) {
+            rr = 100 + Math.random() * 155; gg = 170 + Math.random() * 85; bb = 255;
+        } else if (normR < 0.22) {
+            rr = 255; gg = 200 + normR * 200; bb = 130 + normR * 300;
+        } else {
+            const c = 180 + Math.random() * 75;
+            rr = c; gg = c * 0.92; bb = c * 0.82;
+        }
+        d[idx]   = Math.min(255, d[idx]   + rr);
+        d[idx+1] = Math.min(255, d[idx+1] + gg);
+        d[idx+2] = Math.min(255, d[idx+2] + bb);
+        d[idx+3] = Math.min(255, d[idx+3] + 180 + Math.random() * 75);
     }
+    ctx.putImageData(imgData, 0, 0);
+
+    // Centre bulge glow (canvas gradient, fast)
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.3);
+    glow.addColorStop(0,    'rgba(255, 245, 200, 0.95)');
+    glow.addColorStop(0.25, 'rgba(255, 200,  90, 0.55)');
+    glow.addColorStop(0.6,  'rgba(180,  80,  15, 0.18)');
+    glow.addColorStop(1,    'rgba(  0,   0,   0, 0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, size, size);
+
+    return new THREE.CanvasTexture(canvas);
 }
-const mwGeo = new THREE.BufferGeometry();
-mwGeo.setAttribute('position', new THREE.BufferAttribute(mwPos, 3));
-mwGeo.setAttribute('color', new THREE.BufferAttribute(mwCol, 3));
-scene.add(new THREE.Points(mwGeo, new THREE.PointsMaterial({
-    size: 1.8, sizeAttenuation: false, vertexColors: true,
-    transparent: true, opacity: 0.9, depthWrite: false,
-    blending: THREE.AdditiveBlending,
-})));
+
+// Single textured quad — replaces 180k GPU points with 2 triangles
+const galaxyDiscPlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(GRADIUS * 2.2, GRADIUS * 2.2),
+    new THREE.MeshBasicMaterial({
+        map: createGalaxyTexture(1024),
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+    })
+);
+galaxyDiscPlane.position.copy(GCENTER);
+galaxyDiscPlane.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), GNORMAL);
+scene.add(galaxyDiscPlane);
 
 // Galactic centre glow
 const galacticCentreSprite = new THREE.Sprite(new THREE.SpriteMaterial({
