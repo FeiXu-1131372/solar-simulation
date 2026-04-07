@@ -1765,6 +1765,69 @@ function doLaunch(mission, target) {
     launchBtn.classList.add('hidden');
 }
 
+// --- MISSION MINI-GAME ---
+
+let activeGameTimer = null;
+let activeGameFrame = null;
+let activeGameCleanup = null;
+
+function hideMissionGame() {
+    document.getElementById('mission-game-overlay').classList.add('hidden');
+    ['mg-gauntlet', 'mg-hazard', 'mg-control'].forEach(id =>
+        document.getElementById(id).classList.add('hidden'));
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    if (activeGameFrame) { cancelAnimationFrame(activeGameFrame); activeGameFrame = null; }
+    if (activeGameCleanup) { activeGameCleanup(); activeGameCleanup = null; }
+}
+
+function launchMissionGame(mission, target) {
+    const gameData = celestialFacts[target.name] && celestialFacts[target.name].game;
+    if (!gameData) { onGameSuccess(mission, target); return; }
+
+    document.getElementById('mg-mission-label').textContent = `${mission.emoji} ${mission.name} → ${target.name}`;
+
+    const types = ['gauntlet', 'hazard', 'control'];
+    const type = types[Math.floor(Math.random() * types.length)];
+
+    const badges = { gauntlet: '🏁 GAUNTLET', hazard: '🕹️ HAZARD RUN', control: '📡 MISSION CONTROL' };
+    document.getElementById('mg-type-badge').textContent = badges[type];
+
+    document.getElementById('mission-game-overlay').classList.remove('hidden');
+
+    if (type === 'gauntlet')      runGauntlet(mission, target, gameData);
+    else if (type === 'hazard')   runHazardRun(mission, target, gameData);
+    else                          runMissionControl(mission, target, gameData);
+}
+
+function onGameSuccess(mission, target) {
+    hideMissionGame();
+    arrEmoji.textContent = mission.emoji;
+    arrMission.textContent = `${mission.name} has arrived at ${target.name}!`;
+    arrDiscovery.textContent = '🔭 ' + mission.discovery;
+    arrFunfact.textContent = mission.funFact;
+    arrivalPanel.classList.remove('hidden');
+}
+
+function onGameFail(mission, target, gameData) {
+    hideMissionGame();
+    document.getElementById('ml-mission-sub').textContent = `${mission.name} · ${target.name} · ${mission.year}`;
+    document.getElementById('ml-reason').textContent = gameData.failReason;
+    document.getElementById('ml-real-fact').innerHTML = `<strong>Real fact:</strong> ${gameData.realFact}`;
+    document.getElementById('mission-lost-panel').classList.remove('hidden');
+}
+
+document.getElementById('ml-relaunch-btn').addEventListener('click', () => {
+    document.getElementById('mission-lost-panel').classList.add('hidden');
+    if (lockedTarget) showMissionPicker(lockedTarget);
+});
+
+document.getElementById('ml-close-btn').addEventListener('click', () => {
+    document.getElementById('mission-lost-panel').classList.add('hidden');
+    if (lockedTarget && lockedTarget.name !== 'Earth' && lockedTarget.name !== 'Sun') {
+        launchBtn.classList.remove('hidden');
+    }
+});
+
 arrClose.addEventListener('click', () => {
     arrivalPanel.classList.add('hidden');
     if (focusTarget && focusTarget.name !== 'Earth' && focusTarget.name !== 'Sun') {
@@ -1961,13 +2024,9 @@ function animate() {
             // Hide mission log
             missionLog.classList.add('hidden');
 
-            // Show arrival celebration panel
+            // Launch mini-game before showing arrival panel
             if (r.mission) {
-                arrEmoji.textContent = r.mission.emoji;
-                arrMission.textContent = `${r.mission.name} has arrived at ${r.target.name}!`;
-                arrDiscovery.textContent = '🔭 ' + r.mission.discovery;
-                arrFunfact.textContent = r.mission.funFact;
-                arrivalPanel.classList.remove('hidden');
+                launchMissionGame(r.mission, r.target);
             }
         } else {
             const dir = targetPos.clone().sub(r.mesh.position).normalize();
