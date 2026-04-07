@@ -250,7 +250,23 @@ const celestialFacts = {
         year: '11.8 Earth Years',
         temp: '-108°C cloud tops',
         details: '95 Known Moons • Radius: 69,911 km',
-        wow: '⚡ Jupiter\'s storm (Great Red Spot) has been raging for 350+ years and is wider than planet Earth!'
+        wow: '⚡ Jupiter\'s storm (Great Red Spot) has been raging for 350+ years and is wider than planet Earth!',
+        emoji: '🪐',
+        ministats: ['95 known moons', '11.8-year orbit', '5th from Sun'],
+        statPills: ['🌍 1,300 Earths fit inside', '⚡ 9.9-hour day', '🌡️ −108°C cloud tops', '🔴 Storm: 350+ years', '💪 2.5× Earth gravity'],
+        wowStrip: 'Jupiter spins so fast that its equator <strong>bulges outward</strong> — it\'s noticeably fatter in the middle than at the poles. You can actually see this through a basic telescope!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why has Jupiter\'s Great Red Spot been going for 350 years?', a: 'On Earth, storms die when they hit land. Jupiter has <strong>no solid surface</strong> — it\'s gas all the way down! Without land to stop it, the storm just keeps spinning. Jupiter\'s internal heat keeps pumping energy in like a never-ending engine. Scientists call it a <em>persistent anticyclone</em> — a self-sustaining high-pressure vortex.' },
+            { cls: 'q-chem', q: '🧪 What is Jupiter actually made of?', a: 'About <strong>90% hydrogen (H₂)</strong> and <strong>10% helium (He)</strong> — the same ingredients as the Sun. But deep inside, the pressure is so extreme that hydrogen transforms into a <em>metal</em> — it conducts electricity like copper wire. This "metallic hydrogen" generates Jupiter\'s magnetic field, <strong>20,000× stronger than Earth\'s</strong>.' },
+            { cls: 'q-astro', q: '🔭 Why does Jupiter have so many moons?', a: 'Jupiter\'s enormous <strong>gravity acts like a giant vacuum cleaner</strong> in space — capturing passing asteroids and comets into orbit. It has <strong>95 confirmed moons</strong>, including Ganymede (bigger than Mercury!), Europa (hidden ocean!), and Io (400+ active volcanoes!). Jupiter is basically a mini solar system all by itself.' },
+            { cls: 'q-life', q: '🌱 What would happen if you fell into Jupiter?', a: 'There\'s no ground — you\'d just sink deeper. First, <strong>600 km/h winds</strong> would shred your spacecraft. Then increasing pressure would crush it. Then heat would melt everything. You\'d dissolve into the planet itself. Jupiter is the ultimate gas trap — no solid bottom, just increasingly extreme conditions going deeper.' },
+        ],
+        explore: {
+            mission: 'Juno Spacecraft (NASA, orbiting Jupiter since 2016)',
+            discovery: 'Juno discovered that Jupiter\'s coloured bands go <strong>3,000 km deep</strong> — not just surface paint! It also found enormous cyclone storms at each pole arranged in perfect geometric patterns — a hexagon of storms, like a cosmic flower.',
+            scale: 'If Earth were a <strong>grape</strong>, Jupiter would be a <strong>basketball</strong>. The Sun would be a <strong>door</strong>. Try holding a grape next to a basketball — that\'s us compared to Jupiter. Now imagine the door across the room being the Sun.',
+            whatif: '<strong>What if Jupiter were hollow?</strong> You could fit <em>1,300 planet Earths</em> inside with room to rattle around. The hollow shell would still weigh more than everything else in the solar system combined — except the Sun. Jupiter contains 71% of all planetary mass in our solar system.',
+        },
     },
     'Io': {
         type: '🌋 Jovian Moon',
@@ -260,7 +276,23 @@ const celestialFacts = {
         year: '1.77 Earth Days',
         temp: '-130°C (surface avg)',
         details: 'Radius: 1,821 km',
-        wow: '🌋 Jupiter squishes and stretches Io constantly — like squeezing a stress ball — and that friction creates 400+ active volcanoes!'
+        wow: '🌋 Jupiter squishes and stretches Io constantly — like squeezing a stress ball — and that friction creates 400+ active volcanoes!',
+        emoji: '🌋',
+        ministats: ['Jovian moon', '1.77-day orbit', 'Most volcanic world'],
+        statPills: ['🌋 400+ active volcanoes', '🔥 Lava lakes on surface', '🧀 Yellow-orange surface', '💨 Sulfur dioxide atmosphere', '⚡ Tidal squeeze heating'],
+        wowStrip: 'Io is the most volcanically active body in the entire solar system — more eruptions than Earth, all other planets, and all other moons <strong>combined</strong>. Its surface is constantly being repaved with fresh lava.',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why does Io have so many volcanoes?', a: '<em>Tidal heating!</em> Io is caught between Jupiter\'s massive gravity and the pulls of Europa and Ganymede. These forces constantly <strong>squeeze and stretch Io</strong> — like kneading dough. The friction generates enormous heat in Io\'s interior, fuelling hundreds of volcanoes. Io experiences tidal forces 10,000× more intensely than Earth\'s Moon does.' },
+            { cls: 'q-chem', q: '🧪 Why is Io yellow and orange?', a: 'Io\'s surface is covered in <strong>sulphur (S)</strong> and <strong>sulphur dioxide (SO₂)</strong> in various colours depending on temperature — yellow, orange, red, and white. When sulphur cools rapidly, it\'s yellow. Hotter sulphur goes orange or red. SO₂ frost appears white. Io is basically a giant sulphur chemistry laboratory constantly stirred by eruptions!' },
+            { cls: 'q-astro', q: '🔭 How high do Io\'s volcanic plumes shoot?', a: 'Io\'s largest volcano, Pele, shoots plumes up to <strong>300 km high</strong> — 30× the height of Earth\'s atmosphere! Because Io has low gravity and a thin atmosphere, material travels enormous distances. Voyager 1 discovered these plumes in 1979 — the first active volcanoes ever found beyond Earth. It was a complete scientific surprise.' },
+            { cls: 'q-life', q: '🌱 Could anything live on Io?', a: 'Io\'s surface is drenched in Jupiter\'s radiation (equivalent to <strong>3,600 chest X-rays per day</strong>), covered in toxic sulphur compounds, and constantly erupting. One of the most hostile places in the solar system. Some scientists speculate about microbial life deep underground, below the volcanism and radiation — very unlikely, but not completely impossible.' },
+        ],
+        explore: {
+            mission: 'Galileo (NASA, 1995–2003) + Juno extended mission flybys (2023–present)',
+            discovery: 'Galileo confirmed Io\'s tidal heating and mapped hundreds of volcanic features. Juno\'s extended mission has now flown within 1,500 km of Io — the closest any spacecraft has been — photographing active lava lakes and erupting plumes in stunning detail.',
+            scale: 'Io is almost exactly the <strong>same size as our Moon</strong>. Same size, completely different reality: our Moon is geologically dead and quiet; Io is the most volcanically violent world we know. The difference is entirely due to where they orbit.',
+            whatif: '<strong>What if you stood on Io\'s surface (without protection)?</strong> Jupiter would fill 20° of sky — enormous! Radiation equivalent to 3,600 X-rays would hit you immediately. Volcanic gases would be toxic. The ground could literally erupt beneath you. An unprotected person would last less than a minute.',
+        },
     },
     'Europa': {
         type: '🧊 Jovian Moon',
@@ -270,7 +302,23 @@ const celestialFacts = {
         year: '3.55 Earth Days',
         temp: '-160°C surface',
         details: 'Radius: 1,560 km',
-        wow: '🌊 Europa may have MORE liquid water than all of Earth\'s oceans combined — hidden beneath miles of ice!'
+        wow: '🌊 Europa may have MORE liquid water than all of Earth\'s oceans combined — hidden beneath miles of ice!',
+        emoji: '🧊',
+        ministats: ['Jovian moon', '3.55-day orbit', 'Hidden ocean beneath ice'],
+        statPills: ['🌊 Ocean: 2× all Earth\'s oceans', '❄️ Ice shell 10–30 km thick', '🎯 Top alien life candidate', '⚡ Tidal heating', '🔵 Smoothest world in solar system'],
+        wowStrip: 'Europa\'s subsurface ocean may contain <strong>twice as much liquid water as all of Earth\'s oceans combined</strong> — hidden beneath miles of ice. It\'s one of the best places to search for alien life!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ How can there be a liquid ocean under miles of ice?', a: '<em>Tidal heating!</em> Like Io, Europa is squeezed by Jupiter\'s gravity and nearby moons. This generates heat in Europa\'s interior — enough to keep a massive ocean <strong>liquid beneath its icy crust</strong>. The ice shell (10–30 km thick) acts as an insulating blanket. The ocean may be ~100 km deep and has been liquid for billions of years.' },
+            { cls: 'q-chem', q: '🧪 What is the ocean under Europa\'s ice made of?', a: 'Probably <strong>saltwater</strong> — similar to Earth\'s oceans, with dissolved minerals from the rocky seafloor. Europa\'s surface has reddish-brown streaks that appear to be salt minerals (like magnesium sulphate) brought up from the ocean through cracks in the ice. The ocean chemistry might resemble Earth\'s early oceans — when life first appeared here!' },
+            { cls: 'q-astro', q: '🔭 Why is Europa\'s surface so smooth?', a: 'Europa has almost <strong>no impact craters</strong> — its surface is constantly renewed! The ice shell moves and flexes, cracking and refreezing. New ice wells up from below, erasing old craters. At large scales, Europa is the smoothest body in the solar system. Scaled to a bowling ball, it would be smoother than the ball itself.' },
+            { cls: 'q-life', q: '🌱 Could alien life exist in Europa\'s ocean?', a: 'This is one of science\'s biggest open questions! Life needs liquid water, energy, and chemistry — Europa has all three. At its seafloor, <em>hydrothermal vents</em> heated by tidal energy could support ecosystems — like on Earth\'s ocean floor where life thrives without sunlight. NASA\'s <strong>Europa Clipper</strong> (launched 2024, arriving 2030) will fly by 50 times to investigate.' },
+        ],
+        explore: {
+            mission: 'Europa Clipper (NASA, launched Oct 2024, arrives Jupiter 2030)',
+            discovery: 'Hubble Space Telescope detected what appear to be <strong>water vapour plumes erupting from Europa\'s south pole</strong> — meaning the ocean is venting into space! A spacecraft could fly through these plumes and sample ocean chemistry without even landing on the ice.',
+            scale: 'Europa is slightly smaller than our Moon. But its ocean contains <strong>2× as much liquid water as all Earth\'s oceans combined</strong> — because it\'s ~100 km deep. Earth\'s deepest ocean trench (Mariana, 11 km) would fit inside Europa\'s ocean 9 times over.',
+            whatif: '<strong>What if Europa\'s ice cracked open?</strong> Ocean water would instantly freeze in space. But just before it did, any life near the crack would be briefly exposed to vacuum. Some Earth microbes survive brief space exposure — if Europa life is similarly tough, it could be the first alien life we ever detected, spraying into space to meet us.',
+        },
     },
     'Ganymede': {
         type: '🌕 Jovian Moon',
@@ -280,7 +328,23 @@ const celestialFacts = {
         year: '7.15 Earth Days',
         temp: '-163°C',
         details: 'Radius: 2,634 km (larger than Mercury!)',
-        wow: '🧲 Ganymede is the ONLY moon with its own magnetic field — it creates its very own Northern and Southern Lights!'
+        wow: '🧲 Ganymede is the ONLY moon with its own magnetic field — it creates its very own Northern and Southern Lights!',
+        emoji: '🌙',
+        ministats: ['Jovian moon', '7.15-day orbit', 'Largest moon in the solar system'],
+        statPills: ['🏆 Bigger than Mercury!', '🧲 Own magnetic field', '🌌 Has its own auroras', '🌊 Subsurface ocean', '📏 5,268 km diameter'],
+        wowStrip: 'Ganymede is bigger than Mercury and Pluto! If it orbited the Sun instead of Jupiter, it would be classified as a <strong>planet</strong>. It\'s the only moon with its own magnetic field — giving it spectacular auroras!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ How does Ganymede have its own magnetic field?', a: 'Ganymede has a <strong>liquid iron core</strong> that generates a magnetic field — just like Earth! This makes it the <em>only moon in the solar system</em> with its own magnetosphere. It carves out a small bubble within Jupiter\'s massive magnetic field, creating its own protected zone — and its own spectacular auroras visible from the Hubble Space Telescope.' },
+            { cls: 'q-chem', q: '🧪 What is Ganymede made of?', a: 'About <strong>50% water ice and 50% rocky material</strong> (silicates and iron), arranged in layers like Earth: iron core → rocky mantle → icy outer layer. Scientists also think there\'s a <em>saltwater ocean</em> sandwiched between ice layers deep inside — different ice phases at different pressures, creating an alien geology unlike anywhere else.' },
+            { cls: 'q-astro', q: '🔭 Why is Ganymede so much bigger than other moons?', a: 'When Jupiter formed 4.6 billion years ago, it was surrounded by a disk of gas and dust — a mini solar system. Ganymede formed from this disk, accumulating material over millions of years. Because Jupiter was so massive, its gravity gathered enormous amounts of material, letting Ganymede grow into the <strong>largest moon in the entire solar system</strong>.' },
+            { cls: 'q-life', q: '🌱 Could life hide in Ganymede\'s hidden ocean?', a: 'Ganymede\'s ocean is sandwiched between <strong>layers of ice</strong> — not in contact with rock. On Earth, life is thought to have started at hydrothermal vents where water meets rock, releasing minerals. If Ganymede\'s ocean doesn\'t touch rock, it might lack those minerals. ESA\'s JUICE mission (arriving 2034) will orbit Ganymede specifically to answer this.' },
+        ],
+        explore: {
+            mission: 'JUICE — JUpiter ICy moons Explorer (ESA, launched 2023, arrives 2031)',
+            discovery: 'Hubble confirmed Ganymede\'s auroras in 2015, proving its magnetic field. JUICE will be the <strong>first spacecraft ever to orbit a moon other than our own</strong>! It will map Ganymede\'s magnetic field, subsurface ocean, and surface in unprecedented detail.',
+            scale: 'Ganymede\'s diameter is <strong>5,268 km</strong> — larger than Mercury (4,879 km). If it orbited the Sun, it would be a planet. The Voyager team briefly debated reclassifying it before deciding moons are moons!',
+            whatif: '<strong>What if Ganymede were a planet?</strong> It would be the 8th planet, orbiting the Sun beyond Mars. Its icy surface would be cold tundra with spectacular auroras at the poles. Large enough for a thin atmosphere. We\'d almost certainly have sent a rover there by now!',
+        },
     },
     'Callisto': {
         type: '☄️ Jovian Moon',
@@ -290,7 +354,23 @@ const celestialFacts = {
         year: '16.7 Earth Days',
         temp: '-139°C',
         details: 'Radius: 2,410 km',
-        wow: '☄️ Callisto is so covered in craters there\'s almost no room for new ones — it\'s a 4 billion-year-old record of asteroid hits!'
+        wow: '☄️ Callisto is so covered in craters there\'s almost no room for new ones — it\'s a 4 billion-year-old record of asteroid hits!',
+        emoji: '☄️',
+        ministats: ['Jovian moon', '16.7-day orbit', 'Most cratered world'],
+        statPills: ['☄️ Surface saturated with craters', '🌑 4-billion-year-old surface', '🥶 No tidal heating', '🌊 Possible subsurface ocean', '📸 Solar system\'s time capsule'],
+        wowStrip: 'Callisto\'s surface is so old and so covered in craters that scientists call it "saturated" — there\'s <strong>literally no room for new craters</strong> without overlapping old ones. It\'s a 4-billion-year record of asteroid hits!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why is Callisto so geologically inactive compared to the other Galilean moons?', a: 'The key is <strong>distance from Jupiter</strong>. Io, Europa, and Ganymede are close enough for significant tidal heating — which drives geological activity. Callisto is much farther out, so tidal heating is minimal. Without internal heat, its geology froze billions of years ago, preserving a perfect fossil record of the solar system\'s most violent early period.' },
+            { cls: 'q-chem', q: '🧪 What is Callisto made of?', a: 'Roughly equal parts <strong>rock and water ice</strong>, mixed together — not as well separated into layers as Ganymede. Its dark surface comes from carbon-rich material deposited by comets and asteroids over billions of years. The bright spots in craters are <em>freshly exposed ice</em> that hasn\'t darkened yet — like white chalk showing through old, weathered rock.' },
+            { cls: 'q-astro', q: '🔭 What is the "Late Heavy Bombardment"?', a: 'About <strong>3.9 billion years ago</strong>, the solar system went through a chaotic period when giant planets (especially Jupiter) shifted orbits, sending countless asteroids crashing into planets and moons. Callisto\'s crater-saturated surface is one of the best records of this violent era. Earth was also bombarded, but plate tectonics erased all evidence.' },
+            { cls: 'q-life', q: '🌱 Could Callisto be a future human outpost?', a: 'Possibly! Callisto might have a <strong>thin subsurface ocean</strong> — kept liquid by radioactive decay rather than tidal heating. It also has a critical advantage: it\'s <em>outside</em> Jupiter\'s intense radiation belts (unlike Io, Europa, and Ganymede). This makes it the safest of Jupiter\'s large moons for future human visits.' },
+        ],
+        explore: {
+            mission: 'Galileo (NASA, 1995–2003) + JUICE (ESA, will fly by Callisto en route)',
+            discovery: 'Galileo\'s magnetic measurements hinted that <strong>Callisto might have a subsurface ocean</strong>. Close-up images revealed its strange surface — ancient multi-ring impact basins, bright ice patches, and terrain so saturated with craters it looks like a golf ball.',
+            scale: 'Callisto is almost the <strong>same size as Mercury</strong>. If you could see it from above Jupiter\'s clouds, it would appear 4× larger than our Moon appears from Earth. From Earth, Callisto is visible as a tiny moving dot through a basic telescope on a clear night.',
+            whatif: '<strong>What if Earth had no plate tectonics (like Callisto)?</strong> Every crater would remain forever — never erased. The Chicxulub crater (dinosaur-killer, 66 million years ago, 180 km wide) would still be a prominent scar. The entire 4-billion-year history of asteroid hits would be permanently written on Earth\'s face — just like Callisto.',
+        },
     },
     'Saturn': {
         type: '💍 Gas Giant',
