@@ -834,11 +834,6 @@ const infoCard = document.getElementById('planet-info-card');
 const infoName = document.getElementById('info-name');
 const infoType = document.getElementById('info-type');
 const infoFact = document.getElementById('info-fact');
-const infoGravity = document.getElementById('info-gravity');
-const infoDay = document.getElementById('info-day');
-const infoYear = document.getElementById('info-year');
-const infoTemp = document.getElementById('info-temp');
-const infoDetails = document.getElementById('info-details');
 const infoWow = document.getElementById('info-wow');
 const launchBtn = document.getElementById('launch-btn');
 
@@ -858,11 +853,6 @@ function focusOn(meshEntry) {
     infoName.textContent = meshEntry.name === 'Sun' ? '☀ Sun' : meshEntry.name;
     infoType.textContent = factData.type;
     infoFact.textContent = factData.fact;
-    infoGravity.textContent = factData.gravity;
-    infoDay.textContent = factData.day;
-    infoYear.textContent = factData.year;
-    infoTemp.textContent = factData.temp;
-    infoDetails.textContent = factData.details;
     infoWow.textContent = factData.wow || '';
     infoCard.classList.remove('hidden');
 
