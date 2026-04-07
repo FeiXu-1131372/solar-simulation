@@ -409,7 +409,7 @@ button:active {
     flex: 1;
     background: rgba(124,58,237,0.1);
     border: 1px solid rgba(124,58,237,0.2);
-    color: #7c6aab;
+    color: #7c6aub;
     font-size: 11px;
     font-weight: 700;
     padding: 7px 4px;
@@ -417,6 +417,8 @@ button:active {
     cursor: pointer;
     transition: all 0.2s;
     font-family: 'Inter', system-ui, sans-serif;
+    text-transform: none;
+    letter-spacing: normal;
 }
 .tab-btn.active {
     background: linear-gradient(135deg, #7c3aed, #6d28d9);
@@ -427,6 +429,10 @@ button:active {
 .tab-btn:hover:not(.active) {
     background: rgba(124,58,237,0.18);
     color: #a78bfa;
+}
+.tab-btn:focus-visible {
+    outline: 2px solid rgba(167,139,250,0.8);
+    outline-offset: 2px;
 }
 
 /* Tab panels */
@@ -506,7 +512,7 @@ button:active {
     line-height: 1.6;
     padding: 0 12px;
 }
-.q-card.open .q-body { max-height: 300px; padding: 0 12px 11px; }
+.q-card.open .q-body { max-height: 600px; padding: 0 12px 11px; }
 
 /* Physics — blue */
 .q-physics .q-header { background: rgba(59,130,246,0.12); color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
