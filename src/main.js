@@ -1893,6 +1893,7 @@ function runTimingStage(stage, stageIdx, mission, target, gameData, showStage) {
     };
 
     fireBtn.addEventListener('click', handler);
+    activeGameCleanup = () => fireBtn.removeEventListener('click', handler);
 }
 
 function runChoiceStage(stage, stageIdx, mission, target, gameData, showStage) {
@@ -1914,6 +1915,7 @@ function runChoiceStage(stage, stageIdx, mission, target, gameData, showStage) {
     fill.style.transition = `width ${TIMER_MS / 1000}s linear`;
     fill.style.width = '0%';
 
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
     activeGameTimer = setInterval(() => {
         if (done) return;
         const remaining = Math.max(0, Math.ceil((TIMER_MS - (Date.now() - start)) / 1000));
@@ -1941,6 +1943,7 @@ function runChoiceStage(stage, stageIdx, mission, target, gameData, showStage) {
         }
     };
     choicesEl.addEventListener('click', clickHandler);
+    activeGameCleanup = () => choicesEl.removeEventListener('click', clickHandler);
 }
 
 function runTapStage(stage, stageIdx, mission, target, gameData, showStage) {
@@ -1962,6 +1965,7 @@ function runTapStage(stage, stageIdx, mission, target, gameData, showStage) {
     fill.style.transition = `width ${TIMER_MS / 1000}s linear`;
     fill.style.width = '0%';
 
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
     activeGameTimer = setInterval(() => {
         if (done) return;
         const remaining = Math.max(0, Math.ceil((TIMER_MS - (Date.now() - start)) / 1000));
@@ -1988,6 +1992,7 @@ function runTapStage(stage, stageIdx, mission, target, gameData, showStage) {
         }
     };
     tapBtn.addEventListener('click', tapHandler);
+    activeGameCleanup = () => tapBtn.removeEventListener('click', tapHandler);
 }
 
 document.getElementById('ml-relaunch-btn').addEventListener('click', () => {
