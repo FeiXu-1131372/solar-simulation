@@ -842,7 +842,7 @@ function renderCard(name) {
     };
 
     document.getElementById('info-emoji').textContent = data.emoji || '⭐';
-    document.getElementById('info-name').textContent = name === 'Sun' ? '☀ Sun' : name;
+    document.getElementById('info-name').textContent = name;
     document.getElementById('info-type').textContent = data.type;
     document.getElementById('info-ministats').innerHTML =
         (data.ministats || []).map(s => `<span class="mini-stat">${s}</span>`).join('');
@@ -851,15 +851,18 @@ function renderCard(name) {
         (data.statPills || []).map(s => `<div class="stat-pill">${s}</div>`).join('');
     document.getElementById('info-wow').innerHTML = data.wowStrip || data.wow || '';
     document.getElementById('info-questions').innerHTML =
-        (data.learn || []).map(q => `
-            <div class="q-card ${q.cls}">
+        (data.learn || []).map(q => {
+            const safeClass = (q.cls || '').replace(/[^a-z0-9-]/gi, '');
+            return `
+            <div class="q-card ${safeClass}">
                 <div class="q-header">
                     <span class="q-label">${q.q}</span>
                     <span class="q-chevron">▼</span>
                 </div>
                 <div class="q-body">${q.a}</div>
             </div>
-        `).join('');
+        `;
+        }).join('');
 
     const explore = data.explore || {};
     document.getElementById('info-mission-name').textContent = explore.mission || '';
