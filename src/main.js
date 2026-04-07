@@ -1995,6 +1995,165 @@ function runTapStage(stage, stageIdx, mission, target, gameData, showStage) {
     activeGameCleanup = () => tapBtn.removeEventListener('click', tapHandler);
 }
 
+// --- HAZARD RUN ---
+
+const HAZARD_EMOJIS = {
+    asteroid: '☄️', radiation_band: '⚡', storm_swirl: '🌀',
+    acid_cloud: '☁️', dust_devil: '🌪️', rock: '🪨', canyon_edge: '🏔️',
+    loose_debris: '🔧', loose_rock: '🪨', dust_plume: '💨', micro_debris: '🔩',
+    ice_shard: '🧊', water_plume: '💧', radiation_belt: '☢️',
+    magnetic_storm: '🧲', radiation_flux: '☢️', debris: '🔧',
+    ancient_debris: '☄️', boulder: '🪨', crater_ejecta: '💥',
+    ring_particle: '💍', moonlet: '🌑', ice_chunk: '❄️',
+    methane_cloud: '🌫️', ice_particle: '❄️', wind_shear: '💨',
+    ring_debris: '💍', magnetic_anomaly: '🧲',
+    ice_crystal: '❄️', canyon_wall: '🏔️', surface_debris: '🔧',
+    storm_band: '🌀', volcanic_plume: '🌋', lava_ejection: '🔥',
+    sulfur_cloud: '🟡', solar_flare: '☀️', radiation_burst: '⚡',
+    plasma_wave: '🌊', solar_radiation: '☀️', pressure_wave: '💨',
+    lightning: '⚡', dust_cloud: '💨', nitrogen_geyser: '💨',
+    ice_debris: '❄️', cryogenic_plume: '❄️',
+};
+
+function runHazardRun(mission, target, gameData) {
+    document.getElementById('mg-hazard').classList.remove('hidden');
+
+    const canvas = document.getElementById('mg-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = canvas.width;   // 370
+    const CH = canvas.height;  // 170
+    const LANES_Y = [CH * 0.2, CH * 0.5, CH * 0.8];
+    const DURATION_MS = 20000;
+    const hazardTypes = (gameData.hazards && gameData.hazards.length)
+        ? gameData.hazards
+        : ['asteroid', 'debris', 'radiation_band'];
+
+    let lane = 1;
+    let lives = 3;
+    let invincible = false;
+    let obstacles = [];
+    let done = false;
+    let startTime = Date.now();
+    let lastSpawn = 0;
+
+    function updateLives() {
+        document.getElementById('mg-lives').textContent = '🟢'.repeat(lives) + '⚫'.repeat(3 - lives);
+    }
+    updateLives();
+
+    function spawnObstacle() {
+        const type = hazardTypes[Math.floor(Math.random() * hazardTypes.length)];
+        obstacles.push({
+            x: CW + 24,
+            lane: Math.floor(Math.random() * 3),
+            emoji: HAZARD_EMOJIS[type] || '☄️',
+        });
+    }
+
+    function gameLoop() {
+        if (done) return;
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, Math.ceil((DURATION_MS - elapsed) / 1000));
+        document.getElementById('mg-hazard-timer').textContent = `${remaining}s`;
+
+        // Speed increases every 5 seconds
+        const speed = 2 + Math.floor(elapsed / 5000) * 0.5;
+
+        // Spawn gap shrinks from 1200ms to 600ms over 20 seconds
+        const spawnInterval = Math.max(600, 1200 - elapsed * 0.03);
+        if (Date.now() - lastSpawn > spawnInterval) {
+            spawnObstacle();
+            lastSpawn = Date.now();
+        }
+
+        // Clear canvas
+        ctx.fillStyle = '#040a14';
+        ctx.fillRect(0, 0, CW, CH);
+
+        // Lane guides
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.setLineDash([6, 6]);
+        LANES_Y.forEach(ly => {
+            ctx.beginPath(); ctx.moveTo(0, ly); ctx.lineTo(CW, ly); ctx.stroke();
+        });
+        ctx.setLineDash([]);
+
+        // Planet target on right
+        ctx.font = '32px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(mission.emoji || '🪐', CW - 24, CH / 2 + 12);
+
+        // Move + draw obstacles
+        ctx.font = '20px serif';
+        obstacles = obstacles.filter(o => {
+            o.x -= speed;
+            if (o.x < -24) return false;
+            ctx.fillText(o.emoji, o.x, LANES_Y[o.lane] + 8);
+            return true;
+        });
+
+        // Draw ship (blink when invincible)
+        const shipX = 50;
+        if (!invincible || Math.floor(Date.now() / 80) % 2 === 0) {
+            ctx.font = '24px serif';
+            ctx.fillText('🛸', shipX, LANES_Y[lane] + 10);
+        }
+
+        // Collision detection
+        if (!invincible) {
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const o = obstacles[i];
+                if (o.lane === lane && Math.abs(o.x - shipX) < 22) {
+                    obstacles.splice(i, 1);
+                    lives--;
+                    updateLives();
+                    if (lives <= 0) {
+                        done = true;
+                        cancelAnimationFrame(activeGameFrame);
+                        activeGameFrame = null;
+                        onGameFail(mission, target, gameData);
+                        return;
+                    }
+                    invincible = true;
+                    setTimeout(() => { invincible = false; }, 1000);
+                    break;
+                }
+            }
+        }
+
+        // Win condition
+        if (elapsed >= DURATION_MS && !done) {
+            done = true;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
+            onGameSuccess(mission, target);
+            return;
+        }
+
+        activeGameFrame = requestAnimationFrame(gameLoop);
+    }
+
+    activeGameFrame = requestAnimationFrame(gameLoop);
+
+    // Keyboard controls
+    const keyHandler = e => {
+        if (done) return;
+        if (e.key === 'ArrowUp')   lane = Math.max(0, lane - 1);
+        if (e.key === 'ArrowDown') lane = Math.min(2, lane + 1);
+    };
+    document.addEventListener('keydown', keyHandler);
+    activeGameCleanup = () => document.removeEventListener('keydown', keyHandler);
+
+    // Touch/click controls
+    canvas.addEventListener('click', e => {
+        if (done) return;
+        const rect = canvas.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        if (y < rect.height / 2) lane = Math.max(0, lane - 1);
+        else lane = Math.min(2, lane + 1);
+    });
+}
+
 document.getElementById('ml-relaunch-btn').addEventListener('click', () => {
     document.getElementById('mission-lost-panel').classList.add('hidden');
     if (lockedTarget) showMissionPicker(lockedTarget);
