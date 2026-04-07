@@ -432,7 +432,23 @@ const celestialFacts = {
         year: '84 Earth Years',
         temp: '-195°C (coldest atmosphere!)',
         details: '28 Known Moons • Radius: 25,362 km',
-        wow: '↔️ Uranus spins on its side! Half the planet gets 42 years of straight sunlight, then 42 years of total darkness — no seasons like ours!'
+        wow: '↔️ Uranus spins on its side! Half the planet gets 42 years of straight sunlight, then 42 years of total darkness — no seasons like ours!',
+        emoji: '🔵',
+        ministats: ['28 known moons', '84-year orbit', '7th from Sun'],
+        statPills: ['↔️ 98° axial tilt (spins sideways!)', '🔵 Methane blue-green colour', '❄️ −195°C atmosphere', '💎 Diamond rain possible', '⏱️ 17.2-hour day'],
+        wowStrip: 'Deep inside Uranus, the pressure is so extreme that scientists think carbon atoms are crushed into <strong>actual diamonds</strong> — which then "rain" downward through the ice layers. Uranus might literally rain diamonds!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why does Uranus spin completely on its side?', a: 'Scientists believe a <strong>massive collision with an Earth-sized object</strong> billions of years ago knocked Uranus completely sideways. Its axial tilt is 98° — meaning it essentially rolls around the Sun on its side. This creates the solar system\'s most extreme seasons: each pole gets <strong>42 years of continuous sunlight</strong>, then 42 years of total darkness!' },
+            { cls: 'q-chem', q: '🧪 What gives Uranus its blue-green colour?', a: '<strong>Methane gas (CH₄)</strong> in Uranus\'s upper atmosphere. Methane absorbs red wavelengths of sunlight and reflects blue-green back to our eyes. The more methane, the bluer the planet. Saturn (less methane) looks yellow-brown; Uranus (more methane) looks blue-green; Neptune (even more methane) is a deeper, richer blue.' },
+            { cls: 'q-astro', q: '🔭 Why is Uranus called an "ice giant"?', a: 'Unlike Jupiter and Saturn (mostly hydrogen and helium gas), Uranus\'s interior contains large amounts of <strong>water (H₂O), methane (CH₄), and ammonia (NH₃)</strong> — compressed into a hot, dense fluid. Astronomers call these "ices," hence "ice giant." At extreme pressures inside Uranus, these materials behave unlike anything on Earth.' },
+            { cls: 'q-life', q: '🌱 What\'s this about diamond rain inside Uranus?', a: 'At <strong>6 million atmospheres of pressure</strong> inside Uranus, carbon atoms (from methane) get squished so tightly they form diamonds. These diamonds are thought to "rain" downward through the ice layers toward the core. Scientists recreated this in the lab using powerful lasers! It\'s a real physical process — just happening on a scale too extreme to imagine.' },
+        ],
+        explore: {
+            mission: 'Voyager 2 (NASA, flew by Jan 24, 1986) — the only spacecraft to visit Uranus',
+            discovery: 'Voyager 2 discovered <strong>10 new moons and 2 new rings</strong> during its 5.5-hour flyby. It found Uranus has a strange off-centre magnetic field — tilted 60° from its rotation axis. A dedicated Uranus orbiter was recommended as NASA\'s top planetary priority by the 2022 Decadal Survey.',
+            scale: 'Uranus is about <strong>4× wider than Earth</strong>. If Earth were a tennis ball, Uranus would be a basketball. Despite being bigger, Uranus is actually less massive than Neptune — it\'s puffier and less dense. Its dark, narrow rings look very different from Saturn\'s bright ones.',
+            whatif: '<strong>What if Uranus\'s tilt were like Earth\'s (23°)?</strong> It would have normal seasonal cycles — gentle spring, summer, autumn, winter — repeating every 84 years. The collision that tilted it also stripped away internal heat, making Uranus the coldest-atmosphered planet even though Neptune is farther from the Sun.',
+        },
     },
     'Titania': {
         type: '🌑 Uranian Moon',
@@ -442,7 +458,23 @@ const celestialFacts = {
         year: '8.7 Earth Days',
         temp: '-203°C',
         details: 'Radius: 788 km',
-        wow: '🏔️ Titania has canyons longer than the entire United States — carved by the moon cracking apart as it cooled down!'
+        wow: '🏔️ Titania has canyons longer than the entire United States — carved by the moon cracking apart as it cooled down!',
+        emoji: '🌑',
+        ministats: ['Uranus\'s largest moon', '8.7-day orbit', '788 km radius'],
+        statPills: ['🏔️ Canyon longer than the USA', '❄️ −203°C surface', '🌑 Half rock, half ice', '☄️ Ancient cratered terrain', '📏 Messina Chasmata: 1,500 km'],
+        wowStrip: 'Titania has canyons (called "chasmata") that stretch <strong>thousands of kilometres</strong> — some longer than the entire United States! They formed when the moon\'s interior froze and expanded, cracking the crust like a cooling shell.',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ How did Titania\'s enormous canyons form?', a: 'When Titania formed, its interior was warm and partly liquid. As it cooled, the water ice froze solid. But <strong>ice is less dense than liquid water — it expands when it freezes</strong>. This expansion cracked and stretched Titania\'s crust, creating enormous rift valleys. Similar to the East African Rift on Earth — but on a moon, frozen in time billions of years ago.' },
+            { cls: 'q-chem', q: '🧪 What is Titania made of?', a: 'About <strong>50% water ice and 50% rock</strong> (silicate minerals and carbon compounds). Its dark surface comes from carbon-rich material deposited by comets over billions of years. The bright spots inside craters are <em>freshly exposed ice</em> that hasn\'t been darkened yet — like white chalk showing through old, weathered rock.' },
+            { cls: 'q-astro', q: '🔭 How was Titania discovered?', a: 'Titania was discovered by <strong>William Herschel on January 11, 1787</strong> — just 6 years after he discovered Uranus itself! He spotted it through his handmade telescope in his garden. Titania is named after a character in Shakespeare\'s <em>A Midsummer Night\'s Dream</em>. All 28 of Uranus\'s moons are named after Shakespeare or Alexander Pope characters.' },
+            { cls: 'q-life', q: '🌱 Could Titania have conditions for life?', a: 'Very cold (−203°C) and far from the Sun — liquid water on the surface is impossible. But scientists have wondered whether there could be a thin <strong>subsurface ocean</strong> kept warm by radioactive decay in Titania\'s rocky core. With so little data (only Voyager 2 has ever flown past), Titania remains one of the least-explored large moons.' },
+        ],
+        explore: {
+            mission: 'Voyager 2 (NASA, flew by Jan 24, 1986) — the only spacecraft to image Titania',
+            discovery: 'Voyager 2 photographed about <strong>40% of Titania\'s surface</strong>, revealing the Messina Chasmata canyon system, ancient craters, and a mix of old and young terrain. No spacecraft has returned in the 40 years since.',
+            scale: 'Titania is <strong>1,578 km in diameter</strong> — about the width of India. Its canyon Messina Chasmata is 1,500 km long. If that canyon were on Earth, it would stretch from London to Moscow — deeper than the Grand Canyon, carved by a freezing moon.',
+            whatif: '<strong>What if you stood in Titania\'s canyon?</strong> Uranus would hang in the sky as a spectacular pale blue disc, about 5× the apparent size of our Moon. Gravity is only 38% of Earth\'s — you\'d feel light. The canyon walls around you would stretch 5 km deep — like standing at the bottom of a crack while clouds float above.',
+        },
     },
     'Neptune': {
         type: '💨 Ice Giant',
@@ -452,7 +484,23 @@ const celestialFacts = {
         year: '165 Earth Years',
         temp: '-200°C',
         details: '16 Known Moons • Radius: 24,622 km',
-        wow: '💨 Neptune\'s winds hit 2,100 km/h — faster than a fighter jet! Its first full year since discovery was only completed in 2011!'
+        wow: '💨 Neptune\'s winds hit 2,100 km/h — faster than a fighter jet! Its first full year since discovery was only completed in 2011!',
+        emoji: '💨',
+        ministats: ['16 known moons', '165-year orbit', '8th from Sun'],
+        statPills: ['💨 2,100 km/h winds (fastest!)', '💙 Vivid cobalt blue', '🌡️ −200°C', '⏱️ 16.1-hour day', '🔭 Predicted by maths before seen!'],
+        wowStrip: 'Neptune was <strong>discovered mathematically</strong> before anyone ever saw it! Astronomers noticed Uranus\'s orbit was slightly wrong — calculated exactly where a hidden planet must be — and found Neptune the same night they looked. Maths discovered a planet!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why does Neptune have the strongest winds in the solar system?', a: 'Neptune receives almost <strong>900× less sunlight than Earth</strong>, yet its winds reach 2,100 km/h — supersonic! The energy comes from inside: Neptune generates <em>2.6× more heat</em> than it receives from the Sun. This internal heat (left over from Neptune\'s formation), combined with rapid rotation, creates these extreme jet streams.' },
+            { cls: 'q-chem', q: '🧪 Why is Neptune such an intense blue?', a: 'Like Uranus, Neptune contains <strong>methane (CH₄)</strong> which absorbs red light and reflects blue. But Neptune is <em>more intensely blue</em> than Uranus — scientists believe there\'s another, still-unidentified substance in Neptune\'s atmosphere making it that vivid cobalt colour. What that substance is remains one of the solar system\'s unsolved mysteries.' },
+            { cls: 'q-astro', q: '🔭 How was Neptune discovered using only mathematics?', a: 'In 1845–46, mathematicians Le Verrier and Adams independently calculated that a <strong>hidden planet</strong> must be gravitationally pulling Uranus off its predicted orbit. Le Verrier sent his prediction to the Berlin Observatory. That same night, astronomers aimed their telescope at the calculated spot and <em>found Neptune within 1°</em>. One of the greatest predictions in the history of science.' },
+            { cls: 'q-life', q: '🌱 Could anything survive Neptune\'s conditions?', a: 'Neptune is an ice giant — its interior contains hot, dense "ices" (water, methane, ammonia) at extreme pressure. Some scientists speculate that at certain pressure-temperature layers inside Neptune, there could be <strong>liquid water</strong>. Whether life could exist there is wildly speculative — but the basic organic chemistry isn\'t inherently hostile. We know very little about ice giant interiors.' },
+        ],
+        explore: {
+            mission: 'Voyager 2 (NASA, flew by Aug 25, 1989) — the only spacecraft to visit Neptune',
+            discovery: 'Voyager 2 discovered Neptune\'s Great Dark Spot (a storm the size of Earth), found <strong>6 new moons</strong>, confirmed the ring system, and photographed Triton\'s nitrogen geysers — the coldest active "volcanic" activity ever found. Neptune completed its first full orbit since discovery in <strong>2011!</strong>',
+            scale: 'Neptune is <strong>4× wider than Earth</strong>. But it\'s so far away (30× the Earth-Sun distance) that even powerful telescopes barely show it as a blue disc. Voyager 2 took <strong>12 years to reach Neptune</strong> after launch — moving at 56,000 km/h the whole time.',
+            whatif: '<strong>What if you hovered at Neptune\'s cloud tops?</strong> The 2,100 km/h winds would be faster than a rifle bullet. The Sun would be a very bright star — 900× dimmer than on Earth. The sky would be vivid dark blue. And Triton would rise in the west — it orbits backwards.',
+        },
     },
     'Triton': {
         type: '🔄 Neptunian Moon',
@@ -462,7 +510,23 @@ const celestialFacts = {
         year: '5.8 Earth Days',
         temp: '-235°C (one of the coldest!)',
         details: 'Radius: 1,353 km',
-        wow: '🔄 Triton is doomed! It orbits backwards, getting closer to Neptune every year — in 3.6 billion years it will shatter into rings!'
+        wow: '🔄 Triton is doomed! It orbits backwards, getting closer to Neptune every year — in 3.6 billion years it will shatter into rings!',
+        emoji: '🔄',
+        ministats: ['Neptune\'s largest moon', '5.88-day retrograde orbit', 'Doomed in ~3.6 billion years'],
+        statPills: ['🔄 Orbits backwards!', '❄️ −235°C (near absolute zero)', '🌋 Active nitrogen geysers', '☄️ Captured Kuiper Belt Object', '💥 Future ring system'],
+        wowStrip: 'At −235°C, Triton is one of the <strong>coldest objects in the solar system</strong> — just 38°C above absolute zero (the coldest anything can physically be). Yet despite this extreme cold, it has active geysers shooting nitrogen gas 8 km into space!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why is Triton slowly spiraling into Neptune?', a: 'Triton orbits <strong>backwards</strong> (retrograde) — opposite to Neptune\'s rotation. Tidal forces always work against Triton\'s orbit, gradually slowing it and stealing orbital energy. As it loses energy, it sinks closer to Neptune. In about <strong>3.6 billion years</strong>, it crosses the Roche limit and Neptune\'s gravity rips it apart — creating spectacular rings!' },
+            { cls: 'q-chem', q: '🧪 What are Triton\'s nitrogen geysers made of?', a: 'Triton\'s surface is covered in frozen <strong>nitrogen (N₂) ice</strong>. As sunlight hits the dark sub-surface material, it absorbs heat and warms the nitrogen just below. The nitrogen turns to gas and erupts through weak spots in the ice — powered by sunlight at −235°C. It shoots <em>dark nitrogen plumes 8 km high</em>. The coldest active "volcanic" activity ever found!' },
+            { cls: 'q-astro', q: '🔭 Where did Triton actually come from?', a: 'Triton orbits the wrong way, on a tilted path — strongly suggesting it wasn\'t born with Neptune. Scientists believe Triton was once a large <em>Kuiper Belt Object</em> — like Pluto! Billions of years ago, it passed too close to Neptune and was gravitationally captured. Its arrival probably disrupted Neptune\'s entire original moon system.' },
+            { cls: 'q-life', q: '🌱 Could Triton have a hidden ocean?', a: 'Despite being the coldest world with active geysers, some scientists think Triton might have a <strong>subsurface liquid ocean</strong> — kept warm by tidal heating (as its orbit slowly decays) plus radioactive decay. Pluto — Triton\'s likely twin — is now thought to have a subsurface ocean. If Pluto has one, Triton might too!' },
+        ],
+        explore: {
+            mission: 'Voyager 2 (NASA, flew by Aug 25, 1989) — the only spacecraft to observe Triton',
+            discovery: 'Voyager 2 photographed Triton\'s active <strong>nitrogen geysers</strong> — completely unexpected on such a cold world. It revealed a young, constantly-refreshed surface, and a pinkish colour from complex organic molecules (<em>tholins</em>) created by radiation hitting nitrogen and methane. No spacecraft has returned in 35+ years.',
+            scale: 'Triton is <strong>2,706 km across</strong> — about the width of the continental United States from coast to coast. At −235°C, a cup of water left there would freeze in milliseconds. Yet geysers shoot gas 8 km high from that same frozen surface. A world of extremes at the edge of the solar system.',
+            whatif: '<strong>What if Triton breaks apart in 3.6 billion years?</strong> Tidal forces rip it apart near the Roche limit. The resulting ring would be spectacular — far more massive than Saturn\'s current rings. For millions of years, Neptune would have the most dramatic ring system in the solar system, visible as a bright band from Earth.',
+        },
     }
 };
 
