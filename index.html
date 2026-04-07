@@ -84,5 +84,51 @@
     </div>
 
     <script type="module" src="/src/main.js"></script>
+
+    <!-- Mission Picker -->
+    <div id="mission-picker" class="mission-picker hidden">
+        <div class="mission-picker-header">
+            <div>
+                <div class="mission-picker-title">🚀 Choose Your Mission</div>
+                <div id="mission-picker-subtitle" class="mission-picker-subtitle"></div>
+            </div>
+            <button id="mission-picker-close" class="mission-picker-close">✕</button>
+        </div>
+        <div id="mission-cards" class="mission-cards"></div>
+    </div>
+
+    <!-- Countdown Overlay -->
+    <div id="countdown-overlay" class="countdown-overlay hidden">
+        <div class="countdown-inner">
+            <div id="cd-mission" class="cd-mission"></div>
+            <div id="cd-number" class="cd-number"></div>
+            <div id="cd-label" class="cd-label"></div>
+        </div>
+    </div>
+
+    <!-- In-Flight Mission Log -->
+    <div id="mission-log" class="mission-log hidden">
+        <div class="ml-header">
+            <span id="ml-emoji"></span>
+            <span id="ml-name"></span>
+            <span id="ml-agency"></span>
+        </div>
+        <div class="ml-target-line">✈ En route to <span id="ml-target"></span></div>
+        <div class="ml-progress-wrap">
+            <div id="ml-bar" class="ml-bar"></div>
+        </div>
+        <div id="ml-pct" class="ml-pct"></div>
+        <div id="ml-fact" class="ml-fact"></div>
+    </div>
+
+    <!-- Arrival Celebration -->
+    <div id="arrival-panel" class="arrival-panel hidden">
+        <div id="arr-emoji" class="arr-emoji"></div>
+        <div id="arr-mission" class="arr-mission"></div>
+        <div id="arr-headline" class="arr-headline">Mission Accomplished! 🎉</div>
+        <div id="arr-discovery" class="arr-discovery"></div>
+        <div id="arr-funfact" class="arr-funfact"></div>
+        <button id="arr-close" class="arr-close">Keep Exploring! 🚀</button>
+    </div>
 </body>
 </html>

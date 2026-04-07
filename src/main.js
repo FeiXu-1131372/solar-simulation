@@ -226,24 +226,161 @@ const celestialFacts = {
     }
 };
 
-const missionMap = {
-    'Mercury': 'MESSENGER',
-    'Venus': 'Magellan',
-    'Moon': 'Apollo 11',
-    'Mars': 'Perseverance',
-    'Phobos': 'MMX Probe',
-    'Deimos': 'MMX Probe',
-    'Jupiter': 'Juno',
-    'Io': 'Galileo',
-    'Europa': 'Europa Clipper',
-    'Ganymede': 'JUICE',
-    'Callisto': 'JUICE',
-    'Saturn': 'Cassini',
-    'Titan': 'Huygens Probe',
-    'Uranus': 'Voyager 2',
-    'Titania': 'Voyager 2',
-    'Neptune': 'Voyager 2',
-    'Triton': 'Voyager 2'
+const missionData = {
+  'Mercury': [
+    { name:'MESSENGER', emoji:'🛸', year:'2004–2015', type:'Orbiter', status:'historical',
+      agency:'NASA', rocket:'Delta II Heavy', color:0x4499ff,
+      steps:['🚀 Delta II ignites — MESSENGER begins a 6.5-year journey to Mercury!','🌍 Using Venus gravity assists like a cosmic slingshot to slow down!','🔭 First spacecraft to orbit Mercury — mapping every crater and lava plain!','🧊 Finding water ice hiding in polar craters that never see sunlight!'],
+      discovery:'Found water ice inside shadowed polar craters — even the Sun\'s closest neighbour has ice!',
+      funFact:'🧊 Mercury\'s poles stay at -170°C permanently — ice survives there forever, just steps from the hottest surface in the solar system!' },
+    { name:'BepiColombo', emoji:'🚀', year:'2018–2025', type:'Dual Orbiter', status:'active',
+      agency:'ESA + JAXA', rocket:'Ariane 5', color:0x22ccff,
+      steps:['🚀 Two spacecraft in one fairing — Europe and Japan launching together!','🌏 9 gravity assists over 7 years — like a cosmic pinball machine!','🔬 Separating into 2 orbiters to study Mercury from different altitudes!','📡 Unravelling the mystery of Mercury\'s surprisingly strong magnetic field!'],
+      discovery:'The most complex Mercury mission ever — two orbiters, two countries, one small planet!',
+      funFact:'🌍 BepiColombo swings past Earth once, Venus twice, and Mercury six times just to slow down enough to enter orbit!' },
+  ],
+  'Venus': [
+    { name:'Magellan', emoji:'📡', year:'1989–1994', type:'Radar Mapper', status:'historical',
+      agency:'NASA', rocket:'Titan IV', color:0xffaa22,
+      steps:['📡 Launched from Space Shuttle — the first planetary probe ever deployed from a shuttle!','🌩️ Piercing Venus\'s impenetrable clouds with radar — like X-ray vision for a planet!','🌋 Discovering over 1,600 volcanoes hiding beneath the acid clouds!','🔥 Deliberately diving into Venus\'s atmosphere at mission end to study it!'],
+      discovery:'Revealed Venus is smothered in volcanoes — some may still be erupting today!',
+      funFact:'🌋 Venus has MORE volcanoes than any other planet in the solar system — Magellan spotted over 1,600 of them!' },
+    { name:'DAVINCI+', emoji:'🔬', year:'Planned 2031', type:'Atmospheric Probe', status:'planned',
+      agency:'NASA', rocket:'Atlas V', color:0xff6622,
+      steps:['🚀 Most ambitious Venus mission in 30 years — finally going back!','☁️ A probe enters Venus\'s thick clouds and FALLS for 63 minutes through sulfuric acid!','📊 Measuring every layer of the atmosphere on the way down!','🌊 Searching for proof that Venus once had oceans and could have supported life!'],
+      discovery:'Will discover whether Venus was once habitable — it may have had oceans for billions of years!',
+      funFact:'☁️ The DAVINCI probe will fall through 60km of sulfuric acid clouds for over an hour — and might even survive the landing!' },
+  ],
+  'Moon': [
+    { name:'Apollo 11', emoji:'👨‍🚀', year:'1969', type:'Crewed Lander', status:'historical',
+      agency:'NASA', rocket:'Saturn V', color:0xf0c040,
+      steps:['🚀 Saturn V ignites — the most powerful rocket ever built, burning 15 TONNES of fuel every second!','🌕 Three-day cruise to the Moon — Neil, Buzz, and Michael in a capsule the size of a car!','🦅 "The Eagle has landed!" — with only 30 seconds of fuel remaining!','👨‍🚀 Neil Armstrong steps out — 600 million people watch on TV all over the world!'],
+      discovery:'Proved humans can explore other worlds! Brought back 21kg of moon rocks that told us the Moon is 4.5 billion years old.',
+      funFact:'🦅 The Eagle lander\'s computer had just 4KB of memory — your phone has ONE MILLION times more computing power!' },
+    { name:'Artemis III', emoji:'👩‍🚀', year:'Planned 2026', type:'Crewed Lander', status:'planned',
+      agency:'NASA', rocket:'Space Launch System', color:0xff8844,
+      steps:['🚀 Space Launch System — NASA\'s most powerful rocket ever — LAUNCHES!','🛸 Orion spacecraft carries the crew on a 4-day journey to the Moon!','👩‍🚀 First woman and first person of color prepare to step onto the Moon!','🌕 Exploring the lunar South Pole — hunting for ice that could build a Moon base!'],
+      discovery:'Will explore water ice near the Moon\'s South Pole — a critical resource for future permanent Moon bases!',
+      funFact:'👩‍🚀 Artemis III will make history — the first woman and first person of color on the Moon, 50+ years after Apollo!' },
+  ],
+  'Mars': [
+    { name:'Perseverance', emoji:'🤖', year:'2021–present', type:'Rover', status:'active',
+      agency:'NASA', rocket:'Atlas V 541', color:0xff4444,
+      steps:['🚀 Atlas V launches — Percy is folded up like origami inside the rocket\'s nose!','🌌 7-month cruise at 39,600 km/h — faster than any bullet ever fired!','🔥 "7 Minutes of Terror" — parachute, rockets, then a sky crane lowers Percy on cables!','🤖 Rolling on Mars in Jezero Crater — an ancient lake bed billions of years old!'],
+      discovery:'Found ancient organic molecules and a river delta — Mars once had flowing water and possibly microbial life!',
+      funFact:'🚁 Percy brought a helicopter! Ingenuity made the first powered flight on another planet — the Wright Brothers of Mars!' },
+    { name:'Curiosity', emoji:'🔬', year:'2012–present', type:'Rover', status:'active',
+      agency:'NASA', rocket:'Atlas V 541', color:0xcc4422,
+      steps:['🚀 Curiosity launches — a rover the size of a car, folded into a ball!','🌌 8.5-month cruise protected from deadly cosmic rays by a heat shield!','💥 Sky crane landing — a hovering rocket platform lowers Curiosity by cables!','🔬 Drilling into Martian rocks in Gale Crater — searching for the chemistry of life!'],
+      discovery:'Found organic molecules AND methane gas in Mars\'s atmosphere — the actual building blocks of life!',
+      funFact:'🎂 Every year on its Mars-birthday, Curiosity plays "Happy Birthday To You" to itself — using a laser pointed at a rock!' },
+  ],
+  'Phobos': [
+    { name:'MMX Probe', emoji:'🪨', year:'2026–2029', type:'Sample Return', status:'planned',
+      agency:'JAXA + NASA', rocket:'H3 Rocket', color:0x88aacc,
+      steps:['🚀 Japan\'s H3 rocket launches the first dedicated mission to Mars\'s moons!','🌌 3-year journey to Mars, then carefully approaching tiny Phobos!','🪨 Landing on a moon only 27km wide — like touching down on a mountain!','💎 Collecting samples to bring back to Earth — the first Mars moon rocks ever!'],
+      discovery:'Will return the first samples from a Martian moon — cracking the mystery of Phobos\'s origin!',
+      funFact:'🪨 Phobos is so small its gravity is almost nothing — throw a baseball and it escapes into space forever!' },
+  ],
+  'Deimos': [
+    { name:'MMX Probe', emoji:'🪨', year:'2026–2029', type:'Flyby', status:'planned',
+      agency:'JAXA', rocket:'H3 Rocket', color:0x99bbdd,
+      steps:['🚀 MMX launches — bound for both of Mars\'s mysterious moons!','🌌 After reaching Mars, swinging out to tiny Deimos for a flyby!','📸 Flying past Deimos — only 15km across, smaller than a city!','🔭 Studying both moons — were they captured asteroids, or chunks blasted off ancient Mars?'],
+      discovery:'Will help solve whether Mars\'s moons came from captured asteroids or a giant impact on ancient Mars!',
+      funFact:'⭐ Deimos is so small and far from Mars that it looks like a bright star from the Martian surface — you\'d need binoculars!' },
+  ],
+  'Jupiter': [
+    { name:'Juno', emoji:'🌩️', year:'2016–present', type:'Orbiter', status:'active',
+      agency:'NASA', rocket:'Atlas V 551', color:0xffcc44,
+      steps:['🚀 Atlas V with 5 solid boosters ROARS into space — Juno is heading to Jupiter!','🌍 Flying past Earth 2 years later for a free speed boost from gravity!','⚡ Diving into Jupiter\'s intense radiation — like flying into a giant microwave oven!','🌩️ Peering beneath Jupiter\'s clouds closer than any spacecraft before!'],
+      discovery:'Discovered Jupiter\'s poles are packed with dozens of massive cyclone storms — each larger than Earth!',
+      funFact:'⚡ Every time Juno passes Jupiter, it absorbs radiation equal to 20 MILLION chest X-rays — its electronics are shielded in titanium!' },
+    { name:'Europa Clipper', emoji:'🌊', year:'2024–2030', type:'Orbiter', status:'active',
+      agency:'NASA', rocket:'Falcon Heavy', color:0x44aaff,
+      steps:['🚀 SpaceX Falcon Heavy launches NASA\'s biggest planetary science spacecraft ever!','🌌 5.5-year journey using Mars and Earth for gravity assists!','🌊 49 close flybys of Europa — scanning for the ocean hiding under 20km of ice!','🔬 Analysing water plumes shooting from Europa\'s surface — is anyone home?'],
+      discovery:'Will determine if Europa\'s hidden ocean could host life — possibly the most important mission in history!',
+      funFact:'🛸 Europa Clipper carries a message from humanity — 2.6 million names etched on a metal plate sent to the outer solar system!' },
+  ],
+  'Io': [
+    { name:'Galileo', emoji:'🌋', year:'1995–2003', type:'Orbiter', status:'historical',
+      agency:'NASA', rocket:'Space Shuttle Atlantis', color:0xff6600,
+      steps:['🚀 Launched from Space Shuttle Atlantis — first planetary probe deployed from a shuttle!','💥 Dropped a probe directly INTO Jupiter\'s atmosphere — first time anything entered a gas giant!','🌋 Discovering Io\'s mind-blowing volcanic activity — hundreds of erupting volcanoes!','🌊 Finding strong evidence for liquid oceans under Europa\'s and Ganymede\'s ice!'],
+      discovery:'Found Io is the most volcanically active body in the solar system AND discovered subsurface oceans on three moons!',
+      funFact:'🌋 Galileo spotted a volcano on Io blasting material 500km into space — higher than the International Space Station orbits Earth!' },
+  ],
+  'Europa': [
+    { name:'Europa Clipper', emoji:'🌊', year:'2024–2030', type:'Orbiter', status:'active',
+      agency:'NASA', rocket:'Falcon Heavy', color:0x44aaff,
+      steps:['🚀 SpaceX Falcon Heavy launches the biggest planetary mission NASA has ever built!','📡 Flying past Mars then Earth for gravity slingshots — saving years of travel!','❄️ Arriving at Jupiter and beginning 49 close flybys of icy Europa!','🔬 Tasting water plumes shooting from Europa\'s cracked ice shell!'],
+      discovery:'Will map Europa\'s ocean and determine whether life could exist there — the holy grail of astrobiology!',
+      funFact:'🌊 Europa has more liquid water than ALL of Earth\'s oceans combined — hidden under 10-30km of ice!' },
+  ],
+  'Ganymede': [
+    { name:'JUICE', emoji:'🧃', year:'2023–2034', type:'Orbiter', status:'active',
+      agency:'ESA', rocket:'Ariane 5', color:0xaaff44,
+      steps:['🚀 ESA\'s Ariane 5 launches JUICE — Jupiter Icy Moons Explorer!','🌍 8-year journey using gravity assists at Earth, Venus, and Jupiter\'s moons!','🌕 Flying past Ganymede, Europa, and Callisto — three worlds hiding secret oceans!','🏆 Becoming the first spacecraft to orbit any moon other than our own Moon!'],
+      discovery:'First spacecraft to orbit an alien moon — will study Ganymede\'s magnetic field, atmosphere, and hidden ocean!',
+      funFact:'🧲 Ganymede is the only moon in the solar system with its own magnetic field — it creates its own Northern and Southern Lights!' },
+  ],
+  'Callisto': [
+    { name:'JUICE', emoji:'🧃', year:'2023–2034', type:'Flyby', status:'active',
+      agency:'ESA', rocket:'Ariane 5', color:0x88cc33,
+      steps:['🚀 JUICE launches on Europe\'s most ambitious deep space mission!','🌌 Navigating through Jupiter\'s complex moon system with precision!','☄️ 21 close flybys of ancient, crater-covered Callisto!','🔬 Hunting for the deep saltwater ocean believed to hide 200km underground!'],
+      discovery:'Callisto may hide a deep buried ocean — another candidate for life in the outer solar system!',
+      funFact:'☄️ Callisto is the most crater-covered object in the solar system — a 4-billion-year record of every asteroid and comet hit!' },
+  ],
+  'Saturn': [
+    { name:'Cassini-Huygens', emoji:'💍', year:'1997–2017', type:'Orbiter + Lander', status:'historical',
+      agency:'NASA + ESA', rocket:'Titan IVB', color:0xddaa33,
+      steps:['🚀 Titan IVB launches — Cassini and the Huygens lander travel together for 7 years!','🌍 Gravity assists past Venus twice, Earth, and Jupiter — gaining speed for free!','💍 Diving through Saturn\'s ring gap to enter orbit — the most dangerous manoeuvre!','🪂 Releasing Huygens to parachute through Titan\'s orange clouds to its surface!'],
+      discovery:'Discovered water geysers on tiny Enceladus — a warm ocean moon — AND soft-landed on Titan!',
+      funFact:'💧 Tiny Enceladus (504km wide) fires water jets into space that feed Saturn\'s entire E ring — Cassini flew through them!' },
+  ],
+  'Titan': [
+    { name:'Huygens Probe', emoji:'🪂', year:'2005', type:'Atmospheric Probe + Lander', status:'historical',
+      agency:'ESA', rocket:'Titan IVB (via Cassini)', color:0xcc8822,
+      steps:['🚀 Hitching a ride on Cassini for 7 years — then separating for the final plunge!','🪂 Entering Titan\'s atmosphere at 6 km/s — parachute deploys in the orange haze!','📸 Photographing Titan while falling for 2.5 hours — rivers, lakes, hills!','🌍 Landing on a surface eerily like Earth — but rocks are ice and rain is liquid methane!'],
+      discovery:'First landing in the outer solar system! Revealed Titan has rivers, lakes, hills, and rain — all made of liquid methane!',
+      funFact:'📡 Huygens sent data for 72 minutes after landing — but due to a software error, only half the data got through!' },
+    { name:'Dragonfly', emoji:'🚁', year:'2028 launch / 2034 arrival', type:'Rotorcraft Lander', status:'planned',
+      agency:'NASA', rocket:'Falcon Heavy', color:0xff9933,
+      steps:['🚀 Falcon Heavy launches Dragonfly — a nuclear-powered helicopter the size of a car!','🌌 6-year cruise — then parachuting into Titan\'s orange nitrogen atmosphere!','🌧️ Landing on Titan\'s surface at -179°C where methane rains from the sky!','🚁 Flying 8km hops from site to site — like a helicopter on an alien world!'],
+      discovery:'Will explore Titan\'s organic chemistry — learning how the building blocks of life form even without liquid water!',
+      funFact:'🚁 On Titan you could strap wings to your arms and FLY — the thick atmosphere and gentle gravity make human-powered flight possible!' },
+  ],
+  'Uranus': [
+    { name:'Voyager 2', emoji:'🔭', year:'1986 flyby', type:'Flyby Probe', status:'historical',
+      agency:'NASA', rocket:'Titan III-E', color:0x88ccff,
+      steps:['🚀 Titan III-E launches Voyager 2 on a once-in-176-year Grand Tour of all outer planets!','🌌 9-year journey to Uranus — traveling further than humanity had ever sent a spacecraft!','🔭 Just 6 hours to fly past Uranus — and 10 new moons discovered in that short window!','📡 Radio signals from Uranus take 2.5 hours to reach Earth at the speed of light!'],
+      discovery:'The only spacecraft to visit Uranus! Found 10 new moons, 2 new rings, and a magnetic field tilted 60° from its axis.',
+      funFact:'🌌 Voyager 2 launched in 1977 and is still alive — now 22 billion km from Earth, the most distant human-made object ever!' },
+    { name:'Uranus Orbiter Probe', emoji:'🛸', year:'Planned 2030s', type:'Orbiter + Probe', status:'planned',
+      agency:'NASA', rocket:'Falcon Heavy', color:0x55aacc,
+      steps:['🚀 Humanity returns to Uranus — 40+ years after Voyager 2\'s brief visit!','🌌 13-year journey, using Jupiter\'s gravity to slingshot to the outer solar system!','🌊 Dropping an atmospheric probe INTO Uranus — the first time ever!','🔭 Orbiting for years — studying its sideways rotation, rings, and icy moons!'],
+      discovery:'Will discover what\'s inside Uranus, why it spins completely sideways, and if its moons hide liquid oceans!',
+      funFact:'↔️ Scientists believe a planet the size of EARTH collided with Uranus long ago — knocking it completely on its side!' },
+  ],
+  'Titania': [
+    { name:'Voyager 2', emoji:'🔭', year:'1986 flyby', type:'Flyby', status:'historical',
+      agency:'NASA', rocket:'Titan III-E', color:0x77bbee,
+      steps:['🚀 Voyager 2 — already past Jupiter and Saturn — now heading for Uranus and its moons!','🌌 Flying past all five major Uranian moons in a single 6-hour window!','🏔️ Spotting Titania\'s enormous canyons from 365,000 km away!','📸 Taking the only close-up photos of Titania humanity has ever seen!'],
+      discovery:'Revealed Titania has enormous fault canyons — it cracked open as its interior froze billions of years ago!',
+      funFact:'📸 Every single photo ever taken of Titania was captured in one 6-hour window in January 1986 — we have seen nothing new since!' },
+  ],
+  'Neptune': [
+    { name:'Voyager 2', emoji:'🔭', year:'1989 flyby', type:'Flyby Probe', status:'historical',
+      agency:'NASA', rocket:'Titan III-E', color:0x4466ff,
+      steps:['🚀 After 12 years in space, Voyager 2 reaches the last planet in our solar system!','💨 Detecting winds of 2,100 km/h — the most violent winds anywhere in the solar system!','🌑 Discovering 6 new moons in a single flyby — including the geologically active Triton!','🌊 Finding nitrogen geysers erupting on Triton — active geology at -235°C!'],
+      discovery:'Discovered the Great Dark Spot (a storm bigger than Earth!), 6 new moons, and active geysers on frozen Triton!',
+      funFact:'📡 Voyager 2\'s radio signals took 4 HOURS to reach Earth from Neptune — traveling at the speed of light the whole way!' },
+  ],
+  'Triton': [
+    { name:'Voyager 2', emoji:'🔭', year:'1989 flyby', type:'Flyby', status:'historical',
+      agency:'NASA', rocket:'Titan III-E', color:0x3355dd,
+      steps:['🚀 Final stop on Voyager 2\'s incredible 12-year Grand Tour of the solar system!','❄️ Approaching Neptune and its strange backwards-orbiting moon Triton!','💨 Detecting active nitrogen geysers erupting on one of the coldest surfaces ever found!','🔄 Confirming Triton orbits BACKWARDS — captured from the outer solar system long ago!'],
+      discovery:'Found Triton has active nitrogen geysers at -235°C — the coldest geological activity ever discovered anywhere!',
+      funFact:'🔄 Triton orbits Neptune backwards and is slowly spiraling inward — in 3.6 billion years Neptune\'s gravity will shatter it into a ring!' },
+  ],
 };
 
 // --- SCENE SETUP ---
@@ -594,70 +731,209 @@ function focusOn(meshEntry) {
     if (meshEntry.name === 'Earth' || meshEntry.name === 'Sun') {
         launchBtn.classList.add('hidden');
     } else {
-        const mName = missionMap[meshEntry.name] || 'Explorer';
-        launchBtn.textContent = `🚀 Launch ${mName}`;
+        const missions = missionData[meshEntry.name];
+        launchBtn.textContent = missions && missions.length > 1 ? `🚀 Choose Mission (${missions.length})` : `🚀 Launch Mission`;
         launchBtn.classList.remove('hidden');
     }
 }
 
 const activeRockets = [];
 
-function createRocket() {
+function createRocket(accentColor = 0xff4444) {
     const group = new THREE.Group();
-    // Body
     const body = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.3, 0.3, 2.0, 16),
-        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
+        new THREE.CylinderGeometry(0.3, 0.4, 2.2, 16),
+        new THREE.MeshStandardMaterial({ color: 0xf0f4ff, roughness: 0.25, metalness: 0.3 })
     );
     group.add(body);
-    // Nose
+    // Nose cone in mission color
     const nose = new THREE.Mesh(
-        new THREE.ConeGeometry(0.3, 0.8, 16),
-        new THREE.MeshStandardMaterial({ color: 0xff4444, roughness: 0.3 })
+        new THREE.ConeGeometry(0.3, 1.0, 16),
+        new THREE.MeshStandardMaterial({ color: accentColor, roughness: 0.3 })
     );
-    nose.position.y = 1.4;
+    nose.position.y = 1.6;
     group.add(nose);
-    // Exhaust Flame
+    // Side boosters
+    [-1, 1].forEach(side => {
+        const booster = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.12, 0.15, 1.4, 8),
+            new THREE.MeshStandardMaterial({ color: 0xddddee, roughness: 0.4 })
+        );
+        booster.position.set(side * 0.55, -0.3, 0);
+        group.add(booster);
+    });
+    // Exhaust flame (main)
     const fireMesh = new THREE.Mesh(
-        new THREE.ConeGeometry(0.25, 1.2, 16),
-        new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending })
+        new THREE.ConeGeometry(0.28, 1.4, 16),
+        new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending })
     );
-    fireMesh.position.y = -1.6;
+    fireMesh.position.y = -1.8;
     fireMesh.rotation.x = Math.PI;
     group.add(fireMesh);
-    
+    // Booster flames
+    [-1, 1].forEach(side => {
+        const bf = new THREE.Mesh(
+            new THREE.ConeGeometry(0.1, 0.7, 8),
+            new THREE.MeshBasicMaterial({ color: 0xff6600, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending })
+        );
+        bf.position.set(side * 0.55, -1.2, 0);
+        bf.rotation.x = Math.PI;
+        group.add(bf);
+        group.boosterFlames = group.boosterFlames || [];
+        group.boosterFlames.push(bf);
+    });
     group.fireMesh = fireMesh;
     return group;
 }
 
-launchBtn.addEventListener('click', () => {
-    if (!focusTarget || focusTarget.name === 'Earth' || focusTarget.name === 'Sun') return;
+// ---- Mission Picker ----
+const missionPicker = document.getElementById('mission-picker');
+const missionPickerSubtitle = document.getElementById('mission-picker-subtitle');
+const missionCards = document.getElementById('mission-cards');
+const missionPickerClose = document.getElementById('mission-picker-close');
+const countdownOverlay = document.getElementById('countdown-overlay');
+const cdMission = document.getElementById('cd-mission');
+const cdNumber = document.getElementById('cd-number');
+const cdLabel = document.getElementById('cd-label');
+const missionLog = document.getElementById('mission-log');
+const mlEmoji = document.getElementById('ml-emoji');
+const mlName = document.getElementById('ml-name');
+const mlAgency = document.getElementById('ml-agency');
+const mlTarget = document.getElementById('ml-target');
+const mlBar = document.getElementById('ml-bar');
+const mlPct = document.getElementById('ml-pct');
+const mlFact = document.getElementById('ml-fact');
+const arrivalPanel = document.getElementById('arrival-panel');
+const arrEmoji = document.getElementById('arr-emoji');
+const arrMission = document.getElementById('arr-mission');
+const arrDiscovery = document.getElementById('arr-discovery');
+const arrFunfact = document.getElementById('arr-funfact');
+const arrClose = document.getElementById('arr-close');
+
+let activeMission = null; // the currently in-flight mission object
+
+function showMissionPicker(target) {
+    const missions = missionData[target.name];
+    if (!missions || missions.length === 0) return;
+    missionPickerSubtitle.textContent = `Destination: ${target.name}`;
+    missionCards.innerHTML = '';
+    missions.forEach(m => {
+        const statusLabel = m.status === 'active' ? '🟢 Active' : m.status === 'planned' ? '🟡 Planned' : '⚪ Historical';
+        const card = document.createElement('div');
+        card.className = 'mission-card';
+        card.innerHTML = `
+            <div class="mc-top">
+                <span class="mc-emoji">${m.emoji}</span>
+                <div class="mc-info">
+                    <div class="mc-name">${m.name}</div>
+                    <div class="mc-meta">${m.type} &bull; ${m.year}</div>
+                </div>
+                <span class="mc-status">${statusLabel}</span>
+            </div>
+            <div class="mc-agency">🏛 ${m.agency} &bull; 🚀 ${m.rocket}</div>
+            <div class="mc-goal">${m.steps[0]}</div>
+            <button class="mc-launch-btn">Launch! 🚀</button>
+        `;
+        card.querySelector('.mc-launch-btn').addEventListener('click', () => {
+            hideMissionPicker();
+            startCountdown(m, target);
+        });
+        missionCards.appendChild(card);
+    });
+    missionPicker.classList.remove('hidden');
+}
+
+function hideMissionPicker() {
+    missionPicker.classList.add('hidden');
+}
+
+missionPickerClose.addEventListener('click', hideMissionPicker);
+
+function startCountdown(mission, target) {
+    countdownOverlay.classList.remove('hidden');
+    cdMission.textContent = `${mission.emoji} ${mission.name}`;
+    cdLabel.textContent = `Launching to ${target.name}`;
+    let n = 3;
+    cdNumber.textContent = n;
+    cdNumber.className = 'cd-number cd-pop';
+    const tick = setInterval(() => {
+        n--;
+        if (n > 0) {
+            cdNumber.textContent = n;
+            cdNumber.className = 'cd-number';
+            void cdNumber.offsetWidth;
+            cdNumber.className = 'cd-number cd-pop';
+        } else {
+            cdNumber.textContent = '🚀';
+            cdLabel.textContent = 'LIFTOFF!';
+            cdNumber.className = 'cd-number cd-liftoff';
+            clearInterval(tick);
+            setTimeout(() => {
+                countdownOverlay.classList.add('hidden');
+                doLaunch(mission, target);
+            }, 900);
+        }
+    }, 800);
+}
+
+function doLaunch(mission, target) {
     const earthEntry = allClickable.find(c => c.name === 'Earth');
     if (!earthEntry) return;
 
-    const rocket = createRocket();
+    const rocket = createRocket(mission.color);
     const earthPos = new THREE.Vector3();
     earthEntry.mesh.getWorldPosition(earthPos);
-    
     rocket.position.copy(earthPos);
     scene.add(rocket);
-    
+
     const trailGeo = new THREE.BufferGeometry();
-    const trailMat = new THREE.LineBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.4 });
+    const trailMat = new THREE.LineBasicMaterial({ color: mission.color, transparent: true, opacity: 0.5 });
     const trailLine = new THREE.Line(trailGeo, trailMat);
     scene.add(trailLine);
 
-    activeRockets.push({
+    const targetPos = new THREE.Vector3();
+    target.mesh.getWorldPosition(targetPos);
+    const totalDist = earthPos.distanceTo(targetPos);
+
+    const rocketObj = {
         mesh: rocket,
-        target: focusTarget,
-        missionName: missionMap[focusTarget.name] || 'Explorer',
+        target,
+        mission,
+        missionName: mission.name,
         fireMesh: rocket.fireMesh,
-        trailGeo: trailGeo,
-        trailLine: trailLine,
-        points: [earthPos.clone()]
-    });
-    
+        trailGeo,
+        trailLine,
+        points: [earthPos.clone()],
+        totalDist,
+        distTraveled: 0,
+        lastStepShown: -1,
+    };
+    activeRockets.push(rocketObj);
+    activeMission = rocketObj;
+
+    // Show mission log
+    mlEmoji.textContent = mission.emoji;
+    mlName.textContent = mission.name;
+    mlAgency.textContent = mission.agency;
+    mlTarget.textContent = target.name;
+    mlBar.style.width = '0%';
+    mlPct.textContent = '0% complete';
+    mlFact.textContent = mission.steps[0];
+    missionLog.classList.remove('hidden');
+
     launchBtn.classList.add('hidden');
+}
+
+arrClose.addEventListener('click', () => {
+    arrivalPanel.classList.add('hidden');
+    if (focusTarget && focusTarget.name !== 'Earth' && focusTarget.name !== 'Sun') {
+        launchBtn.classList.remove('hidden');
+    }
+});
+
+launchBtn.addEventListener('click', () => {
+    if (!focusTarget || focusTarget.name === 'Earth' || focusTarget.name === 'Sun') return;
+    showMissionPicker(focusTarget);
 });
 
 const pointerDown = new THREE.Vector2();
@@ -830,39 +1106,51 @@ function animate() {
             scene.remove(r.mesh);
             scene.remove(r.trailLine);
             activeRockets.splice(i, 1);
-            
-            // Success Label
-            const successDiv = document.createElement('div');
-            successDiv.className = 'planet-label planet-label--large';
-            successDiv.textContent = `✅ ${r.missionName} Arrived!`;
-            successDiv.style.color = '#10b981';
-            successDiv.style.borderColor = '#10b981';
-            const successLabel = new CSS2DObject(successDiv);
-            successLabel.position.set(0, r.target.size + 4, 0);
-            r.target.mesh.add(successLabel);
-            
-            setTimeout(() => {
-                if(r.target.mesh) r.target.mesh.remove(successLabel);
-            }, 5000);
-            
-            // Restore launch button if still focused
-            if (focusTarget === r.target) launchBtn.classList.remove('hidden');
+            if (activeMission === r) activeMission = null;
+
+            // Hide mission log
+            missionLog.classList.add('hidden');
+
+            // Show arrival celebration panel
+            if (r.mission) {
+                arrEmoji.textContent = r.mission.emoji;
+                arrMission.textContent = `${r.mission.name} has arrived at ${r.target.name}!`;
+                arrDiscovery.textContent = '🔭 ' + r.mission.discovery;
+                arrFunfact.textContent = r.mission.funFact;
+                arrivalPanel.classList.remove('hidden');
+            }
         } else {
             const dir = targetPos.clone().sub(r.mesh.position).normalize();
-            
             const up = new THREE.Vector3(0, 1, 0);
-            const quaternion = new THREE.Quaternion().setFromUnitVectors(up, dir);
-            r.mesh.quaternion.slerp(quaternion, 0.15);
-            
-            r.mesh.position.add(dir.multiplyScalar(moveDist));
-            
+            r.mesh.quaternion.slerp(new THREE.Quaternion().setFromUnitVectors(up, dir), 0.15);
+            r.mesh.position.add(dir.clone().multiplyScalar(moveDist));
+
             // Trail
             r.points.push(r.mesh.position.clone());
             if (r.points.length > 200) r.points.shift();
             r.trailGeo.setFromPoints(r.points);
-            
-            // Flickering fire
-            r.fireMesh.scale.set(1, 0.7 + Math.random() * 0.6, 1);
+
+            // Flickering main flame + booster flames
+            const flicker = 0.7 + Math.random() * 0.6;
+            r.fireMesh.scale.set(1, flicker, 1);
+            if (r.mesh.boosterFlames) r.mesh.boosterFlames.forEach(bf => bf.scale.set(1, 0.6 + Math.random() * 0.8, 1));
+
+            // Track distance and update mission log
+            r.distTraveled += moveDist;
+            if (activeMission === r) {
+                const rawPct = Math.min(r.distTraveled / r.totalDist, 0.99);
+                const pct = Math.round(rawPct * 100);
+                mlBar.style.width = pct + '%';
+                mlPct.textContent = pct + '% complete';
+                // Show educational steps at 0%, 33%, 66%
+                const stepIdx = Math.min(Math.floor(rawPct / 0.33), r.mission.steps.length - 2);
+                if (stepIdx !== r.lastStepShown) {
+                    r.lastStepShown = stepIdx;
+                    mlFact.textContent = r.mission.steps[stepIdx + 1] || r.mission.steps[r.mission.steps.length - 1];
+                    mlFact.className = 'ml-fact ml-fact-new';
+                    setTimeout(() => { mlFact.className = 'ml-fact'; }, 600);
+                }
+            }
         }
     }
 
