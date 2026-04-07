@@ -771,7 +771,9 @@ planetData.forEach((data) => {
                 new THREE.MeshStandardMaterial({ map: moonTex })
             );
             mMesh.position.x = m.distance + data.size;
+            mMesh.userData = { name: m.name, size: m.size };
             moonPivot.add(mMesh);
+            allClickable.push({ mesh: mMesh, name: m.name, size: m.size });
 
             if (m.isSyncFocus) {
                 const marker = new THREE.Mesh(
