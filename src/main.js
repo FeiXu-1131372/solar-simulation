@@ -2142,16 +2142,22 @@ function runHazardRun(mission, target, gameData) {
         if (e.key === 'ArrowDown') lane = Math.min(2, lane + 1);
     };
     document.addEventListener('keydown', keyHandler);
-    activeGameCleanup = () => document.removeEventListener('keydown', keyHandler);
 
     // Touch/click controls
-    canvas.addEventListener('click', e => {
+    const clickHandler = e => {
         if (done) return;
         const rect = canvas.getBoundingClientRect();
         const y = e.clientY - rect.top;
         if (y < rect.height / 2) lane = Math.max(0, lane - 1);
         else lane = Math.min(2, lane + 1);
-    });
+    };
+    canvas.addEventListener('click', clickHandler);
+
+    // Cleanup both listeners when game ends
+    activeGameCleanup = () => {
+        document.removeEventListener('keydown', keyHandler);
+        canvas.removeEventListener('click', clickHandler);
+    };
 }
 
 document.getElementById('ml-relaunch-btn').addEventListener('click', () => {
