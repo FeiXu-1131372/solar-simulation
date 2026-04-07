@@ -333,14 +333,14 @@ button:active {
 
 /* ---- Planet Info Card ---- */
 .info-card {
-    position: absolute;
+    position: fixed;
     bottom: 25px;
     right: 25px;
     width: 370px;
     max-height: 85vh;
     overflow-y: auto;
     z-index: 95;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    transition: opacity 0.3s ease;
     scrollbar-width: none;
     background: linear-gradient(160deg, rgba(17,12,40,0.97) 0%, rgba(10,8,30,0.99) 100%);
     border: 2px solid rgba(139,92,246,0.45);
@@ -351,9 +351,12 @@ button:active {
 .info-card::-webkit-scrollbar { display: none; }
 
 .info-card.hidden {
-    transform: translateY(calc(100% + 40px));
     opacity: 0;
     pointer-events: none;
+}
+.info-card.is-dragging {
+    transition: none;
+    box-shadow: 0 0 60px rgba(109,40,217,0.4), 0 25px 70px rgba(0,0,0,0.8);
 }
 
 /* Header */
@@ -362,6 +365,31 @@ button:active {
     align-items: center;
     gap: 14px;
     margin-bottom: 14px;
+    cursor: grab;
+    user-select: none;
+}
+.card-header:active { cursor: grabbing; }
+.card-close-btn {
+    margin-left: auto;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid rgba(139,92,246,0.4);
+    background: rgba(139,92,246,0.15);
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+.card-close-btn:hover {
+    background: rgba(239,68,68,0.4);
+    color: #fff;
+    border-color: rgba(239,68,68,0.6);
 }
 .planet-emoji {
     font-size: 44px;

@@ -1540,6 +1540,11 @@ function renderCard(name) {
     }
 
     switchCardTab('overview');
+    // Reset to default corner position on each open
+    infoCard.style.left = '';
+    infoCard.style.top = '';
+    infoCard.style.right = '25px';
+    infoCard.style.bottom = '25px';
     infoCard.classList.remove('hidden');
 }
 
@@ -1563,6 +1568,47 @@ document.getElementById('tab-learn').addEventListener('click', e => {
     const card = e.target.closest('.q-card');
     if (card) card.classList.toggle('open');
 });
+
+// Close button
+document.getElementById('info-card-close').addEventListener('click', () => {
+    infoCard.classList.add('hidden');
+});
+
+// Drag to move
+(function () {
+    const handle = document.getElementById('card-drag-handle');
+    let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+
+    handle.addEventListener('mousedown', e => {
+        if (e.target.closest('.card-close-btn')) return;
+        dragging = true;
+        const rect = infoCard.getBoundingClientRect();
+        origLeft = rect.left;
+        origTop = rect.top;
+        startX = e.clientX;
+        startY = e.clientY;
+        infoCard.style.right = 'auto';
+        infoCard.style.bottom = 'auto';
+        infoCard.style.left = origLeft + 'px';
+        infoCard.style.top = origTop + 'px';
+        infoCard.classList.add('is-dragging');
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        infoCard.style.left = (origLeft + dx) + 'px';
+        infoCard.style.top  = (origTop  + dy) + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        infoCard.classList.remove('is-dragging');
+    });
+})();
 
 function focusOn(meshEntry) {
     lockedTarget = meshEntry;
