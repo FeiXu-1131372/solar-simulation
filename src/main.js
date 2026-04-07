@@ -59,6 +59,19 @@ const celestialFacts = {
             scale: 'If the Sun were the size of a <strong>front door (2 metres tall)</strong>, Earth would be a 2-cent coin sitting about <strong>215 metres away</strong> — the length of 2 football fields. That\'s how much empty space surrounds us.',
             whatif: '<strong>What if the Sun were replaced by a same-mass black hole?</strong> Earth\'s orbit would be unchanged — gravity is identical! But in 8 minutes total darkness falls. Temperatures plummet below −200°C within a year. All life ends. The black hole itself would be only 3 km across — invisible.',
         },
+        game: {
+            failReason: 'Parker Solar Probe was vaporized by a solar flare — it got too close and never sent another signal!',
+            realFact: 'The real Parker Solar Probe withstood 1,377°C during its closest approach — the most extreme temperature ever survived by a spacecraft.',
+            stages: [
+                { type: 'timing', icon: '🔥', name: 'Perihelion Flyby', prompt: 'Fire thrusters at EXACTLY perihelion to slingshot past the Sun!' },
+                { type: 'choice', icon: '☀️', name: 'Solar Flare Alert', prompt: 'X-class solar flare incoming!', options: ['Rotate heat shield toward Sun', 'Speed up to outrun it', 'Deploy antenna array'], correct: 0 },
+                { type: 'tap',    icon: '⚡', name: 'Shield Boost', prompt: 'Power up heat shield — tap 10 times before overheating!', taps: 10 },
+                { type: 'timing', icon: '📡', name: 'Data Downlink', prompt: 'Transmit data in the narrow Earth-facing window!' },
+                { type: 'choice', icon: '🌀', name: 'Magnetic Switchback', prompt: 'Magnetic field reversal detected!', options: ['Enter safe mode', 'Increase speed', 'Jettison antenna'], correct: 0 },
+            ],
+            hazards: ['solar_flare', 'radiation_burst', 'plasma_wave'],
+            crises: ['Solar flare overloading shields!', 'Thermal coating failing!', 'Data link dropping!', 'Guidance system overheating!'],
+        },
     },
     'Mercury': {
         type: '🪨 Terrestrial Planet',
@@ -85,6 +98,19 @@ const celestialFacts = {
             scale: 'Mercury is only slightly bigger than our Moon. If Earth were a basketball, Mercury would be a large marble (3.5 cm). They\'re similar in size — but Mercury is much denser, with a massive iron core.',
             whatif: '<strong>What if you lived on Mercury\'s terminator line?</strong> That\'s the moving boundary between day and night. Mercury rotates so slowly that walking at just 3 km/h westward could keep you in permanent twilight — you\'d be racing the sunrise and winning forever.',
         },
+        game: {
+            failReason: 'MESSENGER ran out of fuel and crashed into Mercury\'s surface before completing its magnetic field maps!',
+            realFact: 'The real MESSENGER mission took 6.5 years and used 6 planetary gravity assists just to slow down enough to orbit Mercury.',
+            stages: [
+                { type: 'timing', icon: '🚀', name: 'Orbital Insertion', prompt: 'Fire the main engine to brake into Mercury\'s orbit — timing is everything!' },
+                { type: 'choice', icon: '🌡️', name: 'Temperature Spike', prompt: 'Sun-facing panel reaching 370°C!', options: ['Rotate spacecraft to shade panel', 'Boost power output', 'Shut down comms'], correct: 0 },
+                { type: 'tap',    icon: '🔧', name: 'Thruster Check', prompt: 'Fire attitude thrusters 7 times to stabilize orbit!', taps: 7 },
+                { type: 'timing', icon: '📡', name: 'Data Downlink', prompt: 'Earth communication window is closing fast — transmit now!' },
+                { type: 'choice', icon: '⛽', name: 'Fuel Warning', prompt: 'Fuel reaching critical low!', options: ['Use gravity assist to save fuel', 'Fire main engine', 'Abort orbit'], correct: 0 },
+            ],
+            hazards: ['asteroid', 'solar_radiation', 'debris'],
+            crises: ['Fuel critically low!', 'Thermal spike on sun-facing panel!', 'Solar panel overheating!', 'Attitude thrusters failing!'],
+        },
     },
     'Venus': {
         type: '🔥 Terrestrial Planet',
@@ -110,6 +136,19 @@ const celestialFacts = {
             discovery: 'Magellan used <strong>radar to map 98% of Venus\'s surface</strong> through its thick clouds — discovering over 1,600 volcanoes! Some may still be active today. A new ESA mission (EnVision) is planned for the 2030s to find out.',
             scale: 'Venus is almost a <strong>twin of Earth</strong> in size — 95% of Earth\'s diameter. Same size, completely different destiny. One has oceans, rainforests, and life; the other is a hellscape at 464°C. The difference is almost entirely atmospheric chemistry.',
             whatif: '<strong>What if Earth swapped atmospheres with Venus?</strong> Our oceans would boil away in months. The surface would hit 400°C+. The CO₂ would trap heat in a runaway loop. Every building would be crushed by the pressure. That\'s what a runaway greenhouse effect looks like — a warning from our nearest neighbour.',
+        },
+        game: {
+            failReason: 'The probe was crushed by Venus\'s 90× atmospheric pressure before the parachute could fully deploy!',
+            realFact: 'Soviet Venera probes survived Venus\'s crushing atmosphere for only 23–127 minutes before being destroyed — that\'s the all-time survival record on Venus.',
+            stages: [
+                { type: 'timing', icon: '🌩️', name: 'Atmospheric Entry', prompt: 'Hit the entry angle precisely — too steep and you burn, too shallow and you skip off!' },
+                { type: 'choice', icon: '☁️', name: 'Acid Cloud', prompt: 'Sulfuric acid cloud detected at 48km altitude!', options: ['Deploy acid-resistant shield', 'Speed through quickly', 'Ascend above the clouds'], correct: 0 },
+                { type: 'tap',    icon: '🪂', name: 'Parachute Deploy', prompt: 'Manually trigger parachute — tap 9 times before pressure crushes the system!', taps: 9 },
+                { type: 'timing', icon: '📸', name: 'Surface Imaging', prompt: 'Surface visible for only 30 seconds — capture the photo now!' },
+                { type: 'choice', icon: '🔥', name: 'Heat Surge', prompt: 'Temperature hitting 465°C — beyond design limits!', options: ['Route power to cooling system', 'Reduce science instruments', 'Boost transmitter'], correct: 0 },
+            ],
+            hazards: ['acid_cloud', 'pressure_wave', 'lightning'],
+            crises: ['Atmospheric pressure crushing hull!', 'Acid corrosion on sensors!', 'Temperature exceeding limits!', 'Comms blackout through clouds!'],
         },
     },
     'Earth': {
@@ -163,6 +202,19 @@ const celestialFacts = {
             scale: 'The Moon is <strong>384,400 km away</strong>. All 8 planets in the solar system could fit in the gap between Earth and the Moon with room to spare — the planets lined up total about 380,000 km, just inside the gap!',
             whatif: '<strong>What if Earth had no Moon?</strong> Almost no tides. Earth\'s axis would wobble wildly (0°–85°) over millions of years, causing climate chaos. Days would be shorter (6–8 hours). Without stable climate, complex life might never have evolved. We may owe our very existence to that rocky companion!',
         },
+        game: {
+            failReason: 'The Eagle lander tipped over on rocky terrain — Armstrong and Aldrin couldn\'t complete the moonwalk!',
+            realFact: 'During Apollo 11, Neil Armstrong manually flew the lander over a boulder field with only 30 seconds of fuel remaining — it was nearly a disaster.',
+            stages: [
+                { type: 'timing', icon: '🚀', name: 'Powered Descent', prompt: 'Throttle the descent engine to hit 50m altitude exactly on schedule!' },
+                { type: 'choice', icon: '🌑', name: 'Boulder Field', prompt: 'Landing computer selected a boulder-filled crater!', options: ['Manually fly to safer ground', 'Land anyway', 'Abort and orbit'], correct: 0 },
+                { type: 'tap',    icon: '🦅', name: 'Thruster Pulses', prompt: 'Fire manual attitude thrusters 8 times to level the lander!', taps: 8 },
+                { type: 'timing', icon: '🛬', name: 'Touchdown', prompt: 'Cut engine at EXACTLY the right altitude — contact light must flash!' },
+                { type: 'choice', icon: '⛽', name: 'Fuel Critical', prompt: 'Only 20 seconds of hover fuel remaining!', options: ['Commit to current landing spot now', 'Fly further', 'Return to orbit'], correct: 0 },
+            ],
+            hazards: ['boulder', 'crater_rim', 'dust_cloud'],
+            crises: ['Fuel low for descent!', 'Guidance computer alarm!', 'Altitude sensor error!', 'Landing struts at risk!'],
+        },
     },
     'Mars': {
         type: '🔴 Terrestrial Planet',
@@ -188,6 +240,19 @@ const celestialFacts = {
             discovery: 'Perseverance found that Mars had a <strong>long-lasting lake system</strong> in Jezero Crater. It also flew Ingenuity — the <em>first powered aircraft ever flown on another planet</em>! Ingenuity made over 70 flights before retiring in January 2024.',
             scale: 'Mars is about <strong>half the width of Earth</strong>. If Earth were a basketball, Mars would be a tennis ball. But Mars has almost the same <em>land surface area</em> as Earth — because Earth is 71% ocean. Same land area, half the diameter!',
             whatif: '<strong>What if you sneezed on Mars?</strong> The CO₂ air is unbreathable, it\'s freezing, and intense UV radiation would hit you instantly — there\'s no ozone layer. Even stepping outside requires a full spacesuit. Your sneeze cloud would drift far in the thin air, then settle as red dust.',
+        },
+        game: {
+            failReason: 'The parachute deployed too late during "7 minutes of terror" — Perseverance slammed into Jezero Crater at full speed!',
+            realFact: 'Mars entry takes exactly 7 minutes — the spacecraft goes from 20,000 km/h to 0 with no real-time communication possible. Every step must be pre-programmed perfectly.',
+            stages: [
+                { type: 'timing', icon: '🪂', name: 'Parachute Deploy', prompt: 'Deploy supersonic parachute at EXACTLY the right altitude!' },
+                { type: 'choice', icon: '🌪️', name: 'Dust Storm', prompt: 'Unexpected regional dust storm below!', options: ['Adjust landing site westward', 'Continue descent as planned', 'Abort to orbit'], correct: 0 },
+                { type: 'tap',    icon: '🔥', name: 'Retrorocket Burst', prompt: 'Fire 8 retrorockets simultaneously to slow to hover speed!', taps: 8 },
+                { type: 'timing', icon: '🏗️', name: 'Sky Crane Lower', prompt: 'Lower rover on cables — cut them at EXACTLY 0.75m above ground!' },
+                { type: 'choice', icon: '🤖', name: 'System Reboot', prompt: 'Computer restarted during landing — manual override needed!', options: ['Confirm landing mode manually', 'Wait for auto-recovery', 'Fire ascent engines'], correct: 0 },
+            ],
+            hazards: ['dust_devil', 'rock', 'canyon_edge'],
+            crises: ['Parachute drag insufficient!', 'Retrorocket fuel low!', 'Guidance system failed!', 'Landing zone terrain too steep!'],
         },
     },
     'Phobos': {
@@ -215,6 +280,19 @@ const celestialFacts = {
             scale: 'Phobos is about <strong>26 km long</strong> — roughly the size of a medium city. If it floated above Paris, it would stretch from one side to the other. Its gravity is so weak you could throw a ball into orbit around it with your arm!',
             whatif: '<strong>What happens when Phobos breaks apart in 50 million years?</strong> Tidal forces shatter it into millions of pieces that spread into a ring around Mars. For hundreds of millions of years, Mars would have spectacular rings — visible from Earth through a telescope — before slowly raining down onto the surface.',
         },
+        game: {
+            failReason: 'MMX bounced off Phobos\'s surface — its gravity was so weak the lander just floated away into space!',
+            realFact: 'Landing on Phobos is extraordinarily hard — its gravity is 1,800× weaker than Earth\'s. Without anchoring, any spacecraft will simply bounce off and drift away.',
+            stages: [
+                { type: 'timing', icon: '🐌', name: 'Slow Approach', prompt: 'Match Phobos\'s surface speed exactly — approach at under 5 cm/s!' },
+                { type: 'choice', icon: '⚓', name: 'Anchor Deploy', prompt: 'Surface contact made — which anchor?', options: ['Fire screw anchor into regolith', 'Fire harpoon', 'Use magnetic clamp'], correct: 0 },
+                { type: 'tap',    icon: '🪝', name: 'Grip Surface', prompt: 'Drill anchor into loose rubble — tap 9 times before drifting!', taps: 9 },
+                { type: 'timing', icon: '🧪', name: 'Sample Collection', prompt: 'Open sample collector in the exact 2-second landing window!' },
+                { type: 'choice', icon: '💨', name: 'Dust Contamination', prompt: 'Loose regolith entering sample container!', options: ['Seal container immediately', 'Blow out with nitrogen', 'Continue collecting'], correct: 0 },
+            ],
+            hazards: ['loose_debris', 'rock_pile', 'dust_cloud'],
+            crises: ['Anchor failed to grip regolith!', 'Drifting away from surface!', 'Sample collector jammed!', 'Thruster overcompensating!'],
+        },
     },
     'Deimos': {
         type: '🪨 Martian Moon',
@@ -240,6 +318,19 @@ const celestialFacts = {
             discovery: 'Deimos has never had a dedicated mission visit it. Mars Reconnaissance Orbiter photographed it in detail in 2009, confirming its smooth surface. MMX will observe Deimos on its way to Phobos. Most of what we know comes from remote observation.',
             scale: 'Deimos is only about <strong>15 km long</strong> — smaller than Manhattan island (21 km). Its escape velocity is just 5.6 m/s — slower than a baseball pitch. Throw hard and you\'re sending the ball into space forever!',
             whatif: '<strong>What if you tried to throw a ball on Deimos?</strong> Escape velocity is only 5.6 metres per second — about as fast as a slow jog. Any throw harder than that sends the ball into space forever. If you jumped too hard, so would you! Every movement must be very, very gentle.',
+        },
+        game: {
+            failReason: 'The spacecraft jumped off Deimos — a single thruster pulse was too strong and the probe escaped into orbit!',
+            realFact: 'Deimos\'s escape velocity is only 5.6 m/s — slower than a jogging pace. Any movement too fast and your spacecraft literally escapes the moon.',
+            stages: [
+                { type: 'timing', icon: '🐢', name: 'Ultra-Slow Approach', prompt: 'Approach at UNDER 3 cm/s — the slightest speed bump and you bounce off!' },
+                { type: 'choice', icon: '🔍', name: 'Surface Texture', prompt: 'Surface looks smooth — best anchor method?', options: ['Sticky polymer pad', 'Harpoon anchor', 'Thrusters down'], correct: 0 },
+                { type: 'tap',    icon: '🪢', name: 'Tether Deploy', prompt: 'Deploy 6 tethers to secure the craft before it drifts!', taps: 6 },
+                { type: 'timing', icon: '🤏', name: 'Sample Grab', prompt: 'Sample arm only reaches for 1 second — activate at EXACTLY the right moment!' },
+                { type: 'choice', icon: '🌌', name: 'Micro-Gravity Nav', prompt: 'Accidental thruster fired — craft drifting!', options: ['Fire opposite thruster for 0.1 second', 'Deploy drag net', 'Extend arms for balance'], correct: 0 },
+            ],
+            hazards: ['loose_rock', 'dust_plume', 'micro_debris'],
+            crises: ['Tether snapping!', 'Drifting away from surface!', 'Sample arm jammed!', 'Comms antenna misaligned!'],
         },
     },
     'Jupiter': {
@@ -267,6 +358,19 @@ const celestialFacts = {
             scale: 'If Earth were a <strong>grape</strong>, Jupiter would be a <strong>basketball</strong>. The Sun would be a <strong>door</strong>. Try holding a grape next to a basketball — that\'s us compared to Jupiter. Now imagine the door across the room being the Sun.',
             whatif: '<strong>What if Jupiter were hollow?</strong> You could fit <em>1,300 planet Earths</em> inside with room to rattle around. The hollow shell would still weigh more than everything else in the solar system combined — except the Sun. Jupiter contains 71% of all planetary mass in our solar system.',
         },
+        game: {
+            failReason: 'Juno fired its engine too late — the spacecraft overshot Jupiter\'s orbit and was flung into deep space, never to return!',
+            realFact: 'Juno\'s orbital insertion required a 35-minute engine burn timed to within seconds. The JPL team could only watch — 48-minute one-way signal delay means no real-time commands.',
+            stages: [
+                { type: 'timing', icon: '🔥', name: 'Orbital Insertion Burn', prompt: 'Fire main engine for orbital insertion — must start at EXACTLY the right moment!' },
+                { type: 'choice', icon: '⚡', name: 'Radiation Spike', prompt: 'Jupiter\'s magnetosphere surge detected!', options: ['Shield electronics & enter safe mode', 'Speed up orbit to escape', 'Deploy antenna'], correct: 0 },
+                { type: 'tap',    icon: '🔧', name: 'Thruster Correction', prompt: 'Orbit wobbling from Jupiter\'s gravity — fire 8 correction bursts!', taps: 8 },
+                { type: 'timing', icon: '🌀', name: 'Storm Band Navigation', prompt: 'Thread through gap between two massive storm bands!' },
+                { type: 'choice', icon: '🧲', name: 'Magnetic Anomaly', prompt: 'Unexpected magnetic field reversal disrupting instruments!', options: ['Switch to backup magnetometer', 'Ignore and continue', 'Emergency shutdown'], correct: 0 },
+            ],
+            hazards: ['radiation_band', 'storm_swirl', 'asteroid'],
+            crises: ['Radiation overloading systems!', 'Solar panel damage detected!', 'Fuel line anomaly!', 'Attitude control failing!'],
+        },
     },
     'Io': {
         type: '🌋 Jovian Moon',
@@ -292,6 +396,19 @@ const celestialFacts = {
             discovery: 'Galileo confirmed Io\'s tidal heating and mapped hundreds of volcanic features. Juno\'s extended mission has now flown within 1,500 km of Io — the closest any spacecraft has been — photographing active lava lakes and erupting plumes in stunning detail.',
             scale: 'Io is almost exactly the <strong>same size as our Moon</strong>. Same size, completely different reality: our Moon is geologically dead and quiet; Io is the most volcanically violent world we know. The difference is entirely due to where they orbit.',
             whatif: '<strong>What if you stood on Io\'s surface (without protection)?</strong> Jupiter would fill 20° of sky — enormous! Radiation equivalent to 3,600 X-rays would hit you immediately. Volcanic gases would be toxic. The ground could literally erupt beneath you. An unprotected person would last less than a minute.',
+        },
+        game: {
+            failReason: 'The probe flew directly into Pele volcano\'s eruption plume — sulfur particles shredded every instrument!',
+            realFact: 'Io\'s radiation environment delivers the equivalent of 3,600 chest X-rays per day. The Galileo spacecraft received permanent instrument damage from each Io flyby.',
+            stages: [
+                { type: 'timing', icon: '🌋', name: 'Eruption Window', prompt: 'Pele volcano erupts every 40 hours — fly through the clear window between eruptions!' },
+                { type: 'choice', icon: '☁️', name: 'Sulfur Cloud', prompt: 'Sulfur dioxide plume ahead at 300km altitude!', options: ['Dive under the plume at 280km', 'Fly over at 320km', 'Fly straight through'], correct: 0 },
+                { type: 'tap',    icon: '⬆️', name: 'Altitude Boost', prompt: 'Lava lake below heating up — fire thrusters 7 times to gain altitude!', taps: 7 },
+                { type: 'timing', icon: '📸', name: 'Science Capture', prompt: 'Active lava lake visible for exactly 3 seconds — capture all instruments NOW!' },
+                { type: 'choice', icon: '☢️', name: 'Radiation Surge', prompt: 'Jupiter\'s radiation belt intensifying!', options: ['Roll spacecraft to protect instruments', 'Speed up flyby', 'Deploy radiation blanket'], correct: 0 },
+            ],
+            hazards: ['volcanic_plume', 'lava_ejection', 'sulfur_cloud'],
+            crises: ['Volcanic plume incoming!', 'Hull temperature critical!', 'Sulfur clogging sensors!', 'Radiation saturating instruments!'],
         },
     },
     'Europa': {
@@ -319,6 +436,19 @@ const celestialFacts = {
             scale: 'Europa is slightly smaller than our Moon. But its ocean contains <strong>2× as much liquid water as all Earth\'s oceans combined</strong> — because it\'s ~100 km deep. Earth\'s deepest ocean trench (Mariana, 11 km) would fit inside Europa\'s ocean 9 times over.',
             whatif: '<strong>What if Europa\'s ice cracked open?</strong> Ocean water would instantly freeze in space. But just before it did, any life near the crack would be briefly exposed to vacuum. Some Earth microbes survive brief space exposure — if Europa life is similarly tough, it could be the first alien life we ever detected, spraying into space to meet us.',
         },
+        game: {
+            failReason: 'Europa Clipper flew too close to Jupiter\'s radiation belt — electronics fried before it could sample the ocean plumes!',
+            realFact: 'Europa Clipper makes 50 quick flybys rather than orbiting, to limit radiation exposure — extended time near Europa would destroy its instruments.',
+            stages: [
+                { type: 'timing', icon: '☢️', name: 'Radiation Belt Cross', prompt: 'Cross Jupiter\'s radiation belt at maximum speed — minimize exposure time!' },
+                { type: 'choice', icon: '💧', name: 'Plume Sampling', prompt: 'Water vapour plume detected at south pole!', options: ['Fly through for sample collection', 'Observe from safe distance', 'Abort flyby'], correct: 0 },
+                { type: 'tap',    icon: '🛡️', name: 'Radiation Shield', prompt: 'Particle burst detected — boost shields 9 times!', taps: 9 },
+                { type: 'timing', icon: '📡', name: 'Flyby Data Window', prompt: 'Closest approach lasts 25 seconds — start all instruments NOW!' },
+                { type: 'choice', icon: '🧲', name: 'Magnetic Anomaly', prompt: 'Europa\'s magnetic signature stronger than predicted!', options: ['Adjust trajectory for better data', 'Maintain current path', 'Emergency altitude increase'], correct: 0 },
+            ],
+            hazards: ['ice_shard', 'radiation_belt', 'water_plume'],
+            crises: ['Radiation saturating sensors!', 'Ice particle impact!', 'Cryo-fuel pressure dropping!', 'Data storage corruption!'],
+        },
     },
     'Ganymede': {
         type: '🌕 Jovian Moon',
@@ -344,6 +474,19 @@ const celestialFacts = {
             discovery: 'Hubble confirmed Ganymede\'s auroras in 2015, proving its magnetic field. JUICE will be the <strong>first spacecraft ever to orbit a moon other than our own</strong>! It will map Ganymede\'s magnetic field, subsurface ocean, and surface in unprecedented detail.',
             scale: 'Ganymede\'s diameter is <strong>5,268 km</strong> — larger than Mercury (4,879 km). If it orbited the Sun, it would be a planet. The Voyager team briefly debated reclassifying it before deciding moons are moons!',
             whatif: '<strong>What if Ganymede were a planet?</strong> It would be the 8th planet, orbiting the Sun beyond Mars. Its icy surface would be cold tundra with spectacular auroras at the poles. Large enough for a thin atmosphere. We\'d almost certainly have sent a rover there by now!',
+        },
+        game: {
+            failReason: 'JUICE\'s main antenna failed to deploy in Ganymede\'s magnetic field — the mission went silent forever!',
+            realFact: 'JUICE will be the first spacecraft ever to orbit a moon other than Earth\'s Moon. Entering Ganymede\'s orbit requires precise navigation through Jupiter\'s complex multi-moon gravitational field.',
+            stages: [
+                { type: 'timing', icon: '🎯', name: 'Orbital Capture', prompt: 'Ganymede\'s gravity window is only 4 minutes wide — fire the brake burn NOW!' },
+                { type: 'choice', icon: '🧲', name: 'Magnetic Navigation', prompt: 'Ganymede\'s magnetic field deflecting trajectory!', options: ['Compensate with attitude thrusters', 'Follow the field lines', 'Increase speed'], correct: 0 },
+                { type: 'tap',    icon: '📡', name: 'Antenna Deploy', prompt: 'Main antenna stuck in magnetic interference — tap 8 times to manually extend it!', taps: 8 },
+                { type: 'timing', icon: '🌌', name: 'Aurora Observation', prompt: 'Aurora activity window opens for exactly 6 seconds — start recording!' },
+                { type: 'choice', icon: '🌊', name: 'Subsurface Scan', prompt: 'Ice-penetrating radar returning unexpected echoes!', options: ['Adjust frequency to compensate', 'Ignore and continue', 'Switch to backup radar'], correct: 0 },
+            ],
+            hazards: ['magnetic_storm', 'debris', 'radiation_flux'],
+            crises: ['Magnetic interference disrupting comms!', 'Antenna deployment stuck!', 'Power surge in electronics!', 'Orbit decaying unexpectedly!'],
         },
     },
     'Callisto': {
@@ -371,6 +514,19 @@ const celestialFacts = {
             scale: 'Callisto is almost the <strong>same size as Mercury</strong>. If you could see it from above Jupiter\'s clouds, it would appear 4× larger than our Moon appears from Earth. From Earth, Callisto is visible as a tiny moving dot through a basic telescope on a clear night.',
             whatif: '<strong>What if Earth had no plate tectonics (like Callisto)?</strong> Every crater would remain forever — never erased. The Chicxulub crater (dinosaur-killer, 66 million years ago, 180 km wide) would still be a prominent scar. The entire 4-billion-year history of asteroid hits would be permanently written on Earth\'s face — just like Callisto.',
         },
+        game: {
+            failReason: 'The spacecraft\'s orbit decayed through Callisto\'s ancient debris field — it crashed into the most cratered world in the solar system!',
+            realFact: 'Callisto is outside Jupiter\'s main radiation belts, making it the safest large moon to visit — NASA has studied it as a potential staging base for human Jupiter exploration.',
+            stages: [
+                { type: 'timing', icon: '🛰️', name: 'Orbit Stabilization', prompt: 'Debris field perturbing the orbit — stabilize BEFORE passing the equatorial belt!' },
+                { type: 'choice', icon: '☄️', name: 'Debris Field', prompt: 'Ancient impact debris cloud detected ahead!', options: ['Roll spacecraft and boost through', 'Wait for orbit to clear naturally', 'Fire emergency burn'], correct: 0 },
+                { type: 'tap',    icon: '🔧', name: 'Thruster Burst', prompt: 'Altitude dropping — fire correction thrusters 7 times!', taps: 7 },
+                { type: 'timing', icon: '🗺️', name: 'Surface Scan Start', prompt: 'Begin crater mapping sequence at the optimal ground track moment!' },
+                { type: 'choice', icon: '💡', name: 'Power System Check', prompt: 'Solar panels partially shadowed by Jupiter!', options: ['Switch to battery reserves', 'Rotate to maximize solar exposure', 'Reduce instrument power'], correct: 0 },
+            ],
+            hazards: ['ancient_debris', 'boulder', 'crater_ejecta'],
+            crises: ['Orbit altitude dropping!', 'Debris impact detected!', 'Reaction wheels failing!', 'Power system degraded!'],
+        },
     },
     'Saturn': {
         type: '💍 Gas Giant',
@@ -396,6 +552,19 @@ const celestialFacts = {
             discovery: 'Cassini discovered that Enceladus (a small moon) has <strong>geysers of water ice shooting into space</strong> — revealing a liquid ocean beneath its surface. Cassini ended its mission by diving into Saturn\'s atmosphere in a heroic "Grand Finale" after 13 years of discoveries.',
             scale: 'Saturn\'s rings span <strong>282,000 km</strong>. The Moon orbits Earth at 384,000 km. So Saturn\'s rings are almost as wide as the Earth-Moon gap — yet barely thicker than a tall building. Thin as a razor blade stretched across the distance from London to Paris.',
             whatif: '<strong>What if Saturn\'s rings disappeared?</strong> They\'re slowly doing just that — "ring rain" particles are constantly being pulled into Saturn. Scientists estimate the rings could completely disappear in <em>100 million years</em>. In cosmic time, we\'re incredibly lucky to exist right now while they\'re still here to admire.',
+        },
+        game: {
+            failReason: 'Cassini\'s Grand Finale dive went wrong — it entered Saturn\'s atmosphere at too steep an angle and broke apart before transmitting final data!',
+            realFact: 'Cassini\'s real Grand Finale in 2017 required threading between Saturn\'s rings and atmosphere 22 times — a gap only 2,000 km wide.',
+            stages: [
+                { type: 'timing', icon: '💍', name: 'Ring Gap Thread', prompt: 'Thread through the 2,000km gap between rings and atmosphere — perfect timing only!' },
+                { type: 'choice', icon: '🪨', name: 'Moonlet Avoidance', prompt: 'Uncharted moonlet in ring gap trajectory!', options: ['Micro-burn to shift 50km north', 'Speed through the gap', 'Emergency retro-burn'], correct: 0 },
+                { type: 'tap',    icon: '🔧', name: 'Attitude Correction', prompt: 'Ring particles nudging the spacecraft — fire 8 micro-bursts to straighten up!', taps: 8 },
+                { type: 'timing', icon: '🌪️', name: 'Atmosphere Dive Angle', prompt: 'Final dive into Saturn\'s atmosphere — entry angle must be between 12.7° and 13.2°!' },
+                { type: 'choice', icon: '❄️', name: 'Ring Particle Storm', prompt: 'Dense ring particle region unexpectedly thick!', options: ['Roll to protect antenna dish', 'Maintain orientation', 'Emergency altitude boost'], correct: 0 },
+            ],
+            hazards: ['ring_particle', 'moonlet', 'ice_chunk'],
+            crises: ['Ring particles pitting solar panels!', 'Attitude fuel critically low!', 'Antenna signal dropping!', 'Heat shield temperature rising!'],
         },
     },
     'Titan': {
@@ -423,6 +592,19 @@ const celestialFacts = {
             scale: 'Titan is <strong>larger than Mercury</strong>! If it orbited the Sun instead of Saturn, it would be called a planet. Its methane sea (Ligeia Mare) is the size of Lake Superior. You could literally sail a boat across an alien moon\'s methane lake.',
             whatif: '<strong>What if humans visited Titan?</strong> You\'d need a warm suit (−179°C) but not a pressure suit — air pressure is fine. You could breathe with an oxygen supply. You could fly with wings! But the organic haze blocks sunlight, solar panels wouldn\'t work well, and methane lakes would make everything deeply strange and alien.',
         },
+        game: {
+            failReason: 'Huygens\'s parachute deployed too early at 180km — the batteries ran out before the probe reached Titan\'s surface!',
+            realFact: 'Huygens was designed to survive Titan\'s atmosphere for only 2–3 hours on non-rechargeable batteries. Every second of descent counted.',
+            stages: [
+                { type: 'timing', icon: '🪂', name: 'Parachute Altitude', prompt: 'Deploy main parachute at EXACTLY 150km — too early and battery runs out before landing!' },
+                { type: 'choice', icon: '🌧️', name: 'Methane Cloud', prompt: 'Thick methane rain cloud blocking cameras!', options: ['Switch to radar altimeter', 'Descend faster through cloud', 'Wait for cloud to clear'], correct: 0 },
+                { type: 'tap',    icon: '🔥', name: 'Heat Shield Jettison', prompt: 'Heat shield must be jettisoned manually — tap 7 times before atmosphere thickens!', taps: 7 },
+                { type: 'timing', icon: '🔋', name: 'Battery Management', prompt: 'Transmit all science data during the optimal battery window!' },
+                { type: 'choice', icon: '🏞️', name: 'Lake Landing Site', prompt: 'Methane lake directly below — safe to attempt?', options: ['Target adjacent solid shoreline', 'Attempt lake landing', 'Deploy floats'], correct: 0 },
+            ],
+            hazards: ['methane_cloud', 'ice_particle', 'wind_shear'],
+            crises: ['Battery charge critical!', 'Methane rain clogging sensors!', 'Wind shear pushing off course!', 'Heat shield ablating rapidly!'],
+        },
     },
     'Uranus': {
         type: '🔵 Ice Giant',
@@ -448,6 +630,19 @@ const celestialFacts = {
             discovery: 'Voyager 2 discovered <strong>10 new moons and 2 new rings</strong> during its 5.5-hour flyby. It found Uranus has a strange off-centre magnetic field — tilted 60° from its rotation axis. A dedicated Uranus orbiter was recommended as NASA\'s top planetary priority by the 2022 Decadal Survey.',
             scale: 'Uranus is about <strong>4× wider than Earth</strong>. If Earth were a tennis ball, Uranus would be a basketball. Despite being bigger, Uranus is actually less massive than Neptune — it\'s puffier and less dense. Its dark, narrow rings look very different from Saturn\'s bright ones.',
             whatif: '<strong>What if Uranus\'s tilt were like Earth\'s (23°)?</strong> It would have normal seasonal cycles — gentle spring, summer, autumn, winter — repeating every 84 years. The collision that tilted it also stripped away internal heat, making Uranus the coldest-atmosphered planet even though Neptune is farther from the Sun.',
+        },
+        game: {
+            failReason: 'Voyager 2 missed Uranus\'s narrow 5.5-hour encounter window — years of data from the only visit ever planned were lost!',
+            realFact: 'Voyager 2\'s entire Uranus encounter lasted only 5.5 hours. After 8.5 years of travel, it flew past at 15 km/s — all science had to be captured in that tiny window.',
+            stages: [
+                { type: 'timing', icon: '⏱️', name: '5.5-Hour Window', prompt: 'Begin science operations at EXACT moment of closest approach — the window is only 330 minutes!' },
+                { type: 'choice', icon: '💍', name: 'Ring Plane Crossing', prompt: 'Uranus ring plane crossing in 30 seconds!', options: ['Roll to minimize cross-section', 'Maintain orientation', 'Boost above ring plane'], correct: 0 },
+                { type: 'tap',    icon: '📸', name: 'Instrument Pointing', prompt: 'Manually point 9 science instruments to Uranus in rapid sequence!', taps: 9 },
+                { type: 'timing', icon: '🌫️', name: 'Atmospheric Probe Drop', prompt: 'Release atmospheric probe at peak atmospheric density moment!' },
+                { type: 'choice', icon: '🧲', name: 'Magnetosphere Surprise', prompt: 'Magnetic field tilted 60° from rotation axis — unexpected!', options: ['Adjust magnetometer orientation in flight', 'Record raw data as-is', 'Skip magnetic readings'], correct: 0 },
+            ],
+            hazards: ['ring_debris', 'magnetic_anomaly', 'ice_particle'],
+            crises: ['Flyby window closing fast!', 'Ring debris threatening instruments!', 'Attitude control drifting!', 'Downlink signal weakening!'],
         },
     },
     'Titania': {
@@ -475,6 +670,19 @@ const celestialFacts = {
             scale: 'Titania is <strong>1,578 km in diameter</strong> — about the width of India. Its canyon Messina Chasmata is 1,500 km long. If that canyon were on Earth, it would stretch from London to Moscow — deeper than the Grand Canyon, carved by a freezing moon.',
             whatif: '<strong>What if you stood in Titania\'s canyon?</strong> Uranus would hang in the sky as a spectacular pale blue disc, about 5× the apparent size of our Moon. Gravity is only 38% of Earth\'s — you\'d feel light. The canyon walls around you would stretch 5 km deep — like standing at the bottom of a crack while clouds float above.',
         },
+        game: {
+            failReason: 'The probe\'s thrusters iced over in Titania\'s −203°C cold — it drifted silently out of orbit without firing a single manoeuvre!',
+            realFact: 'No spacecraft has returned to Uranus or its moons after Voyager 2\'s 1986 flyby — Titania has been photographed only once, from 369,000 km away.',
+            stages: [
+                { type: 'timing', icon: '🛸', name: 'Orbit Insertion', prompt: 'Enter Titania orbit during the brief gravity-capture window — the only chance!' },
+                { type: 'choice', icon: '🏔️', name: 'Canyon Navigation', prompt: 'Messina Chasmata canyon below — mapping altitude?', options: ['Descend to 500km for high-res data', 'Stay at 2000km safe altitude', 'Abort canyon pass'], correct: 0 },
+                { type: 'tap',    icon: '🔥', name: 'Thruster Defrost', prompt: 'Thrusters icing at −200°C — tap 8 times to activate heaters!', taps: 8 },
+                { type: 'timing', icon: '📷', name: 'Imaging Window', prompt: 'Canyon lit by Uranus-reflected light for exactly 4 seconds — capture now!' },
+                { type: 'choice', icon: '🧊', name: 'Ice Field', prompt: 'Unexpectedly smooth ice field — land or orbit?', options: ['Attempt surface sample from low hover', 'Continue orbital survey', 'Abort to safe altitude'], correct: 0 },
+            ],
+            hazards: ['ice_crystal', 'canyon_wall', 'surface_debris'],
+            crises: ['Thrusters freezing up!', 'Orbit drifting off course!', 'Canyon proximity alarm!', 'Camera lens icing over!'],
+        },
     },
     'Neptune': {
         type: '💨 Ice Giant',
@@ -501,6 +709,19 @@ const celestialFacts = {
             scale: 'Neptune is <strong>4× wider than Earth</strong>. But it\'s so far away (30× the Earth-Sun distance) that even powerful telescopes barely show it as a blue disc. Voyager 2 took <strong>12 years to reach Neptune</strong> after launch — moving at 56,000 km/h the whole time.',
             whatif: '<strong>What if you hovered at Neptune\'s cloud tops?</strong> The 2,100 km/h winds would be faster than a rifle bullet. The Sun would be a very bright star — 900× dimmer than on Earth. The sky would be vivid dark blue. And Triton would rise in the west — it orbits backwards.',
         },
+        game: {
+            failReason: 'Neptune\'s 2,100 km/h supersonic winds spun Voyager 2 off its axis — it missed the entire Triton flyby that can never be repeated!',
+            realFact: 'Voyager 2 had a 12-year journey to reach Neptune — and after the flyby, it left the solar system forever. What it captured in those hours is all we have.',
+            stages: [
+                { type: 'timing', icon: '💨', name: 'Wind Band Crossing', prompt: 'Cross the 2,100 km/h jet stream at the EXACT gap between wind bands!' },
+                { type: 'choice', icon: '🌀', name: 'Great Dark Spot', prompt: 'Great Dark Spot storm system directly in flight path!', options: ['Adjust trajectory 800km north', 'Fly through the storm edge', 'Emergency speed boost'], correct: 0 },
+                { type: 'tap',    icon: '⚖️', name: 'Attitude Stabilize', prompt: 'Supersonic winds destabilizing spacecraft — fire 9 micro-bursts to stabilize!', taps: 9 },
+                { type: 'timing', icon: '🌙', name: 'Triton Flyby Angle', prompt: 'Triton closest approach in 8 seconds — lock instruments at optimal angle NOW!' },
+                { type: 'choice', icon: '🧲', name: 'Magnetosphere Realign', prompt: 'Neptune\'s magnetic axis 47° from rotation axis — unexpected reading!', options: ['Adjust instruments to magnetic axis', 'Record both axes', 'Skip magnetic data'], correct: 0 },
+            ],
+            hazards: ['wind_shear', 'storm_band', 'debris'],
+            crises: ['Supersonic winds destabilizing craft!', 'Attitude control overwhelmed!', 'Downlink antenna drifting!', 'Fuel critically low!'],
+        },
     },
     'Triton': {
         type: '🔄 Neptunian Moon',
@@ -526,6 +747,19 @@ const celestialFacts = {
             discovery: 'Voyager 2 photographed Triton\'s active <strong>nitrogen geysers</strong> — completely unexpected on such a cold world. It revealed a young, constantly-refreshed surface, and a pinkish colour from complex organic molecules (<em>tholins</em>) created by radiation hitting nitrogen and methane. No spacecraft has returned in 35+ years.',
             scale: 'Triton is <strong>2,706 km across</strong> — about the width of the continental United States from coast to coast. At −235°C, a cup of water left there would freeze in milliseconds. Yet geysers shoot gas 8 km high from that same frozen surface. A world of extremes at the edge of the solar system.',
             whatif: '<strong>What if Triton breaks apart in 3.6 billion years?</strong> Tidal forces rip it apart near the Roche limit. The resulting ring would be spectacular — far more massive than Saturn\'s current rings. For millions of years, Neptune would have the most dramatic ring system in the solar system, visible as a bright band from Earth.',
+        },
+        game: {
+            failReason: 'The probe matched Triton\'s retrograde orbit perfectly — but a nitrogen geyser erupted directly below and shredded the landing gear at −235°C!',
+            realFact: 'Triton is one of the few worlds where active geology has been observed from Earth orbit. Landing on such a cold, active world would be extraordinarily dangerous.',
+            stages: [
+                { type: 'timing', icon: '🔄', name: 'Retrograde Match', prompt: 'Triton orbits backwards — match its retrograde velocity EXACTLY to enter orbit!' },
+                { type: 'choice', icon: '💨', name: 'Nitrogen Geyser', prompt: 'Geyser eruption detected 200m ahead!', options: ['Bank hard left and climb 300m', 'Fly over the geyser at altitude', 'Emergency full retro-burn'], correct: 0 },
+                { type: 'tap',    icon: '🔥', name: 'Thermal Protection', prompt: 'Hull at −233°C — tap 8 times to boost heating elements before systems freeze!', taps: 8 },
+                { type: 'timing', icon: '🛬', name: 'Landing Approach', prompt: 'Nitrogen ice surface only 50m below — cut descent thrusters at EXACT moment!' },
+                { type: 'choice', icon: '🌀', name: 'Retrograde Burn', prompt: 'Orbital decay faster than predicted — burn direction?', options: ['Prograde burn to raise orbit', 'Retrograde burn to maintain', 'Use gravitational assist from Neptune'], correct: 0 },
+            ],
+            hazards: ['nitrogen_geyser', 'ice_debris', 'cryogenic_plume'],
+            crises: ['Cryogenic temperatures freezing systems!', 'Nitrogen geyser erupting nearby!', 'Retrograde approach needs correction!', 'Landing struts at cryo-failure risk!'],
         },
     }
 };
@@ -751,6 +985,9 @@ const starColors = [
     [1.0, 0.97, 0.85],  // warm white
     [1.0, 0.88, 0.65],  // yellow
     [1.0, 0.75, 0.55],  // orange
+    [1.0, 0.65, 0.35],  // deep orange (K-type giant)
+    [1.0, 0.48, 0.28],  // orange-red (M-type giant)
+    [1.0, 0.35, 0.22],  // red giant
 ];
 for (let i = 0; i < starCount; i++) {
     const r   = 2000 + Math.random() * 3000;
@@ -920,7 +1157,9 @@ function createGalaxyTexture(size = 2048) {
         (nr, arm) => {
             if (nr < 0.13) return [255, 200, 80, 60 + Math.random() * 80];  // core: orange
             if (!arm)       return null;
-            return [95, 150, 255, 75 + Math.random() * 95];                  // arm: bright blue
+            // arm: 72% blue, 28% warm orange/yellow (older stars mixed with young blue ones)
+            if (Math.random() < 0.28) return [255, 170 + Math.random()*60, 55 + Math.random()*45, 65 + Math.random()*85];
+            return [95, 150, 255, 75 + Math.random() * 95];
         }
     ), Math.round(size * 0.0022));
 
@@ -934,6 +1173,8 @@ function createGalaxyTexture(size = 2048) {
                 return [255, 218 + nr * 150, 128 + nr * 200, 90 + Math.random() * 90];
             }
             if (!arm) return null;
+            // arm: 75% blue tones, 25% warm orange/yellow
+            if (Math.random() < 0.25) return [255, 175 + Math.random()*55, 65 + Math.random()*50, 100 + Math.random()*115];
             return [110 + Math.random()*145, 158 + Math.random()*97, 255, 115 + Math.random()*120];
         }
     ), 0);
@@ -970,6 +1211,68 @@ function createGalaxyTexture(size = 2048) {
     ctx.fillStyle = bulge;
     ctx.fillRect(0, 0, size, size);
 
+    // ── Pass 6 · Nebula clouds — emission regions and reflection nebulae ───
+    // Soft large radial-gradient blobs at arm positions: pink/red H-alpha emission,
+    // indigo reflection nebulae, orange stellar nurseries, teal ionized gas.
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const nebulae = [
+        // H-alpha emission (pink/red) — star-forming regions
+        { arm: 0, nr: 0.38, rgb: [255, 48, 82],  a: 0.30, rad: 0.062 },
+        { arm: 1, nr: 0.54, rgb: [248, 40, 68],  a: 0.25, rad: 0.070 },
+        { arm: 2, nr: 0.44, rgb: [232, 52, 88],  a: 0.28, rad: 0.058 },
+        { arm: 3, nr: 0.61, rgb: [255, 44, 74],  a: 0.22, rad: 0.066 },
+        { arm: 1, nr: 0.70, rgb: [218, 55, 95],  a: 0.20, rad: 0.055 },
+        { arm: 2, nr: 0.73, rgb: [200, 48, 78],  a: 0.18, rad: 0.050 },
+        // Reflection nebulae (blue/indigo) — dust scattering nearby hot stars
+        { arm: 0, nr: 0.47, rgb: [72, 108, 255], a: 0.22, rad: 0.050 },
+        { arm: 2, nr: 0.58, rgb: [88, 72, 255],  a: 0.20, rad: 0.054 },
+        // Stellar nurseries (warm orange/gold) — dense HII regions
+        { arm: 1, nr: 0.34, rgb: [255, 148, 42], a: 0.26, rad: 0.056 },
+        { arm: 3, nr: 0.50, rgb: [255, 128, 32], a: 0.22, rad: 0.062 },
+        // Ionized gas (teal/cyan) — O-type star vicinity
+        { arm: 0, nr: 0.53, rgb: [52, 195, 182], a: 0.18, rad: 0.045 },
+        { arm: 3, nr: 0.40, rgb: [65, 172, 218], a: 0.18, rad: 0.048 },
+    ];
+    for (const n of nebulae) {
+        const rr    = n.nr * R;
+        const logSp = Math.log(rr / (R * 0.025) + 1) * 1.65;
+        const theta = (n.arm / ARMS) * Math.PI * 2 + logSp;
+        const nx    = cx + rr * Math.cos(theta);
+        const ny    = cy + rr * Math.sin(theta);
+        const nr2   = n.rad * R;
+        const [rv, gv, bv] = n.rgb;
+        const g = ctx.createRadialGradient(nx, ny, 0, nx, ny, nr2);
+        g.addColorStop(0,    `rgba(${rv},${gv},${bv},${n.a})`);
+        g.addColorStop(0.40, `rgba(${rv},${gv},${bv},${(n.a * 0.50).toFixed(3)})`);
+        g.addColorStop(0.75, `rgba(${rv},${gv},${bv},${(n.a * 0.14).toFixed(3)})`);
+        g.addColorStop(1,    `rgba(${rv},${gv},${bv},0)`);
+        ctx.beginPath();
+        ctx.arc(nx, ny, nr2, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.fill();
+    }
+    ctx.restore();
+
+    // ── Pass 7 · Dust lane — dark absorption band across the disc midplane ──
+    // Drawing black with source-over darkens existing canvas RGB values, which
+    // means less light is contributed when the texture renders with AdditiveBlending.
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, R * 0.88, R * 0.88, 0, 0, Math.PI * 2);
+    ctx.clip();
+    const dustW = R * 0.028;
+    const dustGrad = ctx.createLinearGradient(cx, cy - dustW * 3, cx, cy + dustW * 3);
+    dustGrad.addColorStop(0.0,  'rgba(0,0,0,0)');
+    dustGrad.addColorStop(0.28, 'rgba(0,0,0,0.22)');
+    dustGrad.addColorStop(0.50, 'rgba(0,0,0,0.38)');
+    dustGrad.addColorStop(0.72, 'rgba(0,0,0,0.22)');
+    dustGrad.addColorStop(1.0,  'rgba(0,0,0,0)');
+    ctx.fillStyle = dustGrad;
+    ctx.fillRect(0, cy - dustW * 3, size, dustW * 6);
+    ctx.restore();
+
     const tex = new THREE.CanvasTexture(canvas);
     tex.anisotropy = 4; // sharper when viewed at an angle
     return tex;
@@ -1003,7 +1306,7 @@ const galacticCentreSprite = new THREE.Sprite(new THREE.SpriteMaterial({
     blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
 }));
 galacticCentreSprite.position.copy(GCENTER);
-galacticCentreSprite.scale.set(6000, 6000, 1);
+galacticCentreSprite.scale.set(9000, 9000, 1);
 scene.add(galacticCentreSprite);
 galaxyObjects.push(galacticCentreSprite);
 
@@ -1011,7 +1314,7 @@ galaxyObjects.push(galacticCentreSprite);
 const hazePlane = new THREE.Mesh(
     new THREE.PlaneGeometry(GRADIUS * 2.2, GRADIUS * 2.2),
     new THREE.MeshBasicMaterial({
-        color: 0x6070cc, transparent: true, opacity: 0.040,
+        color: 0x7868bb, transparent: true, opacity: 0.090,
         side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
     })
 );
@@ -1019,6 +1322,58 @@ hazePlane.position.copy(GCENTER);
 hazePlane.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), GNORMAL);
 scene.add(hazePlane);
 galaxyObjects.push(hazePlane);
+
+// --- GALACTIC BAND STARS ---
+// Extra stars concentrated along the galactic plane so the Milky Way band is
+// visible from inside the solar system — the defining "inside a galaxy" feeling.
+// Stars are generated in galactic-frame coordinates (GTANGENT/GBITANGENT/GNORMAL)
+// with a tight latitudinal spread (±~11°) around the equatorial plane.
+const bandColors = [
+    [1.0, 1.0, 1.0],
+    [0.90, 0.95, 1.0],
+    [1.0, 0.96, 0.82],
+    [1.0, 0.88, 0.65],
+    [1.0, 0.72, 0.48],
+    [1.0, 0.62, 0.34],
+];
+const bandCount = 8000;
+const bandPos   = new Float32Array(bandCount * 3);
+const bandCol   = new Float32Array(bandCount * 3);
+for (let i = 0; i < bandCount; i++) {
+    // Sample direction biased tightly toward the galactic equatorial plane
+    const lat = (Math.random() - 0.5) * 0.38;   // ≈ ±11° latitudinal spread
+    const lon = Math.random() * Math.PI * 2;
+    const cosLat = Math.cos(lat);
+    // Local galactic-frame unit vector
+    const lx = cosLat * Math.cos(lon);
+    const ly = cosLat * Math.sin(lon);
+    const lz = Math.sin(lat);
+    // Transform to world space via galactic basis
+    const wx = GTANGENT.x * lx + GBITANGENT.x * ly + GNORMAL.x * lz;
+    const wy = GTANGENT.y * lx + GBITANGENT.y * ly + GNORMAL.y * lz;
+    const wz = GTANGENT.z * lx + GBITANGENT.z * ly + GNORMAL.z * lz;
+    const r  = 2200 + Math.random() * 2800;
+    bandPos[i*3]   = wx * r;
+    bandPos[i*3+1] = wy * r;
+    bandPos[i*3+2] = wz * r;
+    const bc = bandColors[Math.floor(Math.random() * bandColors.length)];
+    bandCol[i*3] = bc[0]; bandCol[i*3+1] = bc[1]; bandCol[i*3+2] = bc[2];
+}
+const bandGeo = new THREE.BufferGeometry();
+bandGeo.setAttribute('position', new THREE.BufferAttribute(bandPos, 3));
+bandGeo.setAttribute('color',    new THREE.BufferAttribute(bandCol, 3));
+const bandStars = new THREE.Points(bandGeo, new THREE.PointsMaterial({
+    map: starSpriteTex,
+    size: 1.2,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.78,
+    alphaTest: 0.01,
+    depthWrite: false,
+    sizeAttenuation: false,
+}));
+scene.add(bandStars);
+galaxyObjects.push(bandStars);
 
 // Sun label
 function createLabel(text, isLarge = false) {
