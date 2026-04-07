@@ -31,6 +31,29 @@ const planetData = [
     ]},
 ];
 
+// --- ASTRONOMICAL FACTS ---
+const celestialFacts = {
+    'Sun': { type: 'G-Type Star', fact: 'The Sun contains 99.8% of the mass in the entire solar system and is fueled by nuclear fusion.', gravity: '274 m/s²', day: '27 Earth Days', year: '230M Years', temp: '5,500°C', details: 'Radius: 696,340 km' },
+    'Mercury': { type: 'Terrestrial Planet', fact: 'The smallest and closest planet to the Sun. Its surface experiences the most extreme temperature fluctuations.', gravity: '3.7 m/s²', day: '59 Earth Days', year: '88 Earth Days', temp: '167°C Avg', details: '0 Moons • Radius: 2,439 km' },
+    'Venus': { type: 'Terrestrial Planet', fact: 'The hottest planet in the solar system, shrouded in thick clouds of sulfuric acid.', gravity: '8.87 m/s²', day: '243 Earth Days', year: '225 Earth Days', temp: '464°C', details: '0 Moons • Radius: 6,051 km' },
+    'Earth': { type: 'Terrestrial Planet', fact: 'Our home planet, the only known astronomical object to harbor life, with liquid water covering 71% of its surface.', gravity: '9.81 m/s²', day: '24 Hours', year: '365.25 Days', temp: '15°C Avg', details: '1 Major Moon • Radius: 6,371 km' },
+    'Moon': { type: 'Earth\'s Moon', fact: 'Exhibits synchronous rotation, meaning Earth only ever sees one face. Responsible for Earth\'s ocean tides.', gravity: '1.62 m/s²', day: '27.3 Earth Days', year: '27.3 Earth Days', temp: '-53°C Avg', details: 'Radius: 1,737 km' },
+    'Mars': { type: 'Terrestrial Planet', fact: 'Known as the Red Planet due to iron oxide on its surface. Home to Olympus Mons, the largest volcano in the solar system.', gravity: '3.72 m/s²', day: '24.6 Hours', year: '687 Earth Days', temp: '-63°C Avg', details: '2 Moons • Radius: 3,389 km' },
+    'Phobos': { type: 'Martian Moon', fact: 'Orbiting closer to its primary than any other planetary moon, it races around Mars 3 times a day.', gravity: '0.005 m/s²', day: '8 Hours', year: '8 Hours', temp: '-40°C', details: 'Radius: ~11 km' },
+    'Deimos': { type: 'Martian Moon', fact: 'The smaller and outermost of Mars\' two irregularly shaped, asteroid-like moons.', gravity: '0.003 m/s²', day: '30.3 Hours', year: '30.3 Hours', temp: '-40°C', details: 'Radius: ~6.2 km' },
+    'Jupiter': { type: 'Gas Giant', fact: 'The largest planet, holding more than twice the mass of all other planets combined.', gravity: '24.79 m/s²', day: '9.9 Hours', year: '11.8 Earth Years', temp: '-108°C', details: '95 Known Moons • Radius: 69,911 km' },
+    'Io': { type: 'Jovian Moon', fact: 'The most volcanically active body in the solar system, constantly reshaped by tidal heating.', gravity: '1.79 m/s²', day: '1.77 Earth Days', year: '1.77 Earth Days', temp: '-130°C', details: 'Radius: 1,821 km' },
+    'Europa': { type: 'Jovian Moon', fact: 'Believed to conceal a vast, deep global ocean of liquid water beneath its cracked icy crust.', gravity: '1.31 m/s²', day: '3.55 Earth Days', year: '3.55 Earth Days', temp: '-160°C', details: 'Radius: 1,560 km' },
+    'Ganymede': { type: 'Jovian Moon', fact: 'The largest moon in the solar system, larger than the planet Mercury. Generates its own magnetic field.', gravity: '1.42 m/s²', day: '7.15 Earth Days', year: '7.15 Earth Days', temp: '-163°C', details: 'Radius: 2,634 km' },
+    'Callisto': { type: 'Jovian Moon', fact: 'Possesses one of the oldest, most heavily cratered surfaces in the solar system, indicating low geologic activity.', gravity: '1.23 m/s²', day: '16.7 Earth Days', year: '16.7 Earth Days', temp: '-139°C', details: 'Radius: 2,410 km' },
+    'Saturn': { type: 'Gas Giant', fact: 'Famous for its extensive and brilliant ring system composed mostly of ice particles.', gravity: '10.44 m/s²', day: '10.7 Hours', year: '29.4 Earth Years', temp: '-138°C', details: '146 Known Moons • Radius: 58,232 km' },
+    'Titan': { type: 'Saturnian Moon', fact: 'The only moon known to have a dense atmosphere and liquid methane-ethane lakes on its surface.', gravity: '1.35 m/s²', day: '15.9 Earth Days', year: '15.9 Earth Days', temp: '-179°C', details: 'Radius: 2,574 km' },
+    'Uranus': { type: 'Ice Giant', fact: 'An ice giant with an extreme axial tilt, causing it to essentially rotate on its side.', gravity: '8.69 m/s²', day: '17.2 Hours', year: '84 Earth Years', temp: '-195°C', details: '28 Known Moons • Radius: 25,362 km' },
+    'Titania': { type: 'Uranian Moon', fact: 'The largest moon of Uranus, featuring a mix of rough, cratered terrain and massive geological canyons.', gravity: '0.38 m/s²', day: '8.7 Earth Days', year: '8.7 Earth Days', temp: '-203°C', details: 'Radius: 788 km' },
+    'Neptune': { type: 'Ice Giant', fact: 'The outermost major planet, known for its deep blue hue and supersonic atmospheric winds.', gravity: '11.15 m/s²', day: '16.1 Hours', year: '165 Earth Years', temp: '-200°C', details: '16 Known Moons • Radius: 24,622 km' },
+    'Triton': { type: 'Neptunian Moon', fact: 'A captured dwarf planet with a retrograde orbit—it travels the opposite direction of Neptune\'s rotation.', gravity: '0.78 m/s²', day: '5.8 Earth Days', year: '5.8 Earth Days', temp: '-235°C', details: 'Radius: 1,353 km' }
+};
+
 // --- SCENE SETUP ---
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 8000);
@@ -210,6 +233,17 @@ let isFocusing = false;
 let focusOrbitDist = 50;
 const focusInfoEl = document.getElementById('focus-info');
 
+// Info Card DOM elements
+const infoCard = document.getElementById('planet-info-card');
+const infoName = document.getElementById('info-name');
+const infoType = document.getElementById('info-type');
+const infoFact = document.getElementById('info-fact');
+const infoGravity = document.getElementById('info-gravity');
+const infoDay = document.getElementById('info-day');
+const infoYear = document.getElementById('info-year');
+const infoTemp = document.getElementById('info-temp');
+const infoDetails = document.getElementById('info-details');
+
 function focusOn(meshEntry) {
     lockedTarget = meshEntry;
     focusTarget = meshEntry;
@@ -220,6 +254,18 @@ function focusOn(meshEntry) {
         focusInfoEl.textContent = `📍 Focused: ${meshEntry.name}`;
         focusInfoEl.style.opacity = '1';
     }
+
+    // Populate and show the info card
+    const factData = celestialFacts[meshEntry.name] || { type: 'Celestial Body', fact: 'A fascinating object.', gravity: '--', day: '--', year: '--', temp: '--', details: 'Radius: Unknown' };
+    infoName.textContent = meshEntry.name === 'Sun' ? '☀ Sun' : meshEntry.name;
+    infoType.textContent = factData.type;
+    infoFact.textContent = factData.fact;
+    infoGravity.textContent = factData.gravity;
+    infoDay.textContent = factData.day;
+    infoYear.textContent = factData.year;
+    infoTemp.textContent = factData.temp;
+    infoDetails.textContent = factData.details;
+    infoCard.classList.remove('hidden');
 }
 
 const pointerDown = new THREE.Vector2();
@@ -300,6 +346,7 @@ document.getElementById('reset-pos').addEventListener('click', () => {
     lockedTarget = null;
     if (focusInfoEl) focusInfoEl.style.opacity = '0.6';
     if (focusInfoEl) focusInfoEl.textContent = '📍 Focused: Solar System';
+    if (infoCard) infoCard.classList.add('hidden');
     controls.target.set(0, 0, 0);
     camera.position.set(0, 800, 400);
 });
