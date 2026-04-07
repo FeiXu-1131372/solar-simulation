@@ -535,125 +535,143 @@ const GTANGENT = (() => {
 const GBITANGENT = GNORMAL.clone().cross(GTANGENT).normalize();
 const GRADIUS = 52000;
 
-// Galaxy disc — baked into a canvas texture (1 quad, no per-frame point cost)
+// Galaxy disc — 5-pass canvas render with blur technique for photorealistic look
 function createGalaxyTexture(size = 2048) {
+    const cx = size / 2, cy = size / 2;
+    const R  = size * 0.44;
+    const sl = R * 0.30;
+    const ARMS = 4;
+
+    // Shared spiral placement — returns {x, y, normR, inArm} for one star
+    function placeStar(armChanceFn) {
+        const r     = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
+        const normR = r / R;
+        const arm   = Math.floor(Math.random() * ARMS);
+        const inArm = Math.random() < armChanceFn(normR);
+        const logSp = Math.log(r / (R * 0.025) + 1) * 1.65;
+        const scatter = inArm ? 0.22 + normR * 0.45 : Math.PI * 2;
+        const theta = inArm
+            ? (arm / ARMS) * Math.PI * 2 + logSp + (Math.random() - 0.5) * scatter
+            : Math.random() * Math.PI * 2;
+        return { x: cx + r * Math.cos(theta), y: cy + r * Math.sin(theta), normR, inArm };
+    }
+
+    // Draw N pixel-stars into an offscreen ImageData, return the canvas
+    function pixelPass(count, armChanceFn, colorFn) {
+        const oc = document.createElement('canvas');
+        oc.width = oc.height = size;
+        const octx = oc.getContext('2d');
+        const img  = octx.getImageData(0, 0, size, size);
+        const d    = img.data;
+        for (let i = 0; i < count; i++) {
+            const s = placeStar(armChanceFn);
+            const col = colorFn(s.normR, s.inArm);
+            if (!col) continue;
+            const sx = Math.round(s.x), sy = Math.round(s.y);
+            if (sx < 0 || sx >= size || sy < 0 || sy >= size) continue;
+            const idx = (sy * size + sx) * 4;
+            d[idx]   = Math.min(255, d[idx]   + col[0]);
+            d[idx+1] = Math.min(255, d[idx+1] + col[1]);
+            d[idx+2] = Math.min(255, d[idx+2] + col[2]);
+            d[idx+3] = Math.min(255, d[idx+3] + col[3]);
+        }
+        octx.putImageData(img, 0, 0);
+        return oc;
+    }
+
+    // Composite an offscreen canvas onto ctx with optional blur (CSS filter, one-shot)
+    function blit(src, blurPx, alpha = 1) {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.globalCompositeOperation = 'lighter';
+        if (blurPx > 0) ctx.filter = `blur(${blurPx}px)`;
+        ctx.drawImage(src, 0, 0);
+        ctx.restore();
+    }
+
+    // ── Main canvas ──────────────────────────────────────────────────────────
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = size;
     const ctx = canvas.getContext('2d');
-    // Transparent base — with additive blending alpha=0 means invisible
     ctx.clearRect(0, 0, size, size);
 
-    const cx = size / 2, cy = size / 2;
-    const R  = size * 0.46;
-    const sl = R * 0.28;
-    const N_ARMS = 4;
-
-    // Layer 1 — Overall disc glow: warm centre fading to cool blue edge
-    const discGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.96);
-    discGlow.addColorStop(0.00, 'rgba(255, 230, 150, 0.55)');
-    discGlow.addColorStop(0.14, 'rgba(210, 150,  70, 0.35)');
-    discGlow.addColorStop(0.35, 'rgba(110,  85, 200, 0.18)');
-    discGlow.addColorStop(0.65, 'rgba( 40,  60, 165, 0.08)');
-    discGlow.addColorStop(1.00, 'rgba(  0,   0,   0, 0.00)');
-    ctx.fillStyle = discGlow;
-    ctx.fillRect(0, 0, size, size);
-
-    // Layer 2 — Spiral arm soft glow zones (35 gradient blobs per arm)
-    for (let arm = 0; arm < N_ARMS; arm++) {
-        const armBase = (arm / N_ARMS) * Math.PI * 2;
-        for (let s = 0; s < 35; s++) {
-            const t  = s / 35;
-            const r  = R * (0.08 + t * 0.88);
-            const th = armBase + Math.log(r / (R * 0.04) + 1) * 1.35;
-            const px = cx + r * Math.cos(th);
-            const py = cy + r * Math.sin(th);
-            const spread = R * 0.09 * (1 - t * 0.38);
-            const alpha  = 0.22 - t * 0.14;
-            const ag = ctx.createRadialGradient(px, py, 0, px, py, spread);
-            ag.addColorStop(0,   `rgba(125, 168, 255, ${alpha})`);
-            ag.addColorStop(0.55,`rgba( 75, 108, 220, ${alpha * 0.4})`);
-            ag.addColorStop(1,   `rgba( 35,  55, 160, 0)`);
-            ctx.fillStyle = ag;
-            ctx.beginPath(); ctx.arc(px, py, spread, 0, Math.PI * 2); ctx.fill();
+    // ── Pass 1 · Diffuse haze — heavily blurred (≈18 px) ───────────────────
+    // Thousands of dim stars smeared into a soft glowing cloud — gives the
+    // galaxy its overall luminous shape and warm/cool colour gradient.
+    blit(pixelPass(
+        120000,
+        nr => 0.40 * Math.exp(-nr * 2.2) + 0.22,
+        (nr, arm) => {
+            const a = 28 + Math.random() * 42;
+            if (nr < 0.18) return [255, 210, 125, a + 38];
+            if (arm)       return [ 95, 140, 248, a];
+            return [168, 175, 218, a - 6];
         }
-    }
+    ), Math.round(size * 0.009));
 
-    // Layer 3 — Dense pixel star field (captured on top of existing gradient data)
-    const imgData = ctx.getImageData(0, 0, size, size);
-    const d = imgData.data;
-    for (let i = 0; i < 150000; i++) {
-        const r     = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
-        const normR = r / R;
-        const armIdx = Math.floor(Math.random() * N_ARMS);
-        const inArm  = Math.random() < 0.35;
-        const theta  = inArm
-            ? (armIdx / N_ARMS) * Math.PI * 2 + Math.log(r / (R * 0.015) + 1) * 1.3 + (Math.random() - 0.5) * 0.6
-            : Math.random() * Math.PI * 2;
-        const sx = Math.round(cx + r * Math.cos(theta));
-        const sy = Math.round(cy + r * Math.sin(theta));
-        if (sx < 0 || sx >= size || sy < 0 || sy >= size) continue;
-        const idx = (sy * size + sx) * 4;
-        let rr, gg, bb, aa;
-        if (inArm && normR > 0.15) {
-            rr = 130 + Math.random()*125; gg = 165 + Math.random()*90; bb = 255; aa = 170 + Math.random()*85;
-        } else if (normR < 0.22) {
-            rr = 255; gg = 210 + normR*150; bb = 140 + normR*250; aa = 150 + Math.random()*105;
-        } else {
-            const c = 185 + Math.random()*70; rr = c; gg = c*0.92; bb = c*0.84; aa = 110 + Math.random()*110;
+    // ── Pass 2 · Arm glow — medium blur (≈5 px) ────────────────────────────
+    // Only arm stars, blurred just enough to bleed into each other and create
+    // a continuous glowing band along each spiral arm.
+    blit(pixelPass(
+        80000,
+        nr => 0.82 - nr * 0.28,
+        (nr, arm) => {
+            if (!arm) return null;
+            if (nr < 0.18) return [255, 195,  80, 95 + Math.random() * 95];
+            return [105, 155, 255, 85 + Math.random() * 90];
         }
-        d[idx]   = Math.min(255, d[idx]   + rr);
-        d[idx+1] = Math.min(255, d[idx+1] + gg);
-        d[idx+2] = Math.min(255, d[idx+2] + bb);
-        d[idx+3] = Math.min(255, d[idx+3] + aa);
-    }
-    ctx.putImageData(imgData, 0, 0);
+    ), Math.round(size * 0.0025));
 
-    // Layer 4 — 2500 bright round stars (arc circles, NOT square pixels)
+    // ── Pass 3 · Sharp star field — no blur ────────────────────────────────
+    // Crisp pixel stars on top for fine texture and density variation.
+    blit(pixelPass(
+        130000,
+        nr => 0.58 - nr * 0.20,
+        (nr, arm) => {
+            if (arm && nr > 0.10) {
+                return [115 + Math.random()*140, 162 + Math.random()*93, 255, 130 + Math.random()*110];
+            }
+            if (nr < 0.22) return [255, 218 + nr*120, 132 + nr*180, 115 + Math.random()*95];
+            const c = 188 + Math.random() * 67;
+            return [c, c * 0.93, c * 0.85, 88 + Math.random() * 108];
+        }
+    ), 0);
+
+    // ── Pass 4 · Round hero stars — arc() circles, zero square artefacts ───
     ctx.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 2500; i++) {
-        const r     = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
-        const normR = r / R;
-        const armIdx = Math.floor(Math.random() * N_ARMS);
-        const inArm  = Math.random() < 0.5;
-        const theta  = inArm
-            ? (armIdx / N_ARMS) * Math.PI * 2 + Math.log(r / (R * 0.015) + 1) * 1.3 + (Math.random() - 0.5) * 0.55
-            : Math.random() * Math.PI * 2;
-        const px = cx + r * Math.cos(theta);
-        const py = cy + r * Math.sin(theta);
-        const sz     = 1.2 + Math.random() * 2.5;
-        const glowSz = sz * (2.5 + Math.random());
-        let r0, g0, b0;
-        if (inArm && normR > 0.15) {
-            r0 = 160 + Math.floor(Math.random()*95); g0 = 200 + Math.floor(Math.random()*55); b0 = 255;
-        } else if (normR < 0.2) {
-            r0 = 255; g0 = 220 + Math.floor(normR*100); b0 = 150 + Math.floor(normR*100);
-        } else {
-            r0 = g0 = b0 = 210 + Math.floor(Math.random()*45);
-        }
-        // Soft outer glow halo
-        const sg = ctx.createRadialGradient(px, py, 0, px, py, glowSz);
-        sg.addColorStop(0,   `rgba(${r0},${g0},${b0},0.55)`);
-        sg.addColorStop(0.4, `rgba(${r0},${g0},${b0},0.18)`);
-        sg.addColorStop(1,   `rgba(${r0},${g0},${b0},0)`);
-        ctx.fillStyle = sg;
-        ctx.beginPath(); ctx.arc(px, py, glowSz, 0, Math.PI * 2); ctx.fill();
-        // Bright round core
-        ctx.fillStyle = `rgba(${r0},${g0},${b0},0.95)`;
-        ctx.beginPath(); ctx.arc(px, py, sz, 0, Math.PI * 2); ctx.fill();
+    for (let i = 0; i < 3200; i++) {
+        const s  = placeStar(nr => 0.60 - nr * 0.18);
+        const sz = 1.0 + Math.random() * 3.2;
+        const gs = sz * (2.2 + Math.random() * 2.0);
+        let rv, gv, bv;
+        if (s.inArm && s.normR > 0.13) { rv = 155+Math.random()*100; gv = 198+Math.random()*57; bv = 255; }
+        else if (s.normR < 0.22)        { rv = 255; gv = 228+s.normR*75; bv = 158+s.normR*88; }
+        else                             { rv = gv = bv = 218+Math.random()*37; }
+        // soft glow halo
+        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, gs);
+        g.addColorStop(0,   `rgba(${rv},${gv},${bv},0.62)`);
+        g.addColorStop(0.38,`rgba(${rv},${gv},${bv},0.18)`);
+        g.addColorStop(1,   `rgba(${rv},${gv},${bv},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(s.x, s.y, gs, 0, Math.PI * 2); ctx.fill();
+        // bright round core
+        ctx.fillStyle = `rgba(${rv},${gv},${bv},0.96)`;
+        ctx.beginPath(); ctx.arc(s.x, s.y, sz, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalCompositeOperation = 'source-over';
 
-    // Layer 5 — Central bulge
-    const bulge = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.27);
-    bulge.addColorStop(0,    'rgba(255, 248, 215, 0.95)');
-    bulge.addColorStop(0.2,  'rgba(255, 205,  90, 0.62)');
-    bulge.addColorStop(0.5,  'rgba(195,  85,  18, 0.22)');
-    bulge.addColorStop(0.85, 'rgba( 90,  25,   3, 0.06)');
-    bulge.addColorStop(1.0,  'rgba(  0,   0,   0, 0)');
+    // ── Pass 5 · Central bulge gradient ─────────────────────────────────────
+    const bulge = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.24);
+    bulge.addColorStop(0.00, 'rgba(255, 250, 220, 0.98)');
+    bulge.addColorStop(0.18, 'rgba(255, 212,  98, 0.72)');
+    bulge.addColorStop(0.45, 'rgba(200,  88,  18, 0.30)');
+    bulge.addColorStop(0.78, 'rgba( 88,  25,   4, 0.09)');
+    bulge.addColorStop(1.00, 'rgba(  0,   0,   0, 0)');
     ctx.fillStyle = bulge;
     ctx.fillRect(0, 0, size, size);
 
-    return new THREE.CanvasTexture(canvas);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.anisotropy = 4; // sharper when viewed at an angle
+    return tex;
 }
 
 // Single textured quad — replaces 180k GPU points with 2 triangles
