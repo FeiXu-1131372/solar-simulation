@@ -2181,6 +2181,7 @@ function runMissionControl(mission, target, gameData) {
     let startTime = Date.now();
     let activeCrisisSys = null;
     let nextCrisisAt = Date.now() + 2500;
+    let crisisTimeoutId = null;
 
     const grid = document.getElementById('mg-systems-grid');
     const crisisAlert = document.getElementById('mg-crisis-alert');
@@ -2215,7 +2216,7 @@ function runMissionControl(mission, target, gameData) {
         crisisAlert.textContent = `🚨 ${crisesList[idx]}`;
         crisisAlert.classList.remove('hidden');
         // Auto-clear crisis after 4 seconds if not clicked
-        setTimeout(() => {
+        crisisTimeoutId = setTimeout(() => {
             if (activeCrisisSys === SYSTEMS[idx]) {
                 activeCrisisSys = null;
                 crisisAlert.classList.add('hidden');
@@ -2224,7 +2225,7 @@ function runMissionControl(mission, target, gameData) {
         }, 4000);
     }
 
-    grid.addEventListener('click', e => {
+    const gridClickHandler = e => {
         if (done || !activeCrisisSys) return;
         const card = e.target.closest('.mg-sys-card');
         if (!card) return;
@@ -2234,7 +2235,9 @@ function runMissionControl(mission, target, gameData) {
             crisisAlert.classList.add('hidden');
             nextCrisisAt = Date.now() + 2500 + Math.random() * 2000;
         }
-    });
+    };
+    grid.addEventListener('click', gridClickHandler);
+    activeGameCleanup = () => grid.removeEventListener('click', gridClickHandler);
 
     renderGrid();
 
@@ -2253,6 +2256,7 @@ function runMissionControl(mission, target, gameData) {
                 done = true;
                 clearInterval(activeGameTimer);
                 activeGameTimer = null;
+                if (crisisTimeoutId) { clearTimeout(crisisTimeoutId); crisisTimeoutId = null; }
                 onGameFail(mission, target, gameData);
                 return;
             }
@@ -2268,6 +2272,7 @@ function runMissionControl(mission, target, gameData) {
             done = true;
             clearInterval(activeGameTimer);
             activeGameTimer = null;
+            if (crisisTimeoutId) { clearTimeout(crisisTimeoutId); crisisTimeoutId = null; }
             onGameSuccess(mission, target);
             return;
         }
