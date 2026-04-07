@@ -831,11 +831,76 @@ const focusInfoEl = document.getElementById('focus-info');
 
 // Info Card DOM elements
 const infoCard = document.getElementById('planet-info-card');
-const infoName = document.getElementById('info-name');
-const infoType = document.getElementById('info-type');
-const infoFact = document.getElementById('info-fact');
-const infoWow = document.getElementById('info-wow');
 const launchBtn = document.getElementById('launch-btn');
+
+function renderCard(name) {
+    const data = celestialFacts[name] || {
+        type: 'Celestial Body', emoji: '⭐',
+        fact: 'A fascinating object in our solar system.',
+        ministats: [], statPills: [], wowStrip: '',
+        learn: [], explore: {}
+    };
+
+    document.getElementById('info-emoji').textContent = data.emoji || '⭐';
+    document.getElementById('info-name').textContent = name === 'Sun' ? '☀ Sun' : name;
+    document.getElementById('info-type').textContent = data.type;
+    document.getElementById('info-ministats').innerHTML =
+        (data.ministats || []).map(s => `<span class="mini-stat">${s}</span>`).join('');
+    document.getElementById('info-fact').innerHTML = data.fact;
+    document.getElementById('info-statpills').innerHTML =
+        (data.statPills || []).map(s => `<div class="stat-pill">${s}</div>`).join('');
+    document.getElementById('info-wow').innerHTML = data.wowStrip || data.wow || '';
+    document.getElementById('info-questions').innerHTML =
+        (data.learn || []).map(q => `
+            <div class="q-card ${q.cls}">
+                <div class="q-header">
+                    <span class="q-label">${q.q}</span>
+                    <span class="q-chevron">▼</span>
+                </div>
+                <div class="q-body">${q.a}</div>
+            </div>
+        `).join('');
+
+    const explore = data.explore || {};
+    document.getElementById('info-mission-name').textContent = explore.mission || '';
+    document.getElementById('info-mission-discovery').innerHTML = explore.discovery || '';
+    document.getElementById('info-scale').innerHTML = explore.scale || '';
+    document.getElementById('info-whatif').innerHTML = explore.whatif || '';
+
+    if (name === 'Earth' || name === 'Sun') {
+        launchBtn.classList.add('hidden');
+    } else {
+        const missions = missionData[name];
+        launchBtn.textContent = missions && missions.length > 1
+            ? `🚀 Choose Mission (${missions.length})`
+            : `🚀 Launch Mission`;
+        launchBtn.classList.remove('hidden');
+    }
+
+    switchCardTab('overview');
+    infoCard.classList.remove('hidden');
+}
+
+function switchCardTab(tabName) {
+    document.querySelectorAll('#planet-info-card .tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('#card-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+    const panel = document.getElementById('tab-' + tabName);
+    const btn = document.querySelector(`#card-tabs [data-tab="${tabName}"]`);
+    if (panel) panel.classList.add('active');
+    if (btn) btn.classList.add('active');
+}
+
+// Delegated tab switching
+document.getElementById('card-tabs').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (btn) switchCardTab(btn.dataset.tab);
+});
+
+// Delegated question expand/collapse
+document.getElementById('tab-learn').addEventListener('click', e => {
+    const card = e.target.closest('.q-card');
+    if (card) card.classList.toggle('open');
+});
 
 function focusOn(meshEntry) {
     lockedTarget = meshEntry;
@@ -848,21 +913,7 @@ function focusOn(meshEntry) {
         focusInfoEl.style.opacity = '1';
     }
 
-    // Populate and show the info card
-    const factData = celestialFacts[meshEntry.name] || { type: 'Celestial Body', fact: 'A fascinating object.', gravity: '--', day: '--', year: '--', temp: '--', details: 'Radius: Unknown' };
-    infoName.textContent = meshEntry.name === 'Sun' ? '☀ Sun' : meshEntry.name;
-    infoType.textContent = factData.type;
-    infoFact.textContent = factData.fact;
-    infoWow.textContent = factData.wow || '';
-    infoCard.classList.remove('hidden');
-
-    if (meshEntry.name === 'Earth' || meshEntry.name === 'Sun') {
-        launchBtn.classList.add('hidden');
-    } else {
-        const missions = missionData[meshEntry.name];
-        launchBtn.textContent = missions && missions.length > 1 ? `🚀 Choose Mission (${missions.length})` : `🚀 Launch Mission`;
-        launchBtn.classList.remove('hidden');
-    }
+    renderCard(meshEntry.name);
 }
 
 const activeRockets = [];
