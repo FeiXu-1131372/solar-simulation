@@ -157,5 +157,73 @@
         <div id="arr-funfact" class="arr-funfact"></div>
         <button id="arr-close" class="arr-close">Keep Exploring! 🚀</button>
     </div>
+
+    <!-- Mission Mini-Game Overlay -->
+    <div id="mission-game-overlay" class="mission-overlay hidden">
+        <div class="mission-overlay-header">
+            <span id="mg-mission-label"></span>
+            <span id="mg-type-badge" class="mg-type-badge"></span>
+        </div>
+
+        <!-- Gauntlet section -->
+        <div id="mg-gauntlet" class="mg-section hidden">
+            <div class="stage-track" id="mg-stage-track"></div>
+            <div id="mg-stage-title" class="mg-stage-title"></div>
+            <p id="mg-stage-prompt" class="mg-stage-prompt"></p>
+            <div id="mg-timing-wrap" class="mg-timing-wrap hidden">
+                <div class="mg-bar-track">
+                    <div id="mg-bar-zone" class="mg-bar-zone"></div>
+                    <div id="mg-bar-needle" class="mg-bar-needle"></div>
+                </div>
+                <button id="mg-fire-btn" class="mg-fire-btn">🔥 FIRE!</button>
+            </div>
+            <div id="mg-choice-wrap" class="mg-choice-wrap hidden">
+                <div id="mg-choices" class="mg-choices"></div>
+            </div>
+            <div id="mg-tap-wrap" class="mg-tap-wrap hidden">
+                <div id="mg-tap-count" class="mg-tap-count">0/8</div>
+                <button id="mg-tap-btn" class="mg-tap-btn">👆 TAP!</button>
+            </div>
+            <div class="mg-timer-row">
+                <div class="mg-timer-bar"><div id="mg-timer-fill" class="mg-timer-fill"></div></div>
+                <span id="mg-timer-text" class="mg-timer-text"></span>
+            </div>
+        </div>
+
+        <!-- Hazard Run section -->
+        <div id="mg-hazard" class="mg-section hidden">
+            <canvas id="mg-canvas" width="370" height="170"></canvas>
+            <div class="mg-lives-row">
+                <span class="mg-lives-label">Lives:</span>
+                <span id="mg-lives"></span>
+                <span id="mg-hazard-timer" class="mg-hazard-timer"></span>
+            </div>
+            <p class="mg-hazard-hint">Press ↑↓ or tap top/bottom half to dodge</p>
+        </div>
+
+        <!-- Mission Control section -->
+        <div id="mg-control" class="mg-section hidden">
+            <p class="mg-control-intro">Click a system when it flashes to boost it!</p>
+            <div id="mg-systems-grid" class="mg-systems-grid"></div>
+            <div id="mg-crisis-alert" class="mg-crisis-alert hidden"></div>
+            <div class="mg-timer-row">
+                <div class="mg-timer-bar"><div id="mg-control-timer-fill" class="mg-timer-fill"></div></div>
+                <span id="mg-control-timer-text" class="mg-timer-text"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Lost Panel -->
+    <div id="mission-lost-panel" class="mission-lost hidden">
+        <div class="ml-explosion">💥</div>
+        <div class="ml-title">Mission Lost</div>
+        <div id="ml-mission-sub" class="ml-sub"></div>
+        <div id="ml-reason" class="ml-reason"></div>
+        <div id="ml-real-fact" class="ml-real-fact"></div>
+        <div class="ml-btn-row">
+            <button id="ml-relaunch-btn" class="ml-relaunch-btn">🚀 Relaunch Mission</button>
+            <button id="ml-close-btn" class="ml-close-btn">✕ Close</button>
+        </div>
+    </div>
 </body>
 </html>
