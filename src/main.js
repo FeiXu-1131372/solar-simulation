@@ -685,6 +685,7 @@ const galaxyDiscPlane = new THREE.Mesh(
 galaxyDiscPlane.position.copy(GCENTER);
 galaxyDiscPlane.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), GNORMAL);
 scene.add(galaxyDiscPlane);
+const galaxyObjects = [galaxyDiscPlane];
 
 // Galactic centre glow
 const galacticCentreSprite = new THREE.Sprite(new THREE.SpriteMaterial({
@@ -700,6 +701,7 @@ const galacticCentreSprite = new THREE.Sprite(new THREE.SpriteMaterial({
 galacticCentreSprite.position.copy(GCENTER);
 galacticCentreSprite.scale.set(6000, 6000, 1);
 scene.add(galacticCentreSprite);
+galaxyObjects.push(galacticCentreSprite);
 
 // Soft galaxy-plane haze (unresolved starlight glow)
 const hazePlane = new THREE.Mesh(
@@ -712,6 +714,7 @@ const hazePlane = new THREE.Mesh(
 hazePlane.position.copy(GCENTER);
 hazePlane.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), GNORMAL);
 scene.add(hazePlane);
+galaxyObjects.push(hazePlane);
 
 // Sun label
 function createLabel(text, isLarge = false) {
@@ -1160,6 +1163,15 @@ document.getElementById('reset-pos').addEventListener('click', () => {
     if (infoCard) infoCard.classList.add('hidden');
     controls.target.set(0, 0, 0);
     camera.position.set(0, 800, 400);
+});
+
+let galaxyVisible = true;
+const toggleGalaxyBtn = document.getElementById('toggle-galaxy-btn');
+toggleGalaxyBtn.addEventListener('click', () => {
+    galaxyVisible = !galaxyVisible;
+    galaxyObjects.forEach(o => { o.visible = galaxyVisible; });
+    toggleGalaxyBtn.textContent = galaxyVisible ? '🌌 Hide Galaxy' : '🌌 Show Galaxy';
+    toggleGalaxyBtn.classList.toggle('secondary', !galaxyVisible);
 });
 
 const galaxyBtn = document.getElementById('galaxy-view-btn');
