@@ -146,7 +146,23 @@ const celestialFacts = {
         year: '27.3 Earth Days',
         temp: '-183°C night / 127°C day',
         details: 'Radius: 1,737 km • Drifts 3.8 cm/year from Earth',
-        wow: '🌊 The Moon controls Earth\'s ocean tides! Imagine the whole ocean being pulled around by the Moon\'s gravity!'
+        wow: '🌊 The Moon controls Earth\'s ocean tides! Imagine the whole ocean being pulled around by the Moon\'s gravity!',
+        emoji: '🌕',
+        ministats: ['Orbits Earth', '27.3-day orbit', '384,400 km away'],
+        statPills: ['🌊 Controls Earth\'s tides', '🌡️ −183°C to 127°C', '↔️ Drifting 3.8 cm/yr', '🚶 6 human landings', '🔄 Same face always'],
+        wowStrip: 'Billions of years ago, the Moon was <strong>10× closer to Earth</strong> — tides were 1,000× stronger, and a day on Earth was only 6 hours long! The Moon\'s tidal drag has been slowly braking Earth\'s spin ever since.',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why does the Moon control Earth\'s ocean tides?', a: 'The Moon\'s gravity pulls on Earth\'s water, creating a bulge on the side closest to the Moon. Surprisingly, there\'s also a bulge on the <em>opposite</em> side — that water is being "left behind" as Earth gets pulled toward the Moon. As Earth rotates, these two bulges sweep around, creating <strong>two high tides per day</strong> at most locations.' },
+            { cls: 'q-chem', q: '🧪 What is the Moon made of — and where did it come from?', a: 'The Moon\'s crust is rich in oxygen, silicon, magnesium, and aluminium — similar to Earth\'s mantle. Scientists think a <strong>Mars-sized body called "Theia"</strong> smashed into early Earth 4.5 billion years ago. The blast sent material into orbit, which clumped into the Moon. That\'s why Moon rocks look nearly identical to Earth\'s mantle rocks!' },
+            { cls: 'q-astro', q: '🔭 Why do we always see the same side of the Moon?', a: 'This is called <em>synchronous rotation</em> — the Moon takes exactly as long to spin once (27.3 days) as it takes to orbit Earth (27.3 days). This isn\'t a coincidence: <strong>Earth\'s gravity slowed the Moon\'s spin</strong> until they matched, billions of years ago. The same thing happens to most large moons around their planets.' },
+            { cls: 'q-life', q: '🌱 Could humans live on the Moon permanently?', a: 'Challenging but possible! No atmosphere (need pressurised habitat), extreme temperature swings, radiation. But there\'s <strong>water ice at the poles</strong>, which can be split into hydrogen (rocket fuel) and oxygen (breathable air). NASA\'s Artemis programme is working on lunar bases — the Moon could be humanity\'s first permanent off-Earth home!' },
+        ],
+        explore: {
+            mission: 'Apollo 11 (NASA, July 1969) — First humans on the Moon',
+            discovery: 'Neil Armstrong and Buzz Aldrin spent 2.5 hours on the surface, collecting <strong>21.5 kg of Moon rocks</strong>. Analysis showed the Moon formed from Earth\'s own material after a giant collision. They left laser reflectors we still bounce lasers off today to measure the exact Earth-Moon distance!',
+            scale: 'The Moon is <strong>384,400 km away</strong>. All 8 planets in the solar system could fit in the gap between Earth and the Moon with room to spare — the planets lined up total about 380,000 km, just inside the gap!',
+            whatif: '<strong>What if Earth had no Moon?</strong> Almost no tides. Earth\'s axis would wobble wildly (0°–85°) over millions of years, causing climate chaos. Days would be shorter (6–8 hours). Without stable climate, complex life might never have evolved. We may owe our very existence to that rocky companion!',
+        },
     },
     'Mars': {
         type: '🔴 Terrestrial Planet',
@@ -156,7 +172,23 @@ const celestialFacts = {
         year: '687 Earth Days',
         temp: '-63°C average',
         details: '2 Moons • Radius: 3,389 km',
-        wow: '🌋 Olympus Mons volcano is so tall (22km!) it pokes above most of the atmosphere — 3x higher than Mount Everest!'
+        wow: '🌋 Olympus Mons volcano is so tall (22km!) it pokes above most of the atmosphere — 3x higher than Mount Everest!',
+        emoji: '🔴',
+        ministats: ['2 moons', '687-day orbit', '4th from Sun'],
+        statPills: ['🔴 Iron oxide surface (rust!)', '🌡️ −63°C average', '⏱️ 24.6-hr day', '🏔️ 22 km tallest volcano', '💨 Thin CO₂ atmosphere'],
+        wowStrip: 'Olympus Mons is so tall (22 km!) that if you stood at its base, <strong>the summit would be below the horizon</strong> — the mountain is wider than the curvature of Mars, so you can\'t see the top from the bottom!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why is gravity on Mars so much weaker than Earth?', a: 'Gravity depends on <strong>mass</strong>. Mars has only about 10.7% of Earth\'s mass — much smaller and lighter. Less mass = weaker gravitational pull. On Mars, you\'d weigh about <em>38% of your Earth weight</em>. A 50 kg person feels like only 19 kg — you could jump nearly 3× higher!' },
+            { cls: 'q-chem', q: '🧪 Why is Mars red? What\'s iron oxide?', a: 'Mars is covered in <strong>iron oxide (Fe₂O₃)</strong> — the same thing as rust on an old bike! Billions of years ago, Mars had liquid water. Water + iron minerals + oxygen reacted to form rust all over the surface. When Martian winds blow, red dust fills the sky — even making sunsets appear <em>blue</em> (dust scatters light differently).' },
+            { cls: 'q-astro', q: '🔭 Why is Olympus Mons 3× taller than Everest?', a: 'On Earth, tectonic plates move — so a volcanic hotspot creates a chain of mountains (like Hawaii). On Mars, <strong>the plates don\'t move</strong>. The same volcanic hotspot kept erupting in the same spot for billions of years, piling lava higher and higher. Result: Olympus Mons at 22 km — 3× taller than Everest, wider than Arizona.' },
+            { cls: 'q-life', q: '🌱 Did Mars ever have water — and could life have existed?', a: 'Yes! Mars has dried-up riverbeds, ancient lake basins, and polar ice caps of water and CO₂ ice. About <strong>3–4 billion years ago</strong>, Mars had liquid water on its surface. NASA\'s Perseverance rover is hunting for ancient microbial fossils in old lake sediments right now. Whether life started there — we\'re still searching!' },
+        ],
+        explore: {
+            mission: 'Perseverance Rover (NASA, landed Feb 18, 2021)',
+            discovery: 'Perseverance found that Mars had a <strong>long-lasting lake system</strong> in Jezero Crater. It also flew Ingenuity — the <em>first powered aircraft ever flown on another planet</em>! Ingenuity made over 70 flights before retiring in January 2024.',
+            scale: 'Mars is about <strong>half the width of Earth</strong>. If Earth were a basketball, Mars would be a tennis ball. But Mars has almost the same <em>land surface area</em> as Earth — because Earth is 71% ocean. Same land area, half the diameter!',
+            whatif: '<strong>What if you sneezed on Mars?</strong> The CO₂ air is unbreathable, it\'s freezing, and intense UV radiation would hit you instantly — there\'s no ozone layer. Even stepping outside requires a full spacesuit. Your sneeze cloud would drift far in the thin air, then settle as red dust.',
+        },
     },
     'Phobos': {
         type: '🪨 Martian Moon',
@@ -166,7 +198,23 @@ const celestialFacts = {
         year: '8 Hours',
         temp: '-40°C',
         details: 'Radius: ~11 km (size of a city!)',
-        wow: '💥 Phobos is slowly spiraling toward Mars — in 50 million years it\'ll shatter into a ring like Saturn\'s!'
+        wow: '💥 Phobos is slowly spiraling toward Mars — in 50 million years it\'ll shatter into a ring like Saturn\'s!',
+        emoji: '🪨',
+        ministats: ['Mars\'s inner moon', '8-hour orbit', 'Doomed in ~50 million years'],
+        statPills: ['⏱️ 8-hour orbit', '📏 26×22×18 km', '💥 Spiraling toward Mars', '🕳️ 9 km wide crater', '🏙️ City-sized moon'],
+        wowStrip: 'Phobos is so close to Mars that it orbits faster than Mars rotates — from the Martian surface, it <strong>rises in the west and sets in the east</strong>, twice a day! Only Phobos and Deimos do this in our solar system.',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why is Phobos spiraling toward Mars?', a: '<em>Tidal forces</em>! Mars\'s gravity stretches Phobos slightly, creating a bulge. The interaction gradually slows Phobos down, stealing its orbital energy. As it loses energy, it sinks closer. In <strong>~50 million years</strong>, it\'ll get so close that tidal forces rip it apart — creating a ring around Mars!' },
+            { cls: 'q-chem', q: '🧪 What is Phobos made of?', a: 'Phobos appears to be made of <em>carbonaceous chondrite</em> — dark, carbon-rich rock similar to certain asteroids. It reflects only <strong>7% of light</strong> (darker than coal!). Its density is so low it might be 25–35% empty space — like a rubble pile barely held together by its own weak gravity.' },
+            { cls: 'q-astro', q: '🔭 How big is the giant crater on Phobos?', a: 'The <strong>Stickney crater</strong> is 9 km wide — on a moon only 26 km across! The impact nearly shattered Phobos entirely. Strange grooves radiate across the surface from Stickney — scientists think these are <em>fractures</em> caused by the same massive impact, spreading across Phobos like cracks on a car windshield.' },
+            { cls: 'q-life', q: '🌱 Could Phobos be useful as a space base?', a: 'Yes! Scientists have proposed using Phobos as a <strong>staging post for Mars exploration</strong>. Astronauts on Phobos could control Mars rovers in real-time (no signal delay — just 6,000 km away). Its almost-zero gravity makes landing and leaving very easy. It could serve as a fuel depot for Mars missions.' },
+        ],
+        explore: {
+            mission: 'MMX — Martian Moons eXploration (JAXA, launching 2026, arrives 2027)',
+            discovery: 'No spacecraft has landed on Phobos yet. MMX will be the first — collecting surface samples and returning them to Earth in 2031. Previous Mars orbiters (MRO, Mars Express) photographed it in detail, revealing its low density and strange groove system.',
+            scale: 'Phobos is about <strong>26 km long</strong> — roughly the size of a medium city. If it floated above Paris, it would stretch from one side to the other. Its gravity is so weak you could throw a ball into orbit around it with your arm!',
+            whatif: '<strong>What happens when Phobos breaks apart in 50 million years?</strong> Tidal forces shatter it into millions of pieces that spread into a ring around Mars. For hundreds of millions of years, Mars would have spectacular rings — visible from Earth through a telescope — before slowly raining down onto the surface.',
+        },
     },
     'Deimos': {
         type: '🪨 Martian Moon',
@@ -176,7 +224,23 @@ const celestialFacts = {
         year: '30.3 Hours',
         temp: '-40°C',
         details: 'Radius: ~6.2 km (size of a mountain!)',
-        wow: '⭐ From Mars, Deimos looks like a bright star — you\'d need binoculars to tell it\'s actually a moon!'
+        wow: '⭐ From Mars, Deimos looks like a bright star — you\'d need binoculars to tell it\'s actually a moon!',
+        emoji: '🪨',
+        ministats: ['Mars\'s outer moon', '30-hour orbit', 'Slowly drifting away'],
+        statPills: ['⏱️ 30-hour orbit', '📏 15×12×11 km', '⭐ Looks like a star from Mars', '🥔 Potato-shaped', '🔭 Discovered 1877'],
+        wowStrip: 'From Mars\'s surface, Deimos looks almost exactly like a <strong>bright star</strong> — so small it doesn\'t appear as a disc. Ancient Martian astronomers (if they existed) might never have realised it was a moon!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why might Deimos escape from Mars entirely?', a: 'Unlike Phobos (spiraling IN), Deimos is slowly spiraling <strong>outward</strong>. Tidal interactions gradually pump energy into Deimos\'s orbit, pushing it further away — the same process that makes our Moon drift from Earth. Eventually, Deimos could escape Mars\'s gravity entirely and become a tiny asteroid orbiting the Sun.' },
+            { cls: 'q-chem', q: '🧪 What is Deimos made of?', a: 'Like Phobos, Deimos appears to be made of dark, <em>carbonaceous</em> material — reflecting only about 7% of sunlight, like a lump of charcoal. Its surface is <strong>smoother than Phobos\'s</strong> — ancient craters have been gradually filled by dust sliding down crater walls over billions of years.' },
+            { cls: 'q-astro', q: '🔭 Where did Mars\'s moons come from?', a: 'Two main theories: <strong>(1) captured asteroids</strong> from the asteroid belt, or (2) debris from a giant impact on Mars. Their dark composition matches carbonaceous asteroids, supporting capture. But their near-circular orbits are strange for captured objects — most would end up with wild elliptical orbits. The origin is still debated!' },
+            { cls: 'q-life', q: '🌱 What would it be like to visit Deimos?', a: 'Deimos\'s gravity is so weak (0.003 m/s²) that you could <strong>escape it with a running jump</strong> — every step would send you floating. A 70 kg person would weigh just 0.2 kg. You\'d need to anchor yourself with tethers constantly. It would feel more like spacewalking than walking on a world.' },
+        ],
+        explore: {
+            mission: 'MMX — Martian Moons eXploration (JAXA, launching 2026)',
+            discovery: 'Deimos has never had a dedicated mission visit it. Mars Reconnaissance Orbiter photographed it in detail in 2009, confirming its smooth surface. MMX will observe Deimos on its way to Phobos. Most of what we know comes from remote observation.',
+            scale: 'Deimos is only about <strong>15 km long</strong> — smaller than Manhattan island (21 km). Its escape velocity is just 5.6 m/s — slower than a baseball pitch. Throw hard and you\'re sending the ball into space forever!',
+            whatif: '<strong>What if you tried to throw a ball on Deimos?</strong> Escape velocity is only 5.6 metres per second — about as fast as a slow jog. Any throw harder than that sends the ball into space forever. If you jumped too hard, so would you! Every movement must be very, very gentle.',
+        },
     },
     'Jupiter': {
         type: '🪐 Gas Giant',
