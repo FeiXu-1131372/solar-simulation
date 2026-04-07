@@ -463,13 +463,13 @@ starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
 starGeo.setAttribute('color',    new THREE.BufferAttribute(starCol, 3));
 scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
     map: starSpriteTex,
-    size: 3.5,
+    size: 1.5,           // fixed pixel size — no blob scaling at any zoom level
     vertexColors: true,
     transparent: true,
-    opacity: 0.92,
+    opacity: 0.88,
     alphaTest: 0.01,
     depthWrite: false,
-    sizeAttenuation: true,
+    sizeAttenuation: false,  // stars are "infinitely far" — constant apparent size is correct
 })));
 
 // --- TEXTURE LOADER ---
@@ -542,29 +542,30 @@ function createGalaxyTexture(size = 2048) {
     const sl = R * 0.30;
     const ARMS = 4;
 
-    // Shared spiral placement — returns {x, y, normR, inArm} for one star
-    function placeStar(armChanceFn) {
+    // Place one star. armOnly=true forces it onto a spiral arm (no inter-arm scatter).
+    // scatter controls arm width in radians (smaller = tighter, more defined arms).
+    function placeStar(armOnly, scatter) {
         const r     = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
         const normR = r / R;
         const arm   = Math.floor(Math.random() * ARMS);
-        const inArm = Math.random() < armChanceFn(normR);
         const logSp = Math.log(r / (R * 0.025) + 1) * 1.65;
-        const scatter = inArm ? 0.22 + normR * 0.45 : Math.PI * 2;
-        const theta = inArm
-            ? (arm / ARMS) * Math.PI * 2 + logSp + (Math.random() - 0.5) * scatter
-            : Math.random() * Math.PI * 2;
-        return { x: cx + r * Math.cos(theta), y: cy + r * Math.sin(theta), normR, inArm };
+        // Inside the core (normR < 0.13) always scatter uniformly — bulge has no arms
+        const inCore = normR < 0.13;
+        const theta  = (!armOnly || inCore)
+            ? Math.random() * Math.PI * 2
+            : (arm / ARMS) * Math.PI * 2 + logSp + (Math.random() - 0.5) * scatter;
+        return { x: cx + r * Math.cos(theta), y: cy + r * Math.sin(theta), normR, inArm: armOnly && !inCore };
     }
 
     // Draw N pixel-stars into an offscreen ImageData, return the canvas
-    function pixelPass(count, armChanceFn, colorFn) {
+    function pixelPass(count, armOnly, scatter, colorFn) {
         const oc = document.createElement('canvas');
         oc.width = oc.height = size;
         const octx = oc.getContext('2d');
         const img  = octx.getImageData(0, 0, size, size);
         const d    = img.data;
         for (let i = 0; i < count; i++) {
-            const s = placeStar(armChanceFn);
+            const s = placeStar(armOnly, scatter);
             const col = colorFn(s.normR, s.inArm);
             if (!col) continue;
             const sx = Math.round(s.x), sy = Math.round(s.y);
@@ -580,67 +581,63 @@ function createGalaxyTexture(size = 2048) {
     }
 
     // Composite an offscreen canvas onto ctx with optional blur (CSS filter, one-shot)
-    function blit(src, blurPx, alpha = 1) {
+    function blit(src, blurPx) {
         ctx.save();
-        ctx.globalAlpha = alpha;
         ctx.globalCompositeOperation = 'lighter';
         if (blurPx > 0) ctx.filter = `blur(${blurPx}px)`;
         ctx.drawImage(src, 0, 0);
         ctx.restore();
     }
 
-    // ── Main canvas ──────────────────────────────────────────────────────────
+    // ── Main canvas ─────────────────────────────────────────────────────────
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = size;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, size, size);
 
-    // ── Pass 1 · Diffuse haze — heavily blurred (≈18 px) ───────────────────
-    // Thousands of dim stars smeared into a soft glowing cloud — gives the
-    // galaxy its overall luminous shape and warm/cool colour gradient.
+    // ── Pass 1 · Arm haze — arm-only, heavily blurred ───────────────────────
+    // Stars ONLY placed on spiral arms, then blurred ~16px. The blur smears
+    // arm stars into a continuous soft glow that follows the spiral shape.
+    // Inter-arm space stays dark → high contrast spiral structure.
     blit(pixelPass(
-        120000,
-        nr => 0.40 * Math.exp(-nr * 2.2) + 0.22,
+        100000, true, 0.18,          // arm-only, tight scatter (≈10°)
         (nr, arm) => {
-            const a = 28 + Math.random() * 42;
-            if (nr < 0.18) return [255, 210, 125, a + 38];
-            if (arm)       return [ 95, 140, 248, a];
-            return [168, 175, 218, a - 6];
+            if (nr < 0.13) return [255, 215, 130, 22 + Math.random() * 30]; // core: warm
+            if (!arm)       return null;
+            return [80, 125, 245, 18 + Math.random() * 25];                  // arm: dim blue
         }
-    ), Math.round(size * 0.009));
+    ), Math.round(size * 0.008));
 
-    // ── Pass 2 · Arm glow — medium blur (≈5 px) ────────────────────────────
-    // Only arm stars, blurred just enough to bleed into each other and create
-    // a continuous glowing band along each spiral arm.
+    // ── Pass 2 · Arm glow — arm-only, medium blur ───────────────────────────
+    // Brighter arm stars with tighter scatter and less blur → the spiral arms
+    // light up as distinct glowing bands (the dominant visual feature).
     blit(pixelPass(
-        80000,
-        nr => 0.82 - nr * 0.28,
+        90000, true, 0.10,           // very tight scatter (≈6°) = narrow sharp arms
         (nr, arm) => {
-            if (!arm) return null;
-            if (nr < 0.18) return [255, 195,  80, 95 + Math.random() * 95];
-            return [105, 155, 255, 85 + Math.random() * 90];
+            if (nr < 0.13) return [255, 200, 80, 60 + Math.random() * 80];  // core: orange
+            if (!arm)       return null;
+            return [95, 150, 255, 75 + Math.random() * 95];                  // arm: bright blue
         }
-    ), Math.round(size * 0.0025));
+    ), Math.round(size * 0.0022));
 
-    // ── Pass 3 · Sharp star field — no blur ────────────────────────────────
-    // Crisp pixel stars on top for fine texture and density variation.
+    // ── Pass 3 · Sharp detail — 95% arm, no blur ────────────────────────────
+    // Crisp unblurred pixel stars for fine detail. 95% land in arms so the
+    // inter-arm space is nearly empty, maximising contrast.
     blit(pixelPass(
-        130000,
-        nr => 0.58 - nr * 0.20,
+        110000, true, 0.13,          // arm-only sharp (≈7°)
         (nr, arm) => {
-            if (arm && nr > 0.10) {
-                return [115 + Math.random()*140, 162 + Math.random()*93, 255, 130 + Math.random()*110];
+            if (nr < 0.13) {
+                return [255, 218 + nr * 150, 128 + nr * 200, 90 + Math.random() * 90];
             }
-            if (nr < 0.22) return [255, 218 + nr*120, 132 + nr*180, 115 + Math.random()*95];
-            const c = 188 + Math.random() * 67;
-            return [c, c * 0.93, c * 0.85, 88 + Math.random() * 108];
+            if (!arm) return null;
+            return [110 + Math.random()*145, 158 + Math.random()*97, 255, 115 + Math.random()*120];
         }
     ), 0);
 
     // ── Pass 4 · Round hero stars — arc() circles, zero square artefacts ───
     ctx.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 3200; i++) {
-        const s  = placeStar(nr => 0.60 - nr * 0.18);
+        const s  = placeStar(true, 0.15);
         const sz = 1.0 + Math.random() * 3.2;
         const gs = sz * (2.2 + Math.random() * 2.0);
         let rv, gv, bv;
@@ -701,7 +698,7 @@ const galacticCentreSprite = new THREE.Sprite(new THREE.SpriteMaterial({
     blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
 }));
 galacticCentreSprite.position.copy(GCENTER);
-galacticCentreSprite.scale.set(14000, 14000, 1);
+galacticCentreSprite.scale.set(6000, 6000, 1);
 scene.add(galacticCentreSprite);
 
 // Soft galaxy-plane haze (unresolved starlight glow)
