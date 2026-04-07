@@ -2344,41 +2344,52 @@ const SOLAR_LOOK  = new THREE.Vector3(0, 0, 0);
 
 const toggleBtn = document.getElementById('toggle-sync');
 const pauseBtn = document.getElementById('pause-anim');
-const statusGroup = document.getElementById('status-group');
-const statusText = document.getElementById('sync-status-text');
 const speedSlider = document.getElementById('speed-slider');
 const speedVal = document.getElementById('speed-val');
 const toggleUiBtn = document.getElementById('toggle-ui-btn');
 const uiContainer = document.getElementById('ui-container');
+const cpModeTitle = document.getElementById('cp-mode-title');
 
-statusGroup.classList.add('status-active');
-statusText.innerText = 'Synchronous Rotation: ACTIVE';
+// Sync a chip button + its header status pill to a boolean state.
+function updateChip(chipId, pillId, isActive, activeChipClass, activeDotColor, activeLabel, inactiveLabel, activePillClass = 'pill-on') {
+    const chip = document.getElementById(chipId);
+    const pill = document.getElementById(pillId);
+    if (chip) {
+        chip.className = `cp-chip ${isActive ? activeChipClass : 'chip-off'}`;
+        chip.innerHTML = `<span class="chip-dot" style="background:${isActive ? activeDotColor : '#475569'}"></span> ${isActive ? activeLabel : inactiveLabel}`;
+    }
+    if (pill) pill.className = `cp-pill ${isActive ? activePillClass : 'pill-off'}`;
+}
 
 toggleUiBtn.addEventListener('click', () => {
     uiContainer.classList.toggle('hidden');
 });
 
+document.getElementById('toggle-ui-expand').addEventListener('click', () => {
+    const isCollapsed = uiContainer.classList.toggle('collapsed');
+    document.getElementById('toggle-ui-expand').textContent = isCollapsed ? '▴' : '▾';
+});
+
 speedSlider.addEventListener('input', (e) => {
     simSpeed = parseFloat(e.target.value);
-    speedVal.innerText = simSpeed.toFixed(1);
+    speedVal.innerText = simSpeed.toFixed(2);
 });
 
 toggleBtn.addEventListener('click', () => {
     isSynchronous = !isSynchronous;
-    statusGroup.classList.toggle('status-active', isSynchronous);
-    statusText.innerText = `Synchronous Rotation: ${isSynchronous ? 'ACTIVE' : 'OFF'}`;
+    updateChip('toggle-sync', 'pill-sync', isSynchronous, 'chip-on', '#38bdf8', 'Sync ON', 'Sync OFF');
 });
 
 const toggleLabelsBtn = document.getElementById('toggle-labels');
 toggleLabelsBtn.addEventListener('click', () => {
     showLabels = !showLabels;
     labelRenderer.domElement.style.display = showLabels ? 'block' : 'none';
-    toggleLabelsBtn.innerText = showLabels ? 'Hide Labels' : 'Show Labels';
+    updateChip('toggle-labels', 'pill-labels', showLabels, 'chip-on', '#38bdf8', 'Labels', 'Labels');
 });
 
 pauseBtn.addEventListener('click', () => {
     isPaused = !isPaused;
-    pauseBtn.innerText = isPaused ? 'Resume Simulation' : 'Pause Simulation';
+    updateChip('pause-anim', 'pill-pause', isPaused, 'chip-pause-on', '#fbbf24', 'Paused', 'Running', 'pill-pause-on');
 });
 
 document.getElementById('reset-pos').addEventListener('click', () => {
@@ -2388,7 +2399,7 @@ document.getElementById('reset-pos').addEventListener('click', () => {
     lockedTarget = null;
     isGalaxyView = false;
     galaxyTransition = null;
-    if (galaxyBtn) galaxyBtn.textContent = '🌌 Galaxy View';
+    cpModeTitle.textContent = '🌌 Solar System';
     if (focusInfoEl) focusInfoEl.style.opacity = '0.6';
     if (focusInfoEl) focusInfoEl.textContent = '📍 Focused: Solar System';
     if (infoCard) infoCard.classList.add('hidden');
@@ -2401,14 +2412,13 @@ const toggleGalaxyBtn = document.getElementById('toggle-galaxy-btn');
 toggleGalaxyBtn.addEventListener('click', () => {
     galaxyVisible = !galaxyVisible;
     galaxyObjects.forEach(o => { o.visible = galaxyVisible; });
-    toggleGalaxyBtn.textContent = galaxyVisible ? '🌌 Hide Galaxy' : '🌌 Show Galaxy';
-    toggleGalaxyBtn.classList.toggle('secondary', !galaxyVisible);
+    updateChip('toggle-galaxy-btn', 'pill-galaxy', galaxyVisible, 'chip-galaxy', '#a78bfa', 'Galaxy', 'Galaxy', 'pill-galaxy-on');
 });
 
 const galaxyBtn = document.getElementById('galaxy-view-btn');
 galaxyBtn.addEventListener('click', () => {
     isGalaxyView = !isGalaxyView;
-    galaxyBtn.textContent = isGalaxyView ? '🪐 Solar System' : '🌌 Galaxy View';
+    cpModeTitle.textContent = isGalaxyView ? '🔭 Galaxy View' : '🌌 Solar System';
     if (isGalaxyView) {
         galaxyTransition = { cam: GALAXY_CAM.clone(), tgt: GCENTER.clone() };
         lockedTarget = null;

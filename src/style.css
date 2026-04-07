@@ -1198,3 +1198,286 @@ button:active {
 }
 .arr-close:hover { opacity: 0.88; transform: translateY(-1px); }
 .arr-close:active { transform: translateY(0); }
+
+/* ======================================================
+   REDESIGNED CONTROL PANEL
+   ====================================================== */
+
+/* Header — always visible */
+.cp-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+}
+
+.cp-mode-title {
+    font-size: 13px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #38bdf8 0%, #2dd4bf 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Status pills row */
+.cp-pills {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.cp-pill {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    border: 1px solid;
+    flex-shrink: 0;
+    cursor: default;
+    transition: all 0.2s ease;
+}
+
+.cp-pill.pill-on {
+    background: rgba(56, 189, 248, 0.18);
+    border-color: rgba(56, 189, 248, 0.4);
+    color: #38bdf8;
+}
+
+.cp-pill.pill-off {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #475569;
+    opacity: 0.45;
+}
+
+.cp-pill.pill-pause-on {
+    background: rgba(251, 191, 36, 0.15);
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fbbf24;
+}
+
+.cp-pill.pill-galaxy-on {
+    background: rgba(139, 92, 246, 0.18);
+    border-color: rgba(139, 92, 246, 0.4);
+    color: #a78bfa;
+}
+
+/* Expand / collapse toggle */
+.cp-expand-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    box-shadow: none !important;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.cp-expand-btn:hover {
+    background: rgba(255, 255, 255, 0.10) !important;
+    color: #94a3b8;
+    transform: none !important;
+    filter: none !important;
+}
+
+/* Collapsible body */
+.cp-body {
+    padding: 4px 16px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    max-height: 420px;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                padding    0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity    0.25s ease;
+    opacity: 1;
+}
+
+#ui-container.collapsed .cp-body {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+}
+
+/* Section dividers */
+.cp-section-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #334155;
+    margin: 10px 0 6px;
+}
+
+.cp-toggle-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+}
+
+/* Chip toggle buttons */
+.cp-chip {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px !important;
+    border-radius: 8px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    cursor: pointer;
+    white-space: nowrap;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    box-shadow: none !important;
+    transition: filter 0.15s ease, transform 0.1s ease !important;
+}
+.cp-chip:hover  { filter: brightness(1.18) !important; transform: none !important; }
+.cp-chip:active { transform: scale(0.97) !important; }
+
+.chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.chip-on {
+    background: rgba(56, 189, 248, 0.14) !important;
+    border: 1px solid rgba(56, 189, 248, 0.35) !important;
+    color: #38bdf8 !important;
+}
+
+.chip-off {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    color: #475569 !important;
+}
+
+.chip-pause-on {
+    background: rgba(251, 191, 36, 0.12) !important;
+    border: 1px solid rgba(251, 191, 36, 0.3) !important;
+    color: #fbbf24 !important;
+}
+
+.chip-galaxy {
+    background: rgba(139, 92, 246, 0.14) !important;
+    border: 1px solid rgba(139, 92, 246, 0.35) !important;
+    color: #a78bfa !important;
+}
+
+/* Speed slider */
+.cp-slider-wrap { margin: 6px 0 2px; }
+
+.cp-slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.cp-speed-ticks {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0 0;
+}
+
+.cp-speed-ticks span {
+    font-size: 8px;
+    color: #334155;
+}
+
+/* Galaxy view full-width button */
+.cp-view-btn {
+    width: 100%;
+    padding: 8px !important;
+    margin-top: 8px;
+    background: linear-gradient(135deg, #1e1b4b, #312e81) !important;
+    color: #c4b5fd !important;
+    border: 1px solid rgba(139, 92, 246, 0.4) !important;
+    border-radius: 9px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    letter-spacing: 0.02em !important;
+    box-shadow: none !important;
+    display: block;
+    transition: all 0.2s ease !important;
+}
+.cp-view-btn:hover {
+    background: linear-gradient(135deg, #312e81, #4c1d95) !important;
+    border-color: rgba(167, 139, 250, 0.6) !important;
+    color: #ede9fe !important;
+    transform: none !important;
+    box-shadow: 0 0 14px rgba(139, 92, 246, 0.3) !important;
+    filter: none !important;
+}
+
+/* Reset view secondary button */
+.cp-reset-btn {
+    width: 100%;
+    padding: 7px !important;
+    margin-top: 5px;
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: #475569 !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 9px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    box-shadow: none !important;
+    display: block;
+    transition: all 0.2s ease !important;
+}
+.cp-reset-btn:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #94a3b8 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+/* Legend */
+.cp-legend {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cp-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    color: #475569;
+}
+
+.cp-legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}

@@ -17,31 +17,40 @@
     </button>
 
     <div id="ui-container">
-        <h1>Why do we only see one side of the Moon?</h1>
-        <p>The moon exhibits synchronous rotation. This means it rotates on its axis at exactly the same rate it orbits the Earth.</p>
-        
-        <div id="status-group" class="status-badge">
-            <span class="status-indicator"></span>
-            <span id="sync-status-text">Synchronous Rotation: ACTIVE</span>
+        <div class="cp-header">
+            <div class="cp-mode-title" id="cp-mode-title">🌌 Solar System</div>
+            <div class="cp-pills">
+                <div class="cp-pill pill-on"        id="pill-sync"   title="Sync Rotation">⟳</div>
+                <div class="cp-pill pill-off"       id="pill-pause"  title="Paused">⏸</div>
+                <div class="cp-pill pill-on"        id="pill-labels" title="Labels">🏷</div>
+                <div class="cp-pill pill-galaxy-on" id="pill-galaxy" title="Galaxy">🌌</div>
+            </div>
+            <button id="toggle-ui-expand" class="cp-expand-btn" aria-label="Toggle controls">▾</button>
         </div>
-
-        <div class="control-group">
-            <label for="speed-slider">Simulation Speed: <span id="speed-val">0.05</span>x</label>
-            <input type="range" id="speed-slider" min="0" max="0.5" step="0.01" value="0.05" style="width:100%; height:8px; border-radius:4px; appearance:none; background:rgba(255,255,255,0.1); outline:none; margin:10px 0;">
-        </div>
-        
-        <div class="controls">
-            <button id="toggle-sync">Disable Synchronous Rotation</button>
-            <button id="pause-anim">Pause Simulation</button>
-            <button id="toggle-labels">Hide Labels</button>
-            <button id="reset-pos" class="secondary">Reset View</button>
-            <button id="galaxy-view-btn" class="galaxy-btn">🌌 Galaxy View</button>
-            <button id="toggle-galaxy-btn" class="galaxy-btn">🌌 Hide Galaxy</button>
-        </div>
-        
-        <div class="legend">
-            <div class="legend-item"><span class="dot" style="background:#ef4444"></span> Red: Facing Earth</div>
-            <div class="legend-item"><span class="dot" style="background:#4ade80"></span> Green: Dark Side</div>
+        <div class="cp-body">
+            <div class="cp-section-label">Simulation</div>
+            <div class="cp-toggle-row">
+                <button id="toggle-sync"  class="cp-chip chip-on"><span class="chip-dot" style="background:#38bdf8"></span> Sync ON</button>
+                <button id="pause-anim"   class="cp-chip chip-off"><span class="chip-dot" style="background:#475569"></span> Running</button>
+            </div>
+            <div class="cp-slider-wrap">
+                <div class="cp-slider-label">Speed <span id="speed-val">0.05</span>×</div>
+                <input type="range" id="speed-slider" min="0" max="0.5" step="0.01" value="0.05">
+                <div class="cp-speed-ticks">
+                    <span>0</span><span>0.1</span><span>0.25</span><span>0.5×</span>
+                </div>
+            </div>
+            <div class="cp-section-label">View</div>
+            <div class="cp-toggle-row">
+                <button id="toggle-labels"     class="cp-chip chip-on"><span class="chip-dot" style="background:#38bdf8"></span> Labels</button>
+                <button id="toggle-galaxy-btn" class="cp-chip chip-galaxy"><span class="chip-dot" style="background:#a78bfa"></span> Galaxy</button>
+            </div>
+            <button id="galaxy-view-btn" class="cp-view-btn">🌌 Galaxy View &nbsp;↔&nbsp; 🪐 Solar</button>
+            <button id="reset-pos"       class="cp-reset-btn">⟲ Reset View</button>
+            <div class="cp-legend">
+                <div class="cp-legend-item"><span class="cp-legend-dot" style="background:#ef4444"></span> Facing Earth</div>
+                <div class="cp-legend-item"><span class="cp-legend-dot" style="background:#4ade80"></span> Dark Side</div>
+            </div>
         </div>
     </div>
 
