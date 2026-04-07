@@ -254,14 +254,29 @@ const missionData = {
   'Moon': [
     { name:'Apollo 11', emoji:'👨‍🚀', year:'1969', type:'Crewed Lander', status:'historical',
       agency:'NASA', rocket:'Saturn V', color:0xf0c040,
-      steps:['🚀 Saturn V ignites — the most powerful rocket ever built, burning 15 TONNES of fuel every second!','🌕 Three-day cruise to the Moon — Neil, Buzz, and Michael in a capsule the size of a car!','🦅 "The Eagle has landed!" — with only 30 seconds of fuel remaining!','👨‍🚀 Neil Armstrong steps out — 600 million people watch on TV all over the world!'],
-      discovery:'Proved humans can explore other worlds! Brought back 21kg of moon rocks that told us the Moon is 4.5 billion years old.',
-      funFact:'🦅 The Eagle lander\'s computer had just 4KB of memory — your phone has ONE MILLION times more computing power!' },
-    { name:'Artemis III', emoji:'👩‍🚀', year:'Planned 2026', type:'Crewed Lander', status:'planned',
-      agency:'NASA', rocket:'Space Launch System', color:0xff8844,
-      steps:['🚀 Space Launch System — NASA\'s most powerful rocket ever — LAUNCHES!','🛸 Orion spacecraft carries the crew on a 4-day journey to the Moon!','👩‍🚀 First woman and first person of color prepare to step onto the Moon!','🌕 Exploring the lunar South Pole — hunting for ice that could build a Moon base!'],
-      discovery:'Will explore water ice near the Moon\'s South Pole — a critical resource for future permanent Moon bases!',
-      funFact:'👩‍🚀 Artemis III will make history — the first woman and first person of color on the Moon, 50+ years after Apollo!' },
+      steps:['🚀 Saturn V ignites — the most powerful rocket ever built, burning 15 TONNES of fuel every second!','🌕 Three-day cruise to the Moon — Neil, Buzz, and Michael in a capsule the size of a car!','🦅 "The Eagle has landed!" — only 30 seconds of fuel left when they touched down!','👨‍🚀 Neil Armstrong steps out: "One small step for man, one giant leap for mankind!" — 600M people watch live!'],
+      discovery:'Proved humans can walk on another world! Brought back 21kg of moon rocks, revealing the Moon is 4.5 billion years old.',
+      funFact:'🦅 The landing computer had just 4KB of memory and flashed an alarm at landing — but the astronauts landed anyway with 30 seconds of fuel!' },
+    { name:'Artemis I', emoji:'🛸', year:'2022', type:'Uncrewed Test Flight', status:'historical',
+      agency:'NASA', rocket:'Space Launch System', color:0xaaddff,
+      steps:['🚀 SLS — NASA\'s most powerful rocket since Saturn V — lifts off for the first time!','🌕 Orion capsule travels further from Earth than any human-rated spacecraft EVER — 450,000km!','🛸 26 days orbiting the Moon and testing all systems — no crew, but paving the way!','✅ Perfect splashdown in the Pacific — Artemis is GO for crewed missions!'],
+      discovery:'Proved the Space Launch System and Orion capsule are ready to carry astronauts back to the Moon!',
+      funFact:'🌕 Artemis I flew Orion further from Earth than any crewed-capable capsule in history — smashing the Apollo record!' },
+    { name:'Artemis II', emoji:'🧑‍🚀', year:'Planned 2025', type:'Crewed Lunar Flyby', status:'planned',
+      agency:'NASA', rocket:'Space Launch System', color:0x88ccff,
+      steps:['🚀 SLS launches 4 astronauts — the first humans to leave low Earth orbit since Apollo 17 in 1972!','🌕 Flying around the Moon — the first humans to see the far side with their own eyes!','📸 Capturing breathtaking views of Earth and the Moon together from 8,900km above the lunar surface!','🎉 Safe return to Earth — the most important crewed test flight since Apollo!'],
+      discovery:'Will prove SLS + Orion can carry humans safely around the Moon, clearing the way for the Moon landing!',
+      funFact:'🧑‍🚀 The Artemis II crew includes the first woman and first non-American to fly to the Moon — Canadian Jeremy Hansen!' },
+    { name:'Artemis III', emoji:'👩‍🚀', year:'Planned 2026', type:'Crewed Moon Landing', status:'planned',
+      agency:'NASA + SpaceX', rocket:'SLS + Starship HLS', color:0xff8844,
+      steps:['🚀 SLS launches the crew — Orion docks with SpaceX\'s Starship Human Landing System in lunar orbit!','🛸 Two astronauts climb into Starship and descend to the lunar South Pole!','👩‍🚀 First woman steps onto the Moon — and first person of colour walks on the lunar surface!','🧊 Exploring icy craters at the South Pole that hold water — the key to living on the Moon!'],
+      discovery:'Will land at the lunar South Pole for the first time — where water ice could sustain a permanent Moon base!',
+      funFact:'👩‍🚀 For the first time in history, a woman will walk on the Moon — 57 years after Neil Armstrong\'s first step!' },
+    { name:'Lunar Gateway', emoji:'🛰️', year:'Construction 2025–2030', type:'Crewed Space Station', status:'planned',
+      agency:'NASA + ESA + JAXA + CSA', rocket:'SLS + Falcon Heavy', color:0xcc99ff,
+      steps:['🚀 First modules launch on Falcon Heavy and SLS rockets — building a station in lunar orbit!','🛸 Astronauts arrive via Orion capsule — the first humans to live in deep space since the Moon landings!','🌕 Gateway becomes the jumping-off point for landing missions to the Moon\'s surface!','🔭 Also serving as a base for future missions toward Mars — humanity\'s outpost in deep space!'],
+      discovery:'Will be humanity\'s first space station outside Earth orbit — a permanent base for Moon exploration and Mars preparation!',
+      funFact:'🌕 Gateway will orbit the Moon in a special "near-rectilinear halo orbit" — sometimes just 3,000km from the surface, sometimes 70,000km!' },
   ],
   'Mars': [
     { name:'Perseverance', emoji:'🤖', year:'2021–present', type:'Rover', status:'active',
@@ -406,20 +421,56 @@ scene.add(new THREE.AmbientLight(0x333355, 1.5));
 const sunLight = new THREE.PointLight(0xfff5e0, 3.0, 0, 0);
 scene.add(sunLight);
 
-// --- BACKGROUND ---
-const starGeo = new THREE.BufferGeometry();
-const starCount = 20000;
-const starPos = new Float32Array(starCount * 3);
-for (let i = 0; i < starCount; i++) {
-    const r = 2000 + Math.random() * 3000;
-    const phi = Math.acos(Math.random() * 2 - 1);
-    const theta = Math.random() * Math.PI * 2;
-    starPos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    starPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    starPos[i * 3 + 2] = r * Math.cos(phi);
+// --- BACKGROUND STARS ---
+// Circular soft-glow sprite — prevents the default square fragment shape
+function makeStarSprite() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0.0,  'rgba(255, 255, 255, 1.0)');
+    g.addColorStop(0.25, 'rgba(240, 248, 255, 0.85)');
+    g.addColorStop(0.6,  'rgba(200, 220, 255, 0.35)');
+    g.addColorStop(1.0,  'rgba(180, 200, 255, 0.0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
 }
+const starSpriteTex = makeStarSprite();
+
+const starCount = 22000;
+const starPos   = new Float32Array(starCount * 3);
+const starCol   = new Float32Array(starCount * 3);
+const starColors = [
+    [1.0, 1.0, 1.0],   // white
+    [0.85, 0.92, 1.0],  // blue-white
+    [1.0, 0.97, 0.85],  // warm white
+    [1.0, 0.88, 0.65],  // yellow
+    [1.0, 0.75, 0.55],  // orange
+];
+for (let i = 0; i < starCount; i++) {
+    const r   = 2000 + Math.random() * 3000;
+    const phi = Math.acos(Math.random() * 2 - 1);
+    const th  = Math.random() * Math.PI * 2;
+    starPos[i*3]   = r * Math.sin(phi) * Math.cos(th);
+    starPos[i*3+1] = r * Math.sin(phi) * Math.sin(th);
+    starPos[i*3+2] = r * Math.cos(phi);
+    const sc = starColors[Math.floor(Math.random() * starColors.length)];
+    starCol[i*3] = sc[0]; starCol[i*3+1] = sc[1]; starCol[i*3+2] = sc[2];
+}
+const starGeo = new THREE.BufferGeometry();
 starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 1.6, transparent: true, opacity: 0.8 })));
+starGeo.setAttribute('color',    new THREE.BufferAttribute(starCol, 3));
+scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
+    map: starSpriteTex,
+    size: 3.5,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.92,
+    alphaTest: 0.01,
+    depthWrite: false,
+    sizeAttenuation: true,
+})));
 
 // --- TEXTURE LOADER ---
 const textureLoader = new THREE.TextureLoader();
@@ -485,54 +536,121 @@ const GBITANGENT = GNORMAL.clone().cross(GTANGENT).normalize();
 const GRADIUS = 52000;
 
 // Galaxy disc — baked into a canvas texture (1 quad, no per-frame point cost)
-function createGalaxyTexture(size = 1024) {
+function createGalaxyTexture(size = 2048) {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = size;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000';
+    // Transparent base — with additive blending alpha=0 means invisible
+    ctx.clearRect(0, 0, size, size);
+
+    const cx = size / 2, cy = size / 2;
+    const R  = size * 0.46;
+    const sl = R * 0.28;
+    const N_ARMS = 4;
+
+    // Layer 1 — Overall disc glow: warm centre fading to cool blue edge
+    const discGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.96);
+    discGlow.addColorStop(0.00, 'rgba(255, 230, 150, 0.55)');
+    discGlow.addColorStop(0.14, 'rgba(210, 150,  70, 0.35)');
+    discGlow.addColorStop(0.35, 'rgba(110,  85, 200, 0.18)');
+    discGlow.addColorStop(0.65, 'rgba( 40,  60, 165, 0.08)');
+    discGlow.addColorStop(1.00, 'rgba(  0,   0,   0, 0.00)');
+    ctx.fillStyle = discGlow;
     ctx.fillRect(0, 0, size, size);
 
+    // Layer 2 — Spiral arm soft glow zones (35 gradient blobs per arm)
+    for (let arm = 0; arm < N_ARMS; arm++) {
+        const armBase = (arm / N_ARMS) * Math.PI * 2;
+        for (let s = 0; s < 35; s++) {
+            const t  = s / 35;
+            const r  = R * (0.08 + t * 0.88);
+            const th = armBase + Math.log(r / (R * 0.04) + 1) * 1.35;
+            const px = cx + r * Math.cos(th);
+            const py = cy + r * Math.sin(th);
+            const spread = R * 0.09 * (1 - t * 0.38);
+            const alpha  = 0.22 - t * 0.14;
+            const ag = ctx.createRadialGradient(px, py, 0, px, py, spread);
+            ag.addColorStop(0,   `rgba(125, 168, 255, ${alpha})`);
+            ag.addColorStop(0.55,`rgba( 75, 108, 220, ${alpha * 0.4})`);
+            ag.addColorStop(1,   `rgba( 35,  55, 160, 0)`);
+            ctx.fillStyle = ag;
+            ctx.beginPath(); ctx.arc(px, py, spread, 0, Math.PI * 2); ctx.fill();
+        }
+    }
+
+    // Layer 3 — Dense pixel star field (captured on top of existing gradient data)
     const imgData = ctx.getImageData(0, 0, size, size);
     const d = imgData.data;
-    const cx = size / 2, cy = size / 2, R = size * 0.46;
-    const sl = R * 0.28; // exponential scale length
-
-    for (let i = 0; i < 90000; i++) {
-        const r = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
+    for (let i = 0; i < 150000; i++) {
+        const r     = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
         const normR = r / R;
-        const armIdx = Math.floor(Math.random() * 4);
-        const inArm = Math.random() < 0.35;
-        const theta = inArm
-            ? (armIdx / 4) * Math.PI * 2 + Math.log(r / (R * 0.015) + 1) * 1.3 + (Math.random() - 0.5) * 0.65
+        const armIdx = Math.floor(Math.random() * N_ARMS);
+        const inArm  = Math.random() < 0.35;
+        const theta  = inArm
+            ? (armIdx / N_ARMS) * Math.PI * 2 + Math.log(r / (R * 0.015) + 1) * 1.3 + (Math.random() - 0.5) * 0.6
             : Math.random() * Math.PI * 2;
         const sx = Math.round(cx + r * Math.cos(theta));
         const sy = Math.round(cy + r * Math.sin(theta));
         if (sx < 0 || sx >= size || sy < 0 || sy >= size) continue;
         const idx = (sy * size + sx) * 4;
-
-        let rr, gg, bb;
-        if (inArm && normR > 0.12) {
-            rr = 100 + Math.random() * 155; gg = 170 + Math.random() * 85; bb = 255;
+        let rr, gg, bb, aa;
+        if (inArm && normR > 0.15) {
+            rr = 130 + Math.random()*125; gg = 165 + Math.random()*90; bb = 255; aa = 170 + Math.random()*85;
         } else if (normR < 0.22) {
-            rr = 255; gg = 200 + normR * 200; bb = 130 + normR * 300;
+            rr = 255; gg = 210 + normR*150; bb = 140 + normR*250; aa = 150 + Math.random()*105;
         } else {
-            const c = 180 + Math.random() * 75;
-            rr = c; gg = c * 0.92; bb = c * 0.82;
+            const c = 185 + Math.random()*70; rr = c; gg = c*0.92; bb = c*0.84; aa = 110 + Math.random()*110;
         }
         d[idx]   = Math.min(255, d[idx]   + rr);
         d[idx+1] = Math.min(255, d[idx+1] + gg);
         d[idx+2] = Math.min(255, d[idx+2] + bb);
-        d[idx+3] = Math.min(255, d[idx+3] + 180 + Math.random() * 75);
+        d[idx+3] = Math.min(255, d[idx+3] + aa);
     }
     ctx.putImageData(imgData, 0, 0);
 
-    // Centre bulge glow (canvas gradient, fast)
-    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.3);
-    glow.addColorStop(0,    'rgba(255, 245, 200, 0.95)');
-    glow.addColorStop(0.25, 'rgba(255, 200,  90, 0.55)');
-    glow.addColorStop(0.6,  'rgba(180,  80,  15, 0.18)');
-    glow.addColorStop(1,    'rgba(  0,   0,   0, 0)');
-    ctx.fillStyle = glow;
+    // Layer 4 — 2500 bright round stars (arc circles, NOT square pixels)
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 2500; i++) {
+        const r     = Math.min(-sl * Math.log(Math.max(1 - Math.random(), 1e-6)), R);
+        const normR = r / R;
+        const armIdx = Math.floor(Math.random() * N_ARMS);
+        const inArm  = Math.random() < 0.5;
+        const theta  = inArm
+            ? (armIdx / N_ARMS) * Math.PI * 2 + Math.log(r / (R * 0.015) + 1) * 1.3 + (Math.random() - 0.5) * 0.55
+            : Math.random() * Math.PI * 2;
+        const px = cx + r * Math.cos(theta);
+        const py = cy + r * Math.sin(theta);
+        const sz     = 1.2 + Math.random() * 2.5;
+        const glowSz = sz * (2.5 + Math.random());
+        let r0, g0, b0;
+        if (inArm && normR > 0.15) {
+            r0 = 160 + Math.floor(Math.random()*95); g0 = 200 + Math.floor(Math.random()*55); b0 = 255;
+        } else if (normR < 0.2) {
+            r0 = 255; g0 = 220 + Math.floor(normR*100); b0 = 150 + Math.floor(normR*100);
+        } else {
+            r0 = g0 = b0 = 210 + Math.floor(Math.random()*45);
+        }
+        // Soft outer glow halo
+        const sg = ctx.createRadialGradient(px, py, 0, px, py, glowSz);
+        sg.addColorStop(0,   `rgba(${r0},${g0},${b0},0.55)`);
+        sg.addColorStop(0.4, `rgba(${r0},${g0},${b0},0.18)`);
+        sg.addColorStop(1,   `rgba(${r0},${g0},${b0},0)`);
+        ctx.fillStyle = sg;
+        ctx.beginPath(); ctx.arc(px, py, glowSz, 0, Math.PI * 2); ctx.fill();
+        // Bright round core
+        ctx.fillStyle = `rgba(${r0},${g0},${b0},0.95)`;
+        ctx.beginPath(); ctx.arc(px, py, sz, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+
+    // Layer 5 — Central bulge
+    const bulge = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.27);
+    bulge.addColorStop(0,    'rgba(255, 248, 215, 0.95)');
+    bulge.addColorStop(0.2,  'rgba(255, 205,  90, 0.62)');
+    bulge.addColorStop(0.5,  'rgba(195,  85,  18, 0.22)');
+    bulge.addColorStop(0.85, 'rgba( 90,  25,   3, 0.06)');
+    bulge.addColorStop(1.0,  'rgba(  0,   0,   0, 0)');
+    ctx.fillStyle = bulge;
     ctx.fillRect(0, 0, size, size);
 
     return new THREE.CanvasTexture(canvas);
@@ -542,7 +660,7 @@ function createGalaxyTexture(size = 1024) {
 const galaxyDiscPlane = new THREE.Mesh(
     new THREE.PlaneGeometry(GRADIUS * 2.2, GRADIUS * 2.2),
     new THREE.MeshBasicMaterial({
-        map: createGalaxyTexture(1024),
+        map: createGalaxyTexture(2048),
         transparent: true,
         side: THREE.DoubleSide,
         depthWrite: false,
