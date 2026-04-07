@@ -55,32 +55,58 @@
     <div id="focus-info">📍 Focused: Solar System</div>
 
     <div id="planet-info-card" class="info-card hidden">
-        <h2 id="info-name">Planet Name</h2>
-        <h4 id="info-type">Planet Type</h4>
-        <p id="info-fact">Interesting fact goes here.</p>
-        
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-label">Gravity</span>
-                <span id="info-gravity" class="stat-value">--</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Day Length</span>
-                <span id="info-day" class="stat-value">--</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Orbital Period</span>
-                <span id="info-year" class="stat-value">--</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Avg Temp</span>
-                <span id="info-temp" class="stat-value">--</span>
+        <!-- Header -->
+        <div class="card-header">
+            <div class="planet-emoji" id="info-emoji">🌍</div>
+            <div class="planet-title">
+                <h2 id="info-name">Planet</h2>
+                <div id="info-type" class="type-badge">Type</div>
+                <div id="info-ministats" class="mini-stats"></div>
             </div>
         </div>
 
-        <div id="info-details" class="info-details">Details</div>
-        <div id="info-wow" class="info-wow"></div>
-        <button id="launch-btn" class="launch-btn hidden">🚀 Launch Mission</button>
+        <!-- Tabs -->
+        <div class="tabs" id="card-tabs">
+            <button class="tab-btn active" data-tab="overview">📋 Overview</button>
+            <button class="tab-btn" data-tab="learn">🧠 Learn</button>
+            <button class="tab-btn" data-tab="explore">🚀 Explore</button>
+        </div>
+
+        <!-- Overview Panel -->
+        <div class="tab-panel active" id="tab-overview">
+            <p class="fact-text" id="info-fact"></p>
+            <div class="stat-pills" id="info-statpills"></div>
+            <div class="wow-strip" id="info-wow"></div>
+        </div>
+
+        <!-- Learn Panel -->
+        <div class="tab-panel" id="tab-learn">
+            <p class="learn-intro">Tap a question you're curious about 👇</p>
+            <div id="info-questions"></div>
+        </div>
+
+        <!-- Explore Panel -->
+        <div class="tab-panel" id="tab-explore">
+            <div class="explore-section">
+                <div class="explore-label" style="color:#fb923c;">🚀 Real Mission</div>
+                <div class="mission-badge">
+                    <div class="rocket-icon">🛸</div>
+                    <div class="mission-info">
+                        <div id="info-mission-name" class="mission-name"></div>
+                        <p id="info-mission-discovery"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="explore-section">
+                <div class="explore-label" style="color:#a78bfa;">📏 Scale Challenge</div>
+                <div class="scale-box" id="info-scale"></div>
+            </div>
+            <div class="explore-section">
+                <div class="explore-label" style="color:#ec4899;">💭 What If...?</div>
+                <div class="whatif-box" id="info-whatif"></div>
+            </div>
+            <button id="launch-btn" class="launch-btn hidden"></button>
+        </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>
