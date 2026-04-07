@@ -1816,6 +1816,180 @@ function onGameFail(mission, target, gameData) {
     document.getElementById('mission-lost-panel').classList.remove('hidden');
 }
 
+// --- GAUNTLET ---
+
+function runGauntlet(mission, target, gameData) {
+    document.getElementById('mg-gauntlet').classList.remove('hidden');
+
+    // Pick 4 random stages from pool (no repeats)
+    const pool = [...gameData.stages];
+    const stages = [];
+    for (let i = 0; i < Math.min(4, pool.length); i++) {
+        const idx = Math.floor(Math.random() * pool.length);
+        stages.push(...pool.splice(idx, 1));
+    }
+
+    function showStage(i) {
+        if (i >= stages.length) { onGameSuccess(mission, target); return; }
+
+        const stage = stages[i];
+
+        document.getElementById('mg-stage-track').innerHTML =
+            stages.map((_, j) =>
+                `<div class="stage-dot ${j < i ? 'done' : j === i ? 'active' : ''}"></div>`
+            ).join('');
+
+        document.getElementById('mg-stage-title').textContent = `${stage.icon} Stage ${i + 1}: ${stage.name}`;
+        document.getElementById('mg-stage-prompt').textContent = stage.prompt;
+        document.getElementById('mg-timer-text').textContent = '';
+
+        ['mg-timing-wrap', 'mg-choice-wrap', 'mg-tap-wrap'].forEach(id =>
+            document.getElementById(id).classList.add('hidden'));
+
+        if (stage.type === 'timing') runTimingStage(stage, i, mission, target, gameData, showStage);
+        else if (stage.type === 'choice') runChoiceStage(stage, i, mission, target, gameData, showStage);
+        else if (stage.type === 'tap') runTapStage(stage, i, mission, target, gameData, showStage);
+    }
+
+    showStage(0);
+}
+
+function runTimingStage(stage, stageIdx, mission, target, gameData, showStage) {
+    document.getElementById('mg-timing-wrap').classList.remove('hidden');
+
+    // Zone shrinks per stage: 22% → 19% → 16% → 13%
+    const zoneWidth = Math.max(13, 22 - stageIdx * 3);
+    const zoneLeft = 5 + Math.random() * (88 - zoneWidth);
+
+    const zone = document.getElementById('mg-bar-zone');
+    zone.style.width = zoneWidth + '%';
+    zone.style.left = zoneLeft + '%';
+
+    // Needle speeds up per stage: 1.6s → 1.4s → 1.2s → 1.0s
+    const duration = Math.max(1.0, 1.6 - stageIdx * 0.2);
+    const needle = document.getElementById('mg-bar-needle');
+    needle.style.animation = 'none';
+    needle.offsetHeight; // force reflow to restart animation
+    needle.style.animation = `needleSweep ${duration}s linear infinite`;
+
+    let fired = false;
+    const fireBtn = document.getElementById('mg-fire-btn');
+
+    const handler = () => {
+        if (fired) return;
+        fired = true;
+        fireBtn.removeEventListener('click', handler);
+
+        const trackRect = needle.parentElement.getBoundingClientRect();
+        const needleRect = needle.getBoundingClientRect();
+        const needlePct = ((needleRect.left - trackRect.left) / trackRect.width) * 100;
+
+        needle.style.animation = 'none';
+        if (needlePct >= zoneLeft && needlePct <= zoneLeft + zoneWidth) {
+            setTimeout(() => showStage(stageIdx + 1), 350);
+        } else {
+            onGameFail(mission, target, gameData);
+        }
+    };
+
+    fireBtn.addEventListener('click', handler);
+}
+
+function runChoiceStage(stage, stageIdx, mission, target, gameData, showStage) {
+    document.getElementById('mg-choice-wrap').classList.remove('hidden');
+
+    const choicesEl = document.getElementById('mg-choices');
+    choicesEl.innerHTML = stage.options.map((opt, i) =>
+        `<button type="button" class="mg-choice-btn" data-idx="${i}">${opt}</button>`
+    ).join('');
+
+    const TIMER_MS = 5000;
+    const start = Date.now();
+    let done = false;
+
+    const fill = document.getElementById('mg-timer-fill');
+    fill.style.transition = 'none';
+    fill.style.width = '100%';
+    fill.offsetHeight;
+    fill.style.transition = `width ${TIMER_MS / 1000}s linear`;
+    fill.style.width = '0%';
+
+    activeGameTimer = setInterval(() => {
+        if (done) return;
+        const remaining = Math.max(0, Math.ceil((TIMER_MS - (Date.now() - start)) / 1000));
+        document.getElementById('mg-timer-text').textContent = `${remaining}s`;
+        if (Date.now() - start >= TIMER_MS) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            onGameFail(mission, target, gameData);
+        }
+    }, 200);
+
+    const clickHandler = e => {
+        const btn = e.target.closest('.mg-choice-btn');
+        if (!btn || done) return;
+        done = true;
+        clearInterval(activeGameTimer);
+        activeGameTimer = null;
+        choicesEl.removeEventListener('click', clickHandler);
+        const idx = parseInt(btn.dataset.idx);
+        if (idx === stage.correct) {
+            setTimeout(() => showStage(stageIdx + 1), 350);
+        } else {
+            onGameFail(mission, target, gameData);
+        }
+    };
+    choicesEl.addEventListener('click', clickHandler);
+}
+
+function runTapStage(stage, stageIdx, mission, target, gameData, showStage) {
+    document.getElementById('mg-tap-wrap').classList.remove('hidden');
+
+    const required = stage.taps || 8;
+    let taps = 0;
+    let done = false;
+    const TIMER_MS = 6000;
+    const start = Date.now();
+
+    const countEl = document.getElementById('mg-tap-count');
+    countEl.textContent = `0/${required}`;
+
+    const fill = document.getElementById('mg-timer-fill');
+    fill.style.transition = 'none';
+    fill.style.width = '100%';
+    fill.offsetHeight;
+    fill.style.transition = `width ${TIMER_MS / 1000}s linear`;
+    fill.style.width = '0%';
+
+    activeGameTimer = setInterval(() => {
+        if (done) return;
+        const remaining = Math.max(0, Math.ceil((TIMER_MS - (Date.now() - start)) / 1000));
+        document.getElementById('mg-timer-text').textContent = `${remaining}s`;
+        if (Date.now() - start >= TIMER_MS) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            onGameFail(mission, target, gameData);
+        }
+    }, 200);
+
+    const tapBtn = document.getElementById('mg-tap-btn');
+    const tapHandler = () => {
+        if (done) return;
+        taps++;
+        countEl.textContent = `${taps}/${required}`;
+        if (taps >= required) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            tapBtn.removeEventListener('click', tapHandler);
+            setTimeout(() => showStage(stageIdx + 1), 350);
+        }
+    };
+    tapBtn.addEventListener('click', tapHandler);
+}
+
 document.getElementById('ml-relaunch-btn').addEventListener('click', () => {
     document.getElementById('mission-lost-panel').classList.add('hidden');
     if (lockedTarget) showMissionPicker(lockedTarget);
