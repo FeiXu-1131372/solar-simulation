@@ -615,7 +615,7 @@ button:active {
     border: 2px solid rgba(251,191,36,0.5);
     border-radius: 20px;
     padding: 22px;
-    z-index: 200;
+    z-index: 270;
     box-shadow: 0 0 60px rgba(251,191,36,0.2), 0 20px 60px rgba(0,0,0,0.8);
 }
 .mission-overlay.hidden { display: none; }
@@ -680,7 +680,7 @@ button:active {
     box-shadow: 0 0 8px #fff;
     animation: needleSweep 1.6s linear infinite;
 }
-@keyframes needleSweep { 0% { left: 0%; } 100% { left: 96%; } }
+@keyframes needleSweep { 0% { left: 0; } 100% { left: calc(100% - 4px); } }
 .mg-fire-btn {
     width: 100%;
     padding: 13px;
@@ -703,6 +703,8 @@ button:active {
 /* Choice */
 .mg-choices { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
 .mg-choice-btn {
+    text-transform: none;
+    letter-spacing: normal;
     padding: 10px 14px;
     border-radius: 10px;
     border: 1px solid rgba(99,102,241,0.35);
@@ -715,7 +717,7 @@ button:active {
     cursor: pointer;
     transition: background 0.15s;
 }
-.mg-choice-btn:hover { background: rgba(99,102,241,0.25); color: #c7d2fe; }
+.mg-choice-btn:hover { background: rgba(99,102,241,0.25); color: #c7d2fe; box-shadow: none; transform: none; }
 
 /* Tap */
 .mg-tap-wrap { text-align: center; margin-bottom: 12px; }
@@ -747,7 +749,8 @@ button:active {
 /* Hazard Run */
 #mg-canvas {
     display: block;
-    width: 100%;
+    width: 370px;
+    max-width: 100%;
     height: 170px;
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.06);
@@ -811,7 +814,7 @@ button:active {
     border: 2px solid rgba(239,68,68,0.5);
     border-radius: 20px;
     padding: 24px;
-    z-index: 200;
+    z-index: 270;
     box-shadow: 0 0 60px rgba(239,68,68,0.2), 0 20px 60px rgba(0,0,0,0.8);
 }
 .mission-lost.hidden { display: none; }
@@ -860,6 +863,8 @@ button:active {
 }
 .ml-relaunch-btn:hover { filter: brightness(1.1); }
 .ml-close-btn {
+    text-transform: none;
+    letter-spacing: normal;
     padding: 11px 16px;
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.1);
@@ -870,7 +875,7 @@ button:active {
     font-weight: 600;
     color: #94a3b8;
 }
-.ml-close-btn:hover { background: rgba(255,255,255,0.1); }
+.ml-close-btn:hover { background: rgba(255,255,255,0.1); box-shadow: none; transform: none; }
 
 /* ---- Galaxy View Button ---- */
 .galaxy-btn {
