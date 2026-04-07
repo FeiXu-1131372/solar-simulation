@@ -380,7 +380,23 @@ const celestialFacts = {
         year: '29.4 Earth Years',
         temp: '-138°C cloud tops',
         details: '146 Known Moons • Radius: 58,232 km',
-        wow: '🛁 Saturn is the only planet that could float in water — it\'s less dense than water! Its rings are 282,000 km wide but only 100m thick!'
+        wow: '🛁 Saturn is the only planet that could float in water — it\'s less dense than water! Its rings are 282,000 km wide but only 100m thick!',
+        emoji: '💍',
+        ministats: ['146 known moons', '29.4-year orbit', '6th from Sun'],
+        statPills: ['🛁 Less dense than water!', '💍 Rings 282,000 km wide', '⏱️ 10.7-hour day', '🌡️ −138°C cloud tops', '🌕 146 moons (and counting)'],
+        wowStrip: 'Saturn\'s rings are <strong>282,000 km wide</strong> — nearly the distance from Earth to the Moon — yet they\'re thinner than a 10-story building. Thin as a razor blade stretched across a football field!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ How can Saturn float in water?', a: 'An object floats if it\'s <strong>less dense than water</strong>. Saturn is made of gas (hydrogen and helium) and is so huge yet so light that its average density is only <em>0.687 g/cm³</em> — water is 1.0. So yes, if you had a bathtub big enough, Saturn would bob on top! It\'s the only planet in our solar system less dense than water.' },
+            { cls: 'q-chem', q: '🧪 What are Saturn\'s rings actually made of?', a: 'About <strong>90–95% water ice</strong>, plus chunks of rock and dust. Particles range from tiny ice grains (snowflakes) to boulders the size of houses. The rings likely formed when a moon or comet got too close and was <em>ripped apart by tidal forces</em>. They\'re only 10–100 metres thick at most — paper-thin on a cosmic scale!' },
+            { cls: 'q-astro', q: '🔭 How did Saturn end up with 146 moons?', a: 'Saturn\'s <strong>massive gravity</strong> captures passing space objects into orbit. Its ring system also clumps together to form tiny "moonlets." Some moons, like <em>Titan</em>, are ancient — formed with Saturn. Others are recently captured asteroids. Scientists discover new tiny moons almost every year — Saturn keeps adding to its collection!' },
+            { cls: 'q-life', q: '🌱 Could Titan — Saturn\'s biggest moon — have alien life?', a: 'Titan is one of the most exciting places in the solar system! It has <strong>lakes, rivers, and rain</strong> — but made of liquid methane (CH₄) instead of water. Its thick orange atmosphere resembles early Earth\'s. NASA\'s <em>Dragonfly</em> mission (launching 2028) will fly a helicopter on Titan, searching for chemical signs of life in the 2030s!' },
+        ],
+        explore: {
+            mission: 'Cassini-Huygens (NASA/ESA, orbited Saturn 2004–2017)',
+            discovery: 'Cassini discovered that Enceladus (a small moon) has <strong>geysers of water ice shooting into space</strong> — revealing a liquid ocean beneath its surface. Cassini ended its mission by diving into Saturn\'s atmosphere in a heroic "Grand Finale" after 13 years of discoveries.',
+            scale: 'Saturn\'s rings span <strong>282,000 km</strong>. The Moon orbits Earth at 384,000 km. So Saturn\'s rings are almost as wide as the Earth-Moon gap — yet barely thicker than a tall building. Thin as a razor blade stretched across the distance from London to Paris.',
+            whatif: '<strong>What if Saturn\'s rings disappeared?</strong> They\'re slowly doing just that — "ring rain" particles are constantly being pulled into Saturn. Scientists estimate the rings could completely disappear in <em>100 million years</em>. In cosmic time, we\'re incredibly lucky to exist right now while they\'re still here to admire.',
+        },
     },
     'Titan': {
         type: '🌧️ Saturnian Moon',
@@ -390,7 +406,23 @@ const celestialFacts = {
         year: '15.9 Earth Days',
         temp: '-179°C',
         details: 'Radius: 2,574 km',
-        wow: '🦅 Titan\'s thick atmosphere lets humans fly with just wings and a small flap — the gravity and air density make it possible!'
+        wow: '🦅 Titan\'s thick atmosphere lets humans fly with just wings and a small flap — the gravity and air density make it possible!',
+        emoji: '🌧️',
+        ministats: ['Saturnian moon', '15.9-day orbit', 'Only moon with a thick atmosphere'],
+        statPills: ['🌡️ −179°C surface', '🧡 Thick orange haze sky', '🌊 Methane lakes & rivers', '💨 Nitrogen atmosphere', '🦅 Humans could fly with wings!'],
+        wowStrip: 'Titan is the only moon with a dense atmosphere — and it\'s <strong>thicker than Earth\'s</strong>! The air pressure at Titan\'s surface is 1.5× Earth\'s, and the gravity is so low that humans could literally fly by flapping strap-on wings.',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why could humans actually fly on Titan with wings?', a: 'Two factors combine: (1) Titan\'s gravity is only <strong>14% of Earth\'s</strong> — you\'d weigh 1/7 of normal. (2) Titan\'s atmosphere is <strong>1.5× denser than Earth\'s</strong>. Flying requires generating lift, which depends on air density and wingspan. Low gravity + thick air = even large flapping wings could lift a person. NASA\'s Dragonfly helicopter mission exploits exactly this!' },
+            { cls: 'q-chem', q: '🧪 Why does Titan have methane lakes instead of water lakes?', a: 'At −179°C, water is frozen solid as rock. But at that temperature, <strong>methane (CH₄) and ethane (C₂H₆)</strong> can be liquid! Titan has a complete "methane water cycle": evaporating from lakes, forming clouds, raining down, flowing in rivers, pooling in seas. Ligeia Mare — a methane sea — is <strong>500 km wide</strong>, comparable to Lake Superior on Earth!' },
+            { cls: 'q-astro', q: '🔭 What makes Titan\'s orange haze?', a: 'Titan\'s atmosphere contains nitrogen (N₂) and methane (CH₄). Sunlight and charged particles from Saturn\'s magnetosphere break apart methane molecules. The fragments recombine into complex organic molecules called <em>"tholins"</em> — long chains that form the <strong>orange haze</strong> blanketing Titan. This same chemistry may have occurred on early Earth before life began!' },
+            { cls: 'q-life', q: '🌱 Could alien life exist on Titan — but not as we know it?', a: 'Most life on Earth uses liquid water. Titan doesn\'t have liquid water on its surface. But could life use <strong>liquid methane instead</strong>? Scientists have theorised about "methane-based life" that would breathe hydrogen instead of oxygen. Completely alien to us — but Titan has all the organic chemistry ingredients to try. Dragonfly will search the 2030s.' },
+        ],
+        explore: {
+            mission: 'Huygens Probe (ESA, landed Jan 14, 2005) + Dragonfly (NASA, launching 2028)',
+            discovery: 'Huygens descended through Titan\'s atmosphere for 2.5 hours, photographing <strong>drainage channels, shorelines, and rounded pebbles</strong> of water ice — clear signs of flowing liquid. The most distant soft landing ever achieved. Dragonfly will fly to dozens of sites across Titan in the 2030s.',
+            scale: 'Titan is <strong>larger than Mercury</strong>! If it orbited the Sun instead of Saturn, it would be called a planet. Its methane sea (Ligeia Mare) is the size of Lake Superior. You could literally sail a boat across an alien moon\'s methane lake.',
+            whatif: '<strong>What if humans visited Titan?</strong> You\'d need a warm suit (−179°C) but not a pressure suit — air pressure is fine. You could breathe with an oxygen supply. You could fly with wings! But the organic haze blocks sunlight, solar panels wouldn\'t work well, and methane lakes would make everything deeply strange and alien.',
+        },
     },
     'Uranus': {
         type: '🔵 Ice Giant',
