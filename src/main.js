@@ -42,7 +42,23 @@ const celestialFacts = {
         year: '230 Million Years',
         temp: '5,500°C surface',
         details: 'Radius: 696,340 km • 99.8% of all solar system mass',
-        wow: '☀️ Sunlight takes 8 minutes to reach Earth — if the Sun vanished, we wouldn\'t know for 8 whole minutes!'
+        wow: '☀️ Sunlight takes 8 minutes to reach Earth — if the Sun vanished, we wouldn\'t know for 8 whole minutes!',
+        emoji: '☀️',
+        ministats: ['Center of Solar System', '4.6 billion years old', '1 million Earths fit inside'],
+        statPills: ['🔥 5,500°C surface', '⭐ 15M°C core', '💥 Nuclear fusion', '🌟 4.6B years old', '☀️ 8 min light to Earth'],
+        wowStrip: 'Every second, the Sun fuses 600 million tonnes of hydrogen into helium. That energy takes 100,000 years to reach the surface — then just 8 minutes to reach your face!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ How does the Sun actually make energy?', a: 'Deep in the Sun\'s core, <strong>nuclear fusion</strong> smashes hydrogen atoms together to create helium — releasing energy via Einstein\'s equation <em>E=mc²</em>. The core reaches 15 million °C. That energy takes 100,000 years to travel from the core to the surface, then just 8 minutes to cross space to Earth.' },
+            { cls: 'q-chem', q: '🧪 What is the Sun made of?', a: 'About <strong>73% hydrogen (H)</strong> and <strong>25% helium (He)</strong>, with tiny amounts of oxygen, carbon, and iron. Hydrogen is the simplest element — just 1 proton and 1 electron. The Sun is essentially a perfectly controlled hydrogen-to-helium converter that has been running for <em>4.6 billion years</em>!' },
+            { cls: 'q-astro', q: '🔭 How long will the Sun last?', a: 'Another <strong>5 billion years</strong>! Then it swells into a red giant — engulfing Mercury and Venus (and possibly Earth). After that it collapses into a <em>white dwarf</em> — a cooling, Earth-sized cinder that glows for trillions of years.' },
+            { cls: 'q-life', q: '🌱 What would happen if the Sun disappeared right now?', a: 'You\'d have <strong>8 minutes of normal life</strong> — that\'s how long light takes to reach Earth. Then total darkness. Temperatures drop to −18°C in a week, −73°C in a year. All photosynthesis stops immediately. Oceans freeze from the top down. Surface life ends within months.' },
+        ],
+        explore: {
+            mission: 'Parker Solar Probe (NASA, 2018–present)',
+            discovery: 'Parker got closer to the Sun than any spacecraft ever — just <strong>6.2 million km away</strong>! It discovered "switchbacks" — sudden reversals in the magnetic field that accelerate solar wind particles — solving a 70-year mystery about why the solar corona is hotter than the surface.',
+            scale: 'If the Sun were the size of a <strong>front door (2 metres tall)</strong>, Earth would be a 2-cent coin sitting about <strong>215 metres away</strong> — the length of 2 football fields. That\'s how much empty space surrounds us.',
+            whatif: '<strong>What if the Sun were replaced by a same-mass black hole?</strong> Earth\'s orbit would be unchanged — gravity is identical! But in 8 minutes total darkness falls. Temperatures plummet below −200°C within a year. All life ends. The black hole itself would be only 3 km across — invisible.',
+        },
     },
     'Mercury': {
         type: '🪨 Terrestrial Planet',
@@ -52,7 +68,23 @@ const celestialFacts = {
         year: '88 Earth Days',
         temp: '-180°C night / 430°C day',
         details: '0 Moons • Radius: 2,439 km',
-        wow: '🌡️ Wild temperature swings! Nights freeze colder than Antarctica, days scorch hotter than an oven — all with no atmosphere!'
+        wow: '🌡️ Wild temperature swings! Nights freeze colder than Antarctica, days scorch hotter than an oven — all with no atmosphere!',
+        emoji: '🪨',
+        ministats: ['0 moons', '88-day orbit', '1st from Sun'],
+        statPills: ['🌡️ −180°C nights', '🔥 430°C days', '⏱️ 59-Earth-day day', '🌑 No atmosphere', '🏃 Fastest orbit'],
+        wowStrip: 'Mercury\'s "year" (88 days) is shorter than its "day" (59 Earth days). A planet where the year ends before the day does!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why are Mercury\'s days and nights so extreme?', a: 'Without an atmosphere, there\'s nothing to hold heat at night or block it during the day. Earth\'s atmosphere acts like a <strong>blanket</strong>. Mercury has no blanket — so the sunny side hits <strong>430°C</strong> and the dark side drops to <strong>−180°C</strong>. That\'s a 610°C swing in one rotation!' },
+            { cls: 'q-chem', q: '🧪 Why does Mercury have no atmosphere?', a: 'Two reasons: Mercury\'s <strong>gravity is weak</strong> (37% of Earth\'s) — it can\'t hold gas molecules that move fast enough to escape. Second, the <em>solar wind</em> (charged particles from the Sun) blasts away any gas that builds up. No atmosphere means no weather, no erosion by wind — just bare rock and ancient craters.' },
+            { cls: 'q-astro', q: '🔭 Why does Mercury move so fast around the Sun?', a: '<em>Kepler\'s Second Law</em>: objects orbit faster when they\'re closer to what they\'re orbiting. Mercury is the closest planet to the Sun, so it races around at <strong>47 km/s</strong> — 6× faster than Earth! A rocket needs 11 km/s to escape Earth\'s gravity. Mercury laps that naturally just from being close to the Sun.' },
+            { cls: 'q-life', q: '🌱 Is there anything surprising hiding on Mercury?', a: 'Yes! Despite being the Sun\'s closest neighbour, there is <strong>water ice</strong> in Mercury\'s polar craters — places permanently in shadow where the Sun never reaches, staying at −200°C forever. NASA\'s MESSENGER spacecraft confirmed this in 2012. Ice, right next to the scorching Sun!' },
+        ],
+        explore: {
+            mission: 'MESSENGER (NASA, 2004–2015)',
+            discovery: 'MESSENGER confirmed <strong>water ice in Mercury\'s permanently shadowed polar craters</strong>. It also found Mercury\'s iron core takes up 85% of the planet\'s radius — something huge must have knocked off most of the outer layers billions of years ago!',
+            scale: 'Mercury is only slightly bigger than our Moon. If Earth were a basketball, Mercury would be a large marble (3.5 cm). They\'re similar in size — but Mercury is much denser, with a massive iron core.',
+            whatif: '<strong>What if you lived on Mercury\'s terminator line?</strong> That\'s the moving boundary between day and night. Mercury rotates so slowly that walking at just 3 km/h westward could keep you in permanent twilight — you\'d be racing the sunrise and winning forever.',
+        },
     },
     'Venus': {
         type: '🔥 Terrestrial Planet',
@@ -62,7 +94,23 @@ const celestialFacts = {
         year: '225 Earth Days',
         temp: '464°C (melts lead!)',
         details: '0 Moons • Radius: 6,051 km',
-        wow: '🔄 A day on Venus is LONGER than its year! And it spins backwards — the Sun rises in the west and sets in the east!'
+        wow: '🔄 A day on Venus is LONGER than its year! And it spins backwards — the Sun rises in the west and sets in the east!',
+        emoji: '🔥',
+        ministats: ['0 moons', '225-day orbit', '2nd from Sun'],
+        statPills: ['🌡️ 464°C (melts lead!)', '🔄 Spins backwards', '⏱️ Day longer than year', '💨 96% CO₂ atmosphere', '🌧️ Sulfuric acid rain'],
+        wowStrip: 'Because Venus spins backwards, the <strong>Sun rises in the west and sets in the east</strong> there — everything is flipped compared to Earth!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why is Venus hotter than Mercury even though it\'s farther from the Sun?', a: 'The <strong>greenhouse effect</strong>! Venus has a super-thick atmosphere of CO₂ (carbon dioxide). Sunlight gets in and heats the surface, but the heat can\'t escape — trapped like inside a car on a summer day. This <em>runaway greenhouse effect</em> heats Venus to <strong>464°C</strong> — hot enough to melt lead!' },
+            { cls: 'q-chem', q: '🧪 What is Venus\'s atmosphere made of?', a: 'About <strong>96% carbon dioxide (CO₂)</strong> and 3.5% nitrogen — with clouds of <em>sulfuric acid (H₂SO₄)</em>. Yes, it rains acid! The acid evaporates before hitting the ground (too hot). The surface pressure is <strong>90× Earth\'s</strong> — like being 900 metres underwater.' },
+            { cls: 'q-astro', q: '🔭 Why does Venus spin backwards and so slowly?', a: 'Scientists think a <strong>giant asteroid collision</strong> billions of years ago knocked Venus\'s spin into reverse. It now rotates "retrograde" — opposite to most planets. It also spins incredibly slowly: one Venus day = <strong>243 Earth days</strong>. Its year (orbit) is only 225 days — so a day is literally longer than a year!' },
+            { cls: 'q-life', q: '🌱 Could anything survive on Venus?', a: 'The surface is brutal: 464°C, crushing pressure, acid clouds. But in Venus\'s upper atmosphere (~50 km up), temperatures reach a manageable 60°C. Scientists found hints of <em>phosphine gas (PH₃)</em> there in 2020 — on Earth, phosphine is made by living things. Could microscopic life float in Venus\'s clouds? We don\'t know — it\'s one of science\'s biggest open questions!' },
+        ],
+        explore: {
+            mission: 'Magellan (NASA, 1989–1994)',
+            discovery: 'Magellan used <strong>radar to map 98% of Venus\'s surface</strong> through its thick clouds — discovering over 1,600 volcanoes! Some may still be active today. A new ESA mission (EnVision) is planned for the 2030s to find out.',
+            scale: 'Venus is almost a <strong>twin of Earth</strong> in size — 95% of Earth\'s diameter. Same size, completely different destiny. One has oceans, rainforests, and life; the other is a hellscape at 464°C. The difference is almost entirely atmospheric chemistry.',
+            whatif: '<strong>What if Earth swapped atmospheres with Venus?</strong> Our oceans would boil away in months. The surface would hit 400°C+. The CO₂ would trap heat in a runaway loop. Every building would be crushed by the pressure. That\'s what a runaway greenhouse effect looks like — a warning from our nearest neighbour.',
+        },
     },
     'Earth': {
         type: '🌍 Terrestrial Planet',
@@ -72,7 +120,23 @@ const celestialFacts = {
         year: '365.25 Days',
         temp: '15°C average',
         details: '1 Major Moon • Radius: 6,371 km',
-        wow: '💧 71% of Earth is covered in water — we basically live on a giant water planet spinning through space!'
+        wow: '💧 71% of Earth is covered in water — we basically live on a giant water planet spinning through space!',
+        emoji: '🌍',
+        ministats: ['1 major moon', '365.25-day orbit', '3rd from Sun'],
+        statPills: ['🌊 71% covered in ocean', '🌡️ 15°C average', '💨 78% nitrogen air', '🧲 Protective magnetic field', '🌈 Only known life!'],
+        wowStrip: 'Earth is the <strong>densest planet</strong> in the solar system — despite being only the 5th largest. Its iron core makes the whole planet weigh 5.97 × 10²⁴ kg!',
+        learn: [
+            { cls: 'q-physics', q: '⚛️ Why is Earth the perfect temperature for life?', a: 'Earth sits in the <em>"Goldilocks Zone"</em> — not too close to the Sun, not too far. But distance alone isn\'t enough! Earth\'s atmosphere has just enough CO₂ (0.04%) to act as a gentle warming blanket, keeping average temperature at <strong>15°C</strong>. Mars has too little greenhouse effect (freezing). Venus has too much (scorching). Earth got it just right.' },
+            { cls: 'q-chem', q: '🧪 What is Earth\'s atmosphere made of?', a: '<strong>78% nitrogen (N₂)</strong>, 21% oxygen (O₂), 0.9% argon, 0.04% carbon dioxide. The oxygen is almost entirely produced by plants and photosynthetic bacteria — early Earth had almost no oxygen! <em>Life literally changed Earth\'s chemistry</em> over billions of years, creating the air we breathe today.' },
+            { cls: 'q-astro', q: '🔭 How does the Moon keep Earth\'s climate stable?', a: 'Without the Moon\'s gravity, Earth\'s axial tilt would wobble chaotically between 0° and 85° over millions of years — causing catastrophic climate swings. The Moon acts as a <strong>gravitational anchor</strong>, keeping our tilt stable at ~23.5°. That stability is one reason life had time to evolve into complex forms.' },
+            { cls: 'q-life', q: '🌱 What makes Earth special enough for life?', a: 'A remarkable combination: <strong>liquid water</strong>, stable temperature, a <em>magnetic field</em> blocking radiation, an ozone layer filtering UV, plate tectonics recycling nutrients, and a large Moon for stability. Scientists think conditions like these might be very rare — making Earth one of the most special places in the galaxy.' },
+        ],
+        explore: {
+            mission: 'International Space Station (NASA/ESA/JAXA, 1998–present)',
+            discovery: 'Astronauts discovered that <strong>the human body loses 1–2% of bone mass per month</strong> in microgravity — critical data for planning Mars missions. The ISS also watches Earth from 400 km up, tracking climate change, wildfires, and hurricanes in real time.',
+            scale: 'Earth\'s circumference is <strong>40,075 km</strong>. At 100 km/h, driving around Earth non-stop would take 17 days. The ISS orbits every 90 minutes — moving at 28,000 km/h. Astronauts see <strong>16 sunrises every day!</strong>',
+            whatif: '<strong>What if Earth\'s axis were perfectly upright?</strong> No seasons at all — everywhere gets the same sunlight year-round. The poles would be permanently cold, the equator permanently hot. No summer holidays — but also no brutal winters!',
+        },
     },
     'Moon': {
         type: '🌕 Earth\'s Moon',
