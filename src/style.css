@@ -421,3 +421,19 @@ button:active {
     border-radius: 8px;
     font-weight: 500;
 }
+
+.info-wow {
+    margin-top: 10px;
+    font-size: 12px;
+    line-height: 1.55;
+    color: #fde68a;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(245, 158, 11, 0.06));
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.info-wow:empty {
+    display: none;
+}
