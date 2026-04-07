@@ -600,6 +600,278 @@ button:active {
     }
 }
 
+/* ==============================
+   MISSION MINI-GAME
+   ============================== */
+
+.mission-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px;
+    max-width: calc(100vw - 30px);
+    background: linear-gradient(160deg, rgba(17,12,40,0.98) 0%, rgba(10,8,30,0.99) 100%);
+    border: 2px solid rgba(251,191,36,0.5);
+    border-radius: 20px;
+    padding: 22px;
+    z-index: 200;
+    box-shadow: 0 0 60px rgba(251,191,36,0.2), 0 20px 60px rgba(0,0,0,0.8);
+}
+.mission-overlay.hidden { display: none; }
+
+.mission-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+#mg-mission-label { font-size: 13px; font-weight: 700; color: #fbbf24; }
+.mg-type-badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: rgba(251,191,36,0.15);
+    border: 1px solid rgba(251,191,36,0.35);
+    color: #fbbf24;
+    padding: 3px 8px;
+    border-radius: 99px;
+}
+
+.mg-section { display: block; }
+.mg-section.hidden { display: none; }
+
+/* Stage progress dots (Gauntlet) */
+.stage-track { display: flex; gap: 5px; margin-bottom: 12px; }
+.stage-dot { flex: 1; height: 5px; border-radius: 99px; background: rgba(255,255,255,0.08); }
+.stage-dot.done { background: #4ade80; }
+.stage-dot.active { background: #fbbf24; animation: stagePulse 1s ease-in-out infinite; }
+@keyframes stagePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.mg-stage-title { font-size: 18px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.mg-stage-prompt { font-size: 12px; color: #94a3b8; line-height: 1.55; margin-bottom: 14px; }
+
+/* Timing bar */
+.mg-bar-track {
+    height: 24px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 99px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+.mg-bar-zone {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: rgba(74,222,128,0.25);
+    border-left: 2px solid #4ade80;
+    border-right: 2px solid #4ade80;
+}
+.mg-bar-needle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #fff;
+    border-radius: 99px;
+    box-shadow: 0 0 8px #fff;
+    animation: needleSweep 1.6s linear infinite;
+}
+@keyframes needleSweep { 0% { left: 0%; } 100% { left: 96%; } }
+.mg-fire-btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f97316, #ef4444);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(239,68,68,0.4);
+    transition: filter 0.1s;
+}
+.mg-fire-btn:hover { filter: brightness(1.15); }
+.mg-fire-btn:active { transform: scale(0.97); }
+
+/* Choice */
+.mg-choices { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+.mg-choice-btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(99,102,241,0.35);
+    background: rgba(99,102,241,0.12);
+    color: #a5b4fc;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.mg-choice-btn:hover { background: rgba(99,102,241,0.25); color: #c7d2fe; }
+
+/* Tap */
+.mg-tap-wrap { text-align: center; margin-bottom: 12px; }
+#mg-tap-count { font-size: 32px; font-weight: 800; color: #fbbf24; margin-bottom: 10px; }
+.mg-tap-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(109,40,217,0.5);
+    transition: transform 0.08s, filter 0.08s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.mg-tap-btn:active { transform: scale(0.95); filter: brightness(1.2); }
+
+/* Shared timer row */
+.mg-timer-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.mg-timer-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+.mg-timer-fill { height: 100%; border-radius: 99px; background: #fbbf24; width: 100%; }
+.mg-timer-text { font-size: 11px; color: #fbbf24; font-weight: 700; white-space: nowrap; }
+
+/* Hazard Run */
+#mg-canvas {
+    display: block;
+    width: 100%;
+    height: 170px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 8px;
+}
+.mg-lives-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #64748b; }
+.mg-lives-label { font-weight: 600; }
+#mg-lives { font-size: 16px; flex: 1; }
+#mg-hazard-timer { font-size: 11px; color: #fbbf24; font-weight: 700; }
+.mg-hazard-hint { font-size: 10px; color: #475569; margin-top: 5px; font-style: italic; }
+
+/* Mission Control */
+.mg-control-intro { font-size: 11px; color: #64748b; margin-bottom: 10px; }
+.mg-systems-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.mg-sys-card {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 9px 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.mg-sys-card:hover { background: rgba(255,255,255,0.05); }
+.mg-sys-crisis {
+    border-color: rgba(239,68,68,0.6) !important;
+    background: rgba(239,68,68,0.1) !important;
+    animation: crisisPulse 0.5s ease-in-out infinite;
+}
+@keyframes crisisPulse { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 12px rgba(239,68,68,0.5); } }
+.mg-sys-name { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 5px; font-weight: 700; }
+.mg-sys-bar-wrap { height: 6px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; margin-bottom: 4px; }
+.mg-sys-bar-fill { height: 100%; border-radius: 99px; transition: width 0.1s ease; }
+.mg-sys-pct { font-size: 11px; font-weight: 700; }
+.mg-crisis-alert {
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.5);
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #f87171;
+    margin-bottom: 8px;
+    animation: alertFlash 0.8s ease-in-out infinite;
+}
+.mg-crisis-alert.hidden { display: none; }
+@keyframes alertFlash { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* ==============================
+   MISSION LOST PANEL
+   ============================== */
+
+.mission-lost {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    max-width: calc(100vw - 30px);
+    background: linear-gradient(160deg, rgba(17,12,40,0.98) 0%, rgba(10,8,30,0.99) 100%);
+    border: 2px solid rgba(239,68,68,0.5);
+    border-radius: 20px;
+    padding: 24px;
+    z-index: 200;
+    box-shadow: 0 0 60px rgba(239,68,68,0.2), 0 20px 60px rgba(0,0,0,0.8);
+}
+.mission-lost.hidden { display: none; }
+.ml-explosion { font-size: 56px; text-align: center; margin-bottom: 12px; animation: mlShake 0.4s ease-in-out infinite; }
+@keyframes mlShake { 0%,100% { transform: rotate(0deg); } 25% { transform: rotate(-4deg) scale(1.08); } 75% { transform: rotate(4deg) scale(1.08); } }
+.ml-title { font-size: 26px; font-weight: 800; color: #ef4444; text-align: center; margin-bottom: 4px; }
+.ml-sub { font-size: 11px; color: #64748b; text-align: center; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+.ml-reason {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #fca5a5;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.ml-real-fact {
+    background: rgba(251,191,36,0.08);
+    border: 1px solid rgba(251,191,36,0.25);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 11px;
+    line-height: 1.55;
+    color: #fde68a;
+    margin-bottom: 16px;
+}
+.ml-real-fact strong { color: #fbbf24; }
+.ml-btn-row { display: flex; gap: 8px; }
+.ml-relaunch-btn {
+    flex: 1;
+    padding: 11px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 0 14px rgba(109,40,217,0.4);
+}
+.ml-relaunch-btn:hover { filter: brightness(1.1); }
+.ml-close-btn {
+    padding: 11px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer;
+    background: rgba(255,255,255,0.05);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+}
+.ml-close-btn:hover { background: rgba(255,255,255,0.1); }
+
 /* ---- Galaxy View Button ---- */
 .galaxy-btn {
     background: linear-gradient(135deg, #1e1b4b, #312e81);
