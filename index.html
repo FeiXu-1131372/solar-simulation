@@ -159,7 +159,7 @@
     </div>
 
     <!-- Mission Mini-Game Overlay -->
-    <div id="mission-game-overlay" class="mission-overlay hidden">
+    <div id="mission-game-overlay" class="mission-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="mg-mission-label">
         <div class="mission-overlay-header">
             <span id="mg-mission-label"></span>
             <span id="mg-type-badge" class="mg-type-badge"></span>
@@ -175,14 +175,14 @@
                     <div id="mg-bar-zone" class="mg-bar-zone"></div>
                     <div id="mg-bar-needle" class="mg-bar-needle"></div>
                 </div>
-                <button id="mg-fire-btn" class="mg-fire-btn">🔥 FIRE!</button>
+                <button id="mg-fire-btn" type="button" class="mg-fire-btn">🔥 FIRE!</button>
             </div>
             <div id="mg-choice-wrap" class="mg-choice-wrap hidden">
                 <div id="mg-choices" class="mg-choices"></div>
             </div>
             <div id="mg-tap-wrap" class="mg-tap-wrap hidden">
                 <div id="mg-tap-count" class="mg-tap-count">0/8</div>
-                <button id="mg-tap-btn" class="mg-tap-btn">👆 TAP!</button>
+                <button id="mg-tap-btn" type="button" class="mg-tap-btn">👆 TAP!</button>
             </div>
             <div class="mg-timer-row">
                 <div class="mg-timer-bar"><div id="mg-timer-fill" class="mg-timer-fill"></div></div>
@@ -192,7 +192,7 @@
 
         <!-- Hazard Run section -->
         <div id="mg-hazard" class="mg-section hidden">
-            <canvas id="mg-canvas" width="370" height="170"></canvas>
+            <canvas id="mg-canvas" width="370" height="170" aria-label="Hazard Run: dodge asteroids using ↑↓ keys or tap top/bottom">Hazard Run mini-game (keyboard and touch controls available).</canvas>
             <div class="mg-lives-row">
                 <span class="mg-lives-label">Lives:</span>
                 <span id="mg-lives"></span>
@@ -214,15 +214,15 @@
     </div>
 
     <!-- Mission Lost Panel -->
-    <div id="mission-lost-panel" class="mission-lost hidden">
+    <div id="mission-lost-panel" class="mission-lost hidden" role="dialog" aria-modal="true" aria-labelledby="ml-lost-heading">
         <div class="ml-explosion">💥</div>
-        <div class="ml-title">Mission Lost</div>
+        <div id="ml-lost-heading" class="ml-title">Mission Lost</div>
         <div id="ml-mission-sub" class="ml-sub"></div>
         <div id="ml-reason" class="ml-reason"></div>
         <div id="ml-real-fact" class="ml-real-fact"></div>
         <div class="ml-btn-row">
-            <button id="ml-relaunch-btn" class="ml-relaunch-btn">🚀 Relaunch Mission</button>
-            <button id="ml-close-btn" class="ml-close-btn">✕ Close</button>
+            <button id="ml-relaunch-btn" type="button" class="ml-relaunch-btn">🚀 Relaunch Mission</button>
+            <button id="ml-close-btn" type="button" class="ml-close-btn">✕ Close</button>
         </div>
     </div>
 </body>
