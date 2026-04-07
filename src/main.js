@@ -226,9 +226,29 @@ const celestialFacts = {
     }
 };
 
+const missionMap = {
+    'Mercury': 'MESSENGER',
+    'Venus': 'Magellan',
+    'Moon': 'Apollo 11',
+    'Mars': 'Perseverance',
+    'Phobos': 'MMX Probe',
+    'Deimos': 'MMX Probe',
+    'Jupiter': 'Juno',
+    'Io': 'Galileo',
+    'Europa': 'Europa Clipper',
+    'Ganymede': 'JUICE',
+    'Callisto': 'JUICE',
+    'Saturn': 'Cassini',
+    'Titan': 'Huygens Probe',
+    'Uranus': 'Voyager 2',
+    'Titania': 'Voyager 2',
+    'Neptune': 'Voyager 2',
+    'Triton': 'Voyager 2'
+};
+
 // --- SCENE SETUP ---
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 8000);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200000);
 const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -316,6 +336,86 @@ const sunHalo = new THREE.Sprite(new THREE.SpriteMaterial({
 sunHalo.scale.set(240, 240, 1);
 scene.add(sunHalo);
 
+// --- MILKY WAY ---
+// Galactic coordinate frame (disc tilted ~60° from ecliptic, centre offset from solar system)
+const GCENTER = new THREE.Vector3(12000, 6000, -22000);
+const GNORMAL = new THREE.Vector3(0.15, 0.72, 0.68).normalize();
+const GTANGENT = (() => {
+    const t = new THREE.Vector3(1, 0, 0);
+    return t.sub(GNORMAL.clone().multiplyScalar(t.dot(GNORMAL))).normalize();
+})();
+const GBITANGENT = GNORMAL.clone().cross(GTANGENT).normalize();
+const GRADIUS = 52000;
+
+// Star disc — 180k points, exponential radial profile + 4 spiral arms
+const mwCount = 180000;
+const mwPos = new Float32Array(mwCount * 3);
+const mwCol = new Float32Array(mwCount * 3);
+const scaleLen = GRADIUS * 0.28;
+for (let i = 0; i < mwCount; i++) {
+    const r = Math.min(-scaleLen * Math.log(Math.max(1 - Math.random(), 1e-6)), GRADIUS);
+    const normR = r / GRADIUS;
+    const armIdx = Math.floor(Math.random() * 4);
+    const armBase = (armIdx / 4) * Math.PI * 2;
+    const spiralAngle = Math.log(r / 800 + 1) * 1.3;
+    const inArm = Math.random() < 0.32;
+    const theta = inArm
+        ? armBase + spiralAngle + (Math.random() - 0.5) * 0.65
+        : Math.random() * Math.PI * 2;
+    const halfThick = GRADIUS * 0.024 * (1 - normR * 0.65);
+    const h = (Math.random() + Math.random() - 1) * halfThick;
+    const dx = r * Math.cos(theta), dz = r * Math.sin(theta);
+    mwPos[i*3]   = GCENTER.x + GTANGENT.x*dx + GBITANGENT.x*dz + GNORMAL.x*h;
+    mwPos[i*3+1] = GCENTER.y + GTANGENT.y*dx + GBITANGENT.y*dz + GNORMAL.y*h;
+    mwPos[i*3+2] = GCENTER.z + GTANGENT.z*dx + GBITANGENT.z*dz + GNORMAL.z*h;
+    if (inArm && normR > 0.12) {
+        // Spiral arm: blue-white (hot young stars)
+        mwCol[i*3] = 0.72 + Math.random()*0.28; mwCol[i*3+1] = 0.88 + Math.random()*0.12; mwCol[i*3+2] = 1.0;
+    } else if (normR < 0.22) {
+        // Bulge: warm yellow-orange
+        mwCol[i*3] = 1.0; mwCol[i*3+1] = 0.80 + normR*0.9; mwCol[i*3+2] = 0.50 + normR*1.6;
+    } else {
+        // Disc: creamy white
+        const c = 0.72 + Math.random()*0.28;
+        mwCol[i*3] = c; mwCol[i*3+1] = c*0.93; mwCol[i*3+2] = c*0.85;
+    }
+}
+const mwGeo = new THREE.BufferGeometry();
+mwGeo.setAttribute('position', new THREE.BufferAttribute(mwPos, 3));
+mwGeo.setAttribute('color', new THREE.BufferAttribute(mwCol, 3));
+scene.add(new THREE.Points(mwGeo, new THREE.PointsMaterial({
+    size: 1.8, sizeAttenuation: false, vertexColors: true,
+    transparent: true, opacity: 0.9, depthWrite: false,
+    blending: THREE.AdditiveBlending,
+})));
+
+// Galactic centre glow
+const galacticCentreSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+    map: makeGlowTexture([
+        [0,    'rgba(255, 245, 210, 1.0)'],
+        [0.15, 'rgba(255, 210, 130, 0.85)'],
+        [0.35, 'rgba(255, 150, 50,  0.5)'],
+        [0.60, 'rgba(180,  70, 15,  0.2)'],
+        [1,    'rgba( 80,  15,  0,  0)'],
+    ]),
+    blending: THREE.AdditiveBlending, transparent: true, depthWrite: false,
+}));
+galacticCentreSprite.position.copy(GCENTER);
+galacticCentreSprite.scale.set(14000, 14000, 1);
+scene.add(galacticCentreSprite);
+
+// Soft galaxy-plane haze (unresolved starlight glow)
+const hazePlane = new THREE.Mesh(
+    new THREE.PlaneGeometry(GRADIUS * 2.2, GRADIUS * 2.2),
+    new THREE.MeshBasicMaterial({
+        color: 0x6070cc, transparent: true, opacity: 0.040,
+        side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending,
+    })
+);
+hazePlane.position.copy(GCENTER);
+hazePlane.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), GNORMAL);
+scene.add(hazePlane);
+
 // Sun label
 function createLabel(text, isLarge = false) {
     const div = document.createElement('div');
@@ -333,9 +433,13 @@ const planets = [];
 const allClickable = [{ mesh: sun, name: 'Sun', size: 35 }];
 
 planetData.forEach((data) => {
+    // Tilt the entire orbit plane around the X axis — planet will rise/fall correctly as it orbits
+    const inclinationGroup = new THREE.Group();
+    inclinationGroup.rotation.x = data.inclination;
+    scene.add(inclinationGroup);
+
     const orbitPivot = new THREE.Group();
-    orbitPivot.rotation.z = data.inclination;
-    scene.add(orbitPivot);
+    inclinationGroup.add(orbitPivot);
 
     const planetMesh = new THREE.Mesh(
         new THREE.SphereGeometry(data.size, 64, 64),
@@ -361,8 +465,7 @@ planetData.forEach((data) => {
         new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.6 })
     );
     orbitLine.rotation.x = Math.PI / 2;
-    orbitLine.rotation.z = data.inclination;
-    scene.add(orbitLine);
+    inclinationGroup.add(orbitLine);
 
     // Saturn Rings
     if (data.hasRings) {
@@ -435,6 +538,7 @@ const infoYear = document.getElementById('info-year');
 const infoTemp = document.getElementById('info-temp');
 const infoDetails = document.getElementById('info-details');
 const infoWow = document.getElementById('info-wow');
+const launchBtn = document.getElementById('launch-btn');
 
 function focusOn(meshEntry) {
     lockedTarget = meshEntry;
@@ -459,7 +563,75 @@ function focusOn(meshEntry) {
     infoDetails.textContent = factData.details;
     infoWow.textContent = factData.wow || '';
     infoCard.classList.remove('hidden');
+
+    if (meshEntry.name === 'Earth' || meshEntry.name === 'Sun') {
+        launchBtn.classList.add('hidden');
+    } else {
+        const mName = missionMap[meshEntry.name] || 'Explorer';
+        launchBtn.textContent = `🚀 Launch ${mName}`;
+        launchBtn.classList.remove('hidden');
+    }
 }
+
+const activeRockets = [];
+
+function createRocket() {
+    const group = new THREE.Group();
+    // Body
+    const body = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.3, 0.3, 2.0, 16),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
+    );
+    group.add(body);
+    // Nose
+    const nose = new THREE.Mesh(
+        new THREE.ConeGeometry(0.3, 0.8, 16),
+        new THREE.MeshStandardMaterial({ color: 0xff4444, roughness: 0.3 })
+    );
+    nose.position.y = 1.4;
+    group.add(nose);
+    // Exhaust Flame
+    const fireMesh = new THREE.Mesh(
+        new THREE.ConeGeometry(0.25, 1.2, 16),
+        new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending })
+    );
+    fireMesh.position.y = -1.6;
+    fireMesh.rotation.x = Math.PI;
+    group.add(fireMesh);
+    
+    group.fireMesh = fireMesh;
+    return group;
+}
+
+launchBtn.addEventListener('click', () => {
+    if (!focusTarget || focusTarget.name === 'Earth' || focusTarget.name === 'Sun') return;
+    const earthEntry = allClickable.find(c => c.name === 'Earth');
+    if (!earthEntry) return;
+
+    const rocket = createRocket();
+    const earthPos = new THREE.Vector3();
+    earthEntry.mesh.getWorldPosition(earthPos);
+    
+    rocket.position.copy(earthPos);
+    scene.add(rocket);
+    
+    const trailGeo = new THREE.BufferGeometry();
+    const trailMat = new THREE.LineBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.4 });
+    const trailLine = new THREE.Line(trailGeo, trailMat);
+    scene.add(trailLine);
+
+    activeRockets.push({
+        mesh: rocket,
+        target: focusTarget,
+        missionName: missionMap[focusTarget.name] || 'Explorer',
+        fireMesh: rocket.fireMesh,
+        trailGeo: trailGeo,
+        trailLine: trailLine,
+        points: [earthPos.clone()]
+    });
+    
+    launchBtn.classList.add('hidden');
+});
 
 const pointerDown = new THREE.Vector2();
 
@@ -492,6 +664,11 @@ let isPaused = false;
 let showLabels = true;
 let simSpeed = 0.05;
 let clock = 0;
+let isGalaxyView = false;
+let galaxyTransition = null;
+const GALAXY_CAM  = new THREE.Vector3(24000, 64000, 32000);
+const SOLAR_CAM   = new THREE.Vector3(0, 800, 400);
+const SOLAR_LOOK  = new THREE.Vector3(0, 0, 0);
 
 const toggleBtn = document.getElementById('toggle-sync');
 const pauseBtn = document.getElementById('pause-anim');
@@ -537,11 +714,30 @@ document.getElementById('reset-pos').addEventListener('click', () => {
     isFocusing = false;
     focusTarget = null;
     lockedTarget = null;
+    isGalaxyView = false;
+    galaxyTransition = null;
+    if (galaxyBtn) galaxyBtn.textContent = '🌌 Galaxy View';
     if (focusInfoEl) focusInfoEl.style.opacity = '0.6';
     if (focusInfoEl) focusInfoEl.textContent = '📍 Focused: Solar System';
     if (infoCard) infoCard.classList.add('hidden');
     controls.target.set(0, 0, 0);
     camera.position.set(0, 800, 400);
+});
+
+const galaxyBtn = document.getElementById('galaxy-view-btn');
+galaxyBtn.addEventListener('click', () => {
+    isGalaxyView = !isGalaxyView;
+    galaxyBtn.textContent = isGalaxyView ? '🪐 Solar System' : '🌌 Galaxy View';
+    if (isGalaxyView) {
+        galaxyTransition = { cam: GALAXY_CAM.clone(), tgt: GCENTER.clone() };
+        lockedTarget = null;
+        isFocusing = false;
+        if (infoCard) infoCard.classList.add('hidden');
+        if (focusInfoEl) { focusInfoEl.textContent = '🌌 Milky Way Galaxy'; focusInfoEl.style.opacity = '1'; }
+    } else {
+        galaxyTransition = { cam: SOLAR_CAM.clone(), tgt: SOLAR_LOOK.clone() };
+        if (focusInfoEl) { focusInfoEl.textContent = '📍 Focused: Solar System'; focusInfoEl.style.opacity = '0.6'; }
+    }
 });
 
 // --- ANIMATION ---
@@ -590,6 +786,67 @@ function animate() {
             if (camera.position.distanceTo(worldPos) < focusOrbitDist * 1.1) {
                 isFocusing = false;
             }
+        }
+    }
+
+    // --- ROCKET UPDATES ---
+    for (let i = activeRockets.length - 1; i >= 0; i--) {
+        const r = activeRockets[i];
+        const targetPos = new THREE.Vector3();
+        r.target.mesh.getWorldPosition(targetPos);
+        
+        const distToTarget = r.mesh.position.distanceTo(targetPos);
+        const moveDist = 1.0 + (simSpeed * 1.5); 
+        
+        if (distToTarget <= (r.target.size + 1.5)) {
+            // Arrived
+            scene.remove(r.mesh);
+            scene.remove(r.trailLine);
+            activeRockets.splice(i, 1);
+            
+            // Success Label
+            const successDiv = document.createElement('div');
+            successDiv.className = 'planet-label planet-label--large';
+            successDiv.textContent = `✅ ${r.missionName} Arrived!`;
+            successDiv.style.color = '#10b981';
+            successDiv.style.borderColor = '#10b981';
+            const successLabel = new CSS2DObject(successDiv);
+            successLabel.position.set(0, r.target.size + 4, 0);
+            r.target.mesh.add(successLabel);
+            
+            setTimeout(() => {
+                if(r.target.mesh) r.target.mesh.remove(successLabel);
+            }, 5000);
+            
+            // Restore launch button if still focused
+            if (focusTarget === r.target) launchBtn.classList.remove('hidden');
+        } else {
+            const dir = targetPos.clone().sub(r.mesh.position).normalize();
+            
+            const up = new THREE.Vector3(0, 1, 0);
+            const quaternion = new THREE.Quaternion().setFromUnitVectors(up, dir);
+            r.mesh.quaternion.slerp(quaternion, 0.15);
+            
+            r.mesh.position.add(dir.multiplyScalar(moveDist));
+            
+            // Trail
+            r.points.push(r.mesh.position.clone());
+            if (r.points.length > 200) r.points.shift();
+            r.trailGeo.setFromPoints(r.points);
+            
+            // Flickering fire
+            r.fireMesh.scale.set(1, 0.7 + Math.random() * 0.6, 1);
+        }
+    }
+
+    // Galaxy view smooth camera transition
+    if (galaxyTransition) {
+        camera.position.lerp(galaxyTransition.cam, 0.025);
+        controls.target.lerp(galaxyTransition.tgt, 0.025);
+        if (camera.position.distanceTo(galaxyTransition.cam) < 300) {
+            camera.position.copy(galaxyTransition.cam);
+            controls.target.copy(galaxyTransition.tgt);
+            galaxyTransition = null;
         }
     }
 
