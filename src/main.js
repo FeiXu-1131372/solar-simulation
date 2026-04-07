@@ -2160,6 +2160,122 @@ function runHazardRun(mission, target, gameData) {
     };
 }
 
+// --- MISSION CONTROL ---
+
+function runMissionControl(mission, target, gameData) {
+    document.getElementById('mg-control').classList.remove('hidden');
+
+    const DURATION_MS = 25000;
+    const SYSTEMS = ['Fuel', 'Power', 'Shields', 'Comms'];
+    // Seconds for each system to drain from 100% to 0%
+    const DRAIN_SECS = { Fuel: 18, Power: 22, Shields: 20, Comms: 30 };
+    const BOOST_AMOUNT = 40;
+    const TICK_MS = 100;
+
+    const crisesList = (gameData.crises && gameData.crises.length >= 4)
+        ? gameData.crises
+        : ['Fuel depleting!', 'Power failing!', 'Shields dropping!', 'Comms lost!'];
+
+    let values = { Fuel: 80, Power: 85, Shields: 75, Comms: 90 };
+    let done = false;
+    let startTime = Date.now();
+    let activeCrisisSys = null;
+    let nextCrisisAt = Date.now() + 2500;
+
+    const grid = document.getElementById('mg-systems-grid');
+    const crisisAlert = document.getElementById('mg-crisis-alert');
+    const controlTimerFill = document.getElementById('mg-control-timer-fill');
+    const controlTimerText = document.getElementById('mg-control-timer-text');
+
+    // Start overall timer animation
+    controlTimerFill.style.transition = 'none';
+    controlTimerFill.style.width = '100%';
+    controlTimerFill.offsetHeight;
+    controlTimerFill.style.transition = `width ${DURATION_MS / 1000}s linear`;
+    controlTimerFill.style.width = '0%';
+
+    function renderGrid() {
+        grid.innerHTML = SYSTEMS.map(sys => {
+            const v = Math.max(0, Math.round(values[sys]));
+            const color = v > 40 ? '#4ade80' : v > 20 ? '#fbbf24' : '#ef4444';
+            const isCrisis = activeCrisisSys === sys;
+            return `<div class="mg-sys-card${isCrisis ? ' mg-sys-crisis' : ''}" data-sys="${sys}">
+                <div class="mg-sys-name">${sys}</div>
+                <div class="mg-sys-bar-wrap">
+                    <div class="mg-sys-bar-fill" style="width:${v}%;background:${color}"></div>
+                </div>
+                <div class="mg-sys-pct" style="color:${color}">${v}%</div>
+            </div>`;
+        }).join('');
+    }
+
+    function fireCrisis() {
+        const idx = Math.floor(Math.random() * SYSTEMS.length);
+        activeCrisisSys = SYSTEMS[idx];
+        crisisAlert.textContent = `🚨 ${crisesList[idx]}`;
+        crisisAlert.classList.remove('hidden');
+        // Auto-clear crisis after 4 seconds if not clicked
+        setTimeout(() => {
+            if (activeCrisisSys === SYSTEMS[idx]) {
+                activeCrisisSys = null;
+                crisisAlert.classList.add('hidden');
+                nextCrisisAt = Date.now() + 2000 + Math.random() * 2000;
+            }
+        }, 4000);
+    }
+
+    grid.addEventListener('click', e => {
+        if (done || !activeCrisisSys) return;
+        const card = e.target.closest('.mg-sys-card');
+        if (!card) return;
+        if (card.dataset.sys === activeCrisisSys) {
+            values[activeCrisisSys] = Math.min(100, values[activeCrisisSys] + BOOST_AMOUNT);
+            activeCrisisSys = null;
+            crisisAlert.classList.add('hidden');
+            nextCrisisAt = Date.now() + 2500 + Math.random() * 2000;
+        }
+    });
+
+    renderGrid();
+
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    activeGameTimer = setInterval(() => {
+        if (done) return;
+
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, Math.ceil((DURATION_MS - elapsed) / 1000));
+        controlTimerText.textContent = `${remaining}s`;
+
+        // Drain all systems
+        for (const sys of SYSTEMS) {
+            values[sys] -= (100 / (DRAIN_SECS[sys] * 1000)) * TICK_MS;
+            if (values[sys] <= 0 && !done) {
+                done = true;
+                clearInterval(activeGameTimer);
+                activeGameTimer = null;
+                onGameFail(mission, target, gameData);
+                return;
+            }
+        }
+
+        // Fire crisis events
+        if (Date.now() >= nextCrisisAt && !activeCrisisSys) {
+            fireCrisis();
+        }
+
+        // Win condition
+        if (elapsed >= DURATION_MS && !done) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            onGameSuccess(mission, target);
+            return;
+        }
+
+        renderGrid();
+    }, TICK_MS);
+}
+
 document.getElementById('ml-relaunch-btn').addEventListener('click', () => {
     document.getElementById('mission-lost-panel').classList.add('hidden');
     if (lockedTarget) showMissionPicker(lockedTarget);
