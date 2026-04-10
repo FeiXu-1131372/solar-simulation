@@ -33,29 +33,45 @@ const REAL_DATA = {
     Neptune: { radius_km: 24622,   distance_km: 4495100000 },
 };
 
-const SIZE_K = 8.0;
-const DIST_K = 8.0;
-
 function buildLogScale() {
+    // Normalize log distances to a visual range so planets aren't crammed together
+    const logDists = {};
+    let minLogDist = Infinity, maxLogDist = -Infinity;
+    for (const [name, data] of Object.entries(REAL_DATA)) {
+        if (data.distance_km > 0) {
+            const ld = Math.log10(data.distance_km);
+            logDists[name] = ld;
+            minLogDist = Math.min(minLogDist, ld);
+            maxLogDist = Math.max(maxLogDist, ld);
+        }
+    }
+    const logRange = maxLogDist - minLogDist;
     const result = {};
     for (const [name, data] of Object.entries(REAL_DATA)) {
         result[name] = {
-            size: SIZE_K * Math.log10(data.radius_km),
-            distance: data.distance_km > 0 ? DIST_K * Math.log10(data.distance_km) : 0,
+            size: 3.5 * Math.log10(data.radius_km),
+            distance: data.distance_km > 0
+                ? 60 + 740 * (logDists[name] - minLogDist) / logRange
+                : 0,
         };
     }
     return result;
 }
 
 function buildRealisticScale() {
+    // Realistic relative distances between planets, proportional planet sizes,
+    // but cap the Sun so it doesn't engulf the inner solar system
     const earthRadius = REAL_DATA.Earth.radius_km;
     const earthDist = REAL_DATA.Earth.distance_km;
-    const sizeRef = 4.0;   // Earth size = 4.0
-    const distRef = 135;   // Earth distance = 135
+    const sizeRef = 3.0;    // Earth size = 3.0
+    const distRef = 500;    // Earth distance = 500
+    const sunSizeCap = 30;  // Cap the Sun so Mercury isn't inside it
     const result = {};
     for (const [name, data] of Object.entries(REAL_DATA)) {
+        let size = sizeRef * (data.radius_km / earthRadius);
+        if (name === 'Sun') size = sunSizeCap;
         result[name] = {
-            size: sizeRef * (data.radius_km / earthRadius),
+            size,
             distance: data.distance_km > 0 ? distRef * (data.distance_km / earthDist) : 0,
         };
     }
@@ -5353,7 +5369,7 @@ function setScaleMode(mode) {
         const camPositions = {
             compressed:  new THREE.Vector3(0, 1000, 500),
             logarithmic: new THREE.Vector3(0, 1000, 500),
-            realistic:   new THREE.Vector3(0, 1200, 600),
+            realistic:   new THREE.Vector3(0, 2000, 1000),
         };
         const targetCam = camPositions[mode];
         galaxyTransition = { cam: targetCam.clone(), tgt: new THREE.Vector3(0, 0, 0) };
