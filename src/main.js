@@ -1326,8 +1326,8 @@ planetData.forEach((data) => {
 
     // Orbit Line
     const orbitLine = new THREE.Mesh(
-        new THREE.TorusGeometry(data.distance, 0.4, 4, 200),
-        new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.6 })
+        new THREE.TorusGeometry(data.distance, 0.15, 4, 200),
+        new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15 })
     );
     orbitLine.rotation.x = Math.PI / 2;
     inclinationGroup.add(orbitLine);
