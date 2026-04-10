@@ -1372,6 +1372,8 @@ function startCinematic(rocketObj) {
         controlsTarget: controls.target.clone(),
     };
     controls.enabled = false;
+    // Hide planet info card during cinematic
+    if (infoCard) infoCard.classList.add('hidden');
 
     const earthPos = rocketObj.mesh.position.clone();
     const targetPos = new THREE.Vector3();
@@ -1452,6 +1454,8 @@ function endCinematic(skipToGame) {
     const orbitDist = (rocketObj.target.size || 4) * 3;
     camera.position.copy(targetPos).add(new THREE.Vector3(orbitDist, orbitDist * 0.5, orbitDist));
     controls.target.copy(targetPos);
+    // Close any planet info card
+    if (infoCard) infoCard.classList.add('hidden');
     controls.enabled = true;
 
     lockedTarget = rocketObj.target;
@@ -3043,6 +3047,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 });
 
 renderer.domElement.addEventListener('pointerup', (event) => {
+    if (cinematicState) return;
     // Ignore if it was a drag/swipe gesture (moved more than 10 pixels)
     const dist = Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y);
     if (dist > 10) return;
