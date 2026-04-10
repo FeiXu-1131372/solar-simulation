@@ -7,58 +7,67 @@
     <title>Moon: Synchronous Rotation Explained</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+SC:wght@400;600&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Sinhala:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="app"></div>
 
-    <button id="toggle-ui-btn" class="floating-btn">
+    <button id="toggle-ui-btn" class="floating-btn" data-i18n-aria="ui.toggleControls">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z"/></svg>
     </button>
 
     <div id="ui-container">
         <div class="cp-header">
-            <div class="cp-mode-title" id="cp-mode-title">🌌 Solar System</div>
+            <div class="cp-mode-title" id="cp-mode-title" data-i18n="ui.solarSystem">🌌 Solar System</div>
             <div class="cp-pills">
-                <div class="cp-pill pill-on"        id="pill-sync"   title="Sync Rotation">⟳</div>
-                <div class="cp-pill pill-off"       id="pill-pause"  title="Paused">⏸</div>
-                <div class="cp-pill pill-on"        id="pill-labels" title="Labels">🏷</div>
-                <div class="cp-pill pill-galaxy-on" id="pill-galaxy" title="Galaxy">🌌</div>
+                <div class="cp-pill pill-on"        id="pill-sync"   title="Sync Rotation" data-i18n-title="ui.syncRotation">⟳</div>
+                <div class="cp-pill pill-off"       id="pill-pause"  title="Paused" data-i18n-title="ui.paused">⏸</div>
+                <div class="cp-pill pill-on"        id="pill-labels" title="Labels" data-i18n-title="ui.labels">🏷</div>
+                <div class="cp-pill pill-galaxy-on" id="pill-galaxy" title="Galaxy" data-i18n-title="ui.galaxy">🌌</div>
             </div>
-            <button id="toggle-ui-expand" class="cp-expand-btn" aria-label="Toggle controls">▾</button>
+            <button id="toggle-ui-expand" class="cp-expand-btn" aria-label="Toggle controls" data-i18n-aria="ui.toggleControls">▾</button>
         </div>
         <div class="cp-body">
-            <div class="cp-section-label">Simulation</div>
+            <div class="cp-section">
+                <div class="cp-label" data-i18n="ui.language">🌐 Language</div>
+                <select id="lang-select" style="width:100%;padding:6px 10px;border-radius:8px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;font-size:13px;cursor:pointer;">
+                    <option value="en">English</option>
+                    <option value="zh">中文 (Chinese)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                    <option value="si">සිංහල (Sinhala)</option>
+                </select>
+            </div>
+            <div class="cp-section-label" data-i18n="ui.simulation">Simulation</div>
             <div class="cp-toggle-row">
                 <button id="toggle-sync"  class="cp-chip chip-on"><span class="chip-dot" style="background:#38bdf8"></span> Sync ON</button>
                 <button id="pause-anim"   class="cp-chip chip-off"><span class="chip-dot" style="background:#475569"></span> Running</button>
             </div>
             <div class="cp-slider-wrap">
-                <div class="cp-slider-label">Speed <span id="speed-val">0.05</span>×</div>
+                <div class="cp-slider-label"><span data-i18n="ui.speed">Speed</span> <span id="speed-val">0.05</span>×</div>
                 <input type="range" id="speed-slider" min="0" max="0.5" step="0.01" value="0.05">
                 <div class="cp-speed-ticks">
                     <span>0</span><span>0.1</span><span>0.25</span><span>0.5×</span>
                 </div>
             </div>
-            <div class="cp-section-label">View</div>
+            <div class="cp-section-label" data-i18n="ui.view">View</div>
             <div class="cp-toggle-row">
                 <button id="toggle-labels"     class="cp-chip chip-on"><span class="chip-dot" style="background:#38bdf8"></span> Labels</button>
                 <button id="toggle-galaxy-btn" class="cp-chip chip-galaxy"><span class="chip-dot" style="background:#a78bfa"></span> Galaxy</button>
             </div>
-            <button id="galaxy-view-btn" class="cp-view-btn">🌌 Galaxy View &nbsp;↔&nbsp; 🪐 Solar</button>
-            <button id="reset-pos"       class="cp-reset-btn">⟲ Reset View</button>
+            <button id="galaxy-view-btn" class="cp-view-btn" data-i18n-html="ui.galaxyViewBtn">🌌 Galaxy View &nbsp;↔&nbsp; 🪐 Solar</button>
+            <button id="reset-pos"       class="cp-reset-btn" data-i18n="ui.resetView">⟲ Reset View</button>
             <div class="cp-legend">
-                <div class="cp-legend-item"><span class="cp-legend-dot" style="background:#ef4444"></span> Facing Earth</div>
-                <div class="cp-legend-item"><span class="cp-legend-dot" style="background:#4ade80"></span> Dark Side</div>
+                <div class="cp-legend-item"><span class="cp-legend-dot" style="background:#ef4444"></span> <span data-i18n="ui.facingEarth">Facing Earth</span></div>
+                <div class="cp-legend-item"><span class="cp-legend-dot" style="background:#4ade80"></span> <span data-i18n="ui.darkSide">Dark Side</span></div>
             </div>
         </div>
     </div>
 
-    <div id="overlay-message">
+    <div id="overlay-message" data-i18n="ui.overlaySync">
         Synchronous Rotation Activated
     </div>
 
-    <div class="info-help">
+    <div class="info-help" data-i18n-html="ui.helpHint">
         DRAG TO ROTATE &bull; SCROLL TO ZOOM &bull; CLICK PLANET TO FOCUS
     </div>
 
@@ -73,14 +82,14 @@
                 <div id="info-type" class="type-badge">Type</div>
                 <div id="info-ministats" class="mini-stats"></div>
             </div>
-            <button id="info-card-close" class="card-close-btn" aria-label="Close">✕</button>
+            <button id="info-card-close" class="card-close-btn" aria-label="Close" data-i18n-aria="ui.close">✕</button>
         </div>
 
         <!-- Tabs -->
         <div class="tabs" id="card-tabs" role="tablist">
-            <button class="tab-btn active" data-tab="overview" role="tab">📋 Overview</button>
-            <button class="tab-btn" data-tab="learn" role="tab">🧠 Learn</button>
-            <button class="tab-btn" data-tab="explore" role="tab">🚀 Explore</button>
+            <button class="tab-btn active" data-tab="overview" role="tab" data-i18n="ui.tabOverview">📋 Overview</button>
+            <button class="tab-btn" data-tab="learn" role="tab" data-i18n="ui.tabLearn">🧠 Learn</button>
+            <button class="tab-btn" data-tab="explore" role="tab" data-i18n="ui.tabExplore">🚀 Explore</button>
         </div>
 
         <!-- Overview Panel -->
@@ -92,14 +101,14 @@
 
         <!-- Learn Panel -->
         <div class="tab-panel" id="tab-learn" role="tabpanel">
-            <p class="learn-intro">Tap a question you're curious about 👇</p>
+            <p class="learn-intro" data-i18n="ui.learnIntro">Tap a question you're curious about 👇</p>
             <div id="info-questions"></div>
         </div>
 
         <!-- Explore Panel -->
         <div class="tab-panel" id="tab-explore" role="tabpanel">
             <div class="explore-section">
-                <div class="explore-label" style="color:#fb923c;">🚀 Real Mission</div>
+                <div class="explore-label" style="color:#fb923c;" data-i18n="ui.realMission">🚀 Real Mission</div>
                 <div class="mission-badge">
                     <div class="rocket-icon">🛸</div>
                     <div class="mission-info">
@@ -109,11 +118,11 @@
                 </div>
             </div>
             <div class="explore-section">
-                <div class="explore-label" style="color:#a78bfa;">📏 Scale Challenge</div>
+                <div class="explore-label" style="color:#a78bfa;" data-i18n="ui.scaleChallenge">📏 Scale Challenge</div>
                 <div class="scale-box" id="info-scale"></div>
             </div>
             <div class="explore-section">
-                <div class="explore-label" style="color:#ec4899;">💭 What If...?</div>
+                <div class="explore-label" style="color:#ec4899;" data-i18n="ui.whatIf">💭 What If...?</div>
                 <div class="whatif-box" id="info-whatif"></div>
             </div>
             <button id="launch-btn" class="launch-btn hidden"></button>
@@ -126,7 +135,7 @@
     <div id="mission-picker" class="mission-picker hidden">
         <div class="mission-picker-header">
             <div>
-                <div class="mission-picker-title">🚀 Choose Your Mission</div>
+                <div class="mission-picker-title" data-i18n="ui.chooseMission">🚀 Choose Your Mission</div>
                 <div id="mission-picker-subtitle" class="mission-picker-subtitle"></div>
             </div>
             <button id="mission-picker-close" class="mission-picker-close">✕</button>
@@ -150,7 +159,7 @@
             <span id="ml-name"></span>
             <span id="ml-agency"></span>
         </div>
-        <div class="ml-target-line">✈ En route to <span id="ml-target"></span></div>
+        <div class="ml-target-line"><span data-i18n="ui.enRouteTo">✈ En route to </span><span id="ml-target"></span></div>
         <div class="ml-progress-wrap">
             <div id="ml-bar" class="ml-bar"></div>
         </div>
@@ -162,10 +171,10 @@
     <div id="arrival-panel" class="arrival-panel hidden">
         <div id="arr-emoji" class="arr-emoji"></div>
         <div id="arr-mission" class="arr-mission"></div>
-        <div id="arr-headline" class="arr-headline">Mission Accomplished! 🎉</div>
+        <div id="arr-headline" class="arr-headline" data-i18n="ui.missionAccomplished">Mission Accomplished! 🎉</div>
         <div id="arr-discovery" class="arr-discovery"></div>
         <div id="arr-funfact" class="arr-funfact"></div>
-        <button id="arr-close" class="arr-close">Keep Exploring! 🚀</button>
+        <button id="arr-close" class="arr-close" data-i18n="ui.keepExploring">Keep Exploring! 🚀</button>
     </div>
 
     <!-- Mission Mini-Game Overlay -->
@@ -185,14 +194,14 @@
                     <div id="mg-bar-zone" class="mg-bar-zone"></div>
                     <div id="mg-bar-needle" class="mg-bar-needle"></div>
                 </div>
-                <button id="mg-fire-btn" type="button" class="mg-fire-btn">🔥 FIRE!</button>
+                <button id="mg-fire-btn" type="button" class="mg-fire-btn" data-i18n="ui.fire">🔥 FIRE!</button>
             </div>
             <div id="mg-choice-wrap" class="mg-choice-wrap hidden">
                 <div id="mg-choices" class="mg-choices"></div>
             </div>
             <div id="mg-tap-wrap" class="mg-tap-wrap hidden">
                 <div id="mg-tap-count" class="mg-tap-count">0/8</div>
-                <button id="mg-tap-btn" type="button" class="mg-tap-btn">👆 TAP!</button>
+                <button id="mg-tap-btn" type="button" class="mg-tap-btn" data-i18n="ui.tap">👆 TAP!</button>
             </div>
             <div class="mg-timer-row">
                 <div class="mg-timer-bar"><div id="mg-timer-fill" class="mg-timer-fill"></div></div>
@@ -204,16 +213,16 @@
         <div id="mg-hazard" class="mg-section hidden">
             <canvas id="mg-canvas" width="370" height="170" aria-label="Hazard Run: dodge asteroids using ↑↓ keys or tap top/bottom">Hazard Run mini-game (keyboard and touch controls available).</canvas>
             <div class="mg-lives-row">
-                <span class="mg-lives-label">Lives:</span>
+                <span class="mg-lives-label" data-i18n="ui.lives">Lives:</span>
                 <span id="mg-lives"></span>
                 <span id="mg-hazard-timer" class="mg-hazard-timer"></span>
             </div>
-            <p class="mg-hazard-hint">Press ↑↓ or tap top/bottom half to dodge</p>
+            <p class="mg-hazard-hint" data-i18n="ui.hazardHint">Press ↑↓ or tap top/bottom half to dodge</p>
         </div>
 
         <!-- Mission Control section -->
         <div id="mg-control" class="mg-section hidden">
-            <p class="mg-control-intro">Click a system when it flashes to boost it!</p>
+            <p class="mg-control-intro" data-i18n="ui.controlIntro">Click a system when it flashes to boost it!</p>
             <div id="mg-systems-grid" class="mg-systems-grid"></div>
             <div id="mg-crisis-alert" class="mg-crisis-alert hidden"></div>
             <div class="mg-timer-row">
@@ -226,13 +235,13 @@
     <!-- Mission Lost Panel -->
     <div id="mission-lost-panel" class="mission-lost hidden" role="dialog" aria-modal="true" aria-labelledby="ml-lost-heading">
         <div class="ml-explosion">💥</div>
-        <div id="ml-lost-heading" class="ml-title">Mission Lost</div>
+        <div id="ml-lost-heading" class="ml-title" data-i18n="ui.missionLost">Mission Lost</div>
         <div id="ml-mission-sub" class="ml-sub"></div>
         <div id="ml-reason" class="ml-reason"></div>
         <div id="ml-real-fact" class="ml-real-fact"></div>
         <div class="ml-btn-row">
-            <button id="ml-relaunch-btn" type="button" class="ml-relaunch-btn">🚀 Relaunch Mission</button>
-            <button id="ml-close-btn" type="button" class="ml-close-btn">✕ Close</button>
+            <button id="ml-relaunch-btn" type="button" class="ml-relaunch-btn" data-i18n="ui.relaunchMission">🚀 Relaunch Mission</button>
+            <button id="ml-close-btn" type="button" class="ml-close-btn" data-i18n="ui.closeBtn">✕ Close</button>
         </div>
     </div>
 </body>

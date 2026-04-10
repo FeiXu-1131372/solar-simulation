@@ -2,33 +2,68 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { registerLocale, setLang, getLang, t, tf, tm, applyLocaleToDOM, onLangChange } from './i18n/index.js';
+import enData from './i18n/en.js';
+import zhData from './i18n/zh.js';
+import taData from './i18n/ta.js';
+import siData from './i18n/si.js';
+
+registerLocale('en', enData);
+registerLocale('zh', zhData);
+registerLocale('ta', taData);
+registerLocale('si', siData);
 
 // --- DATA ---
 const DEG = Math.PI / 180;
 const planetData = [
-    { name: 'Mercury', distance: 60,  size: 2.2,  speed: 0.02,  inclination: 7.00 * DEG, texture: '/mercury.png' },
-    { name: 'Venus',   distance: 95,  size: 3.6,  speed: 0.015, inclination: 3.39 * DEG, texture: '/venus.png'   },
-    { name: 'Earth',   distance: 135, size: 4.0,  speed: 0.012, inclination: 0.00 * DEG, texture: '/earth.png', moons: [
-        { name: 'Moon', distance: 8, size: 1.0, speed: 0.04, texture: '/moon.png', isSyncFocus: true }
+    { name: 'Mercury', distance: 60,  size: 2.2,  speed: 0.02,  inclination: 7.00 * DEG,
+      texture: '/textures/mercury/diffuse_4k.jpg',
+      roughness: 0.9 },
+    { name: 'Venus',   distance: 95,  size: 3.6,  speed: 0.015, inclination: 3.39 * DEG,
+      texture: '/textures/venus/diffuse_4k.jpg',
+      roughness: 0.4, hasAtmosphere: true, atmosphereColor: 0xffa500 },
+    { name: 'Earth',   distance: 135, size: 4.0,  speed: 0.012, inclination: 0.00 * DEG,
+      texture: '/textures/earth/diffuse_4k.jpg', normalMap: '/textures/earth/normal_4k.jpg',
+      specularMap: '/textures/earth/specular_4k.jpg', cloudMap: '/textures/earth/clouds_4k.jpg',
+      roughness: 0.5, hasAtmosphere: true, atmosphereColor: 0x4488ff,
+      moons: [
+        { name: 'Moon', distance: 8, size: 1.0, speed: 0.04,
+          texture: '/textures/moon/diffuse_4k.jpg',
+          isSyncFocus: true }
     ]},
-    { name: 'Mars',    distance: 175, size: 3.2,  speed: 0.010, inclination: 1.85 * DEG, texture: '/mars.png', moons: [
-        { name: 'Phobos', distance: 5,   size: 0.5, speed: 0.08, texture: '/moon.png' },
-        { name: 'Deimos', distance: 7.5, size: 0.4, speed: 0.06, texture: '/moon.png' }
+    { name: 'Mars',    distance: 175, size: 3.2,  speed: 0.010, inclination: 1.85 * DEG,
+      texture: '/textures/mars/diffuse_4k.jpg',
+      roughness: 0.7,
+      moons: [
+        { name: 'Phobos', distance: 5,   size: 0.5, speed: 0.08, texture: '/textures/moon/diffuse_4k.jpg' },
+        { name: 'Deimos', distance: 7.5, size: 0.4, speed: 0.06, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Jupiter', distance: 280, size: 14.5, speed: 0.006, inclination: 1.30 * DEG, texture: '/jupiter.png', moons: [
-        { name: 'Io',       distance: 20, size: 1.2, speed: 0.05, texture: '/moon.png' },
-        { name: 'Europa',   distance: 25, size: 1.1, speed: 0.04, texture: '/moon.png' },
-        { name: 'Ganymede', distance: 30, size: 1.5, speed: 0.03, texture: '/moon.png' },
-        { name: 'Callisto', distance: 36, size: 1.4, speed: 0.02, texture: '/moon.png' }
+    { name: 'Jupiter', distance: 280, size: 14.5, speed: 0.006, inclination: 1.30 * DEG,
+      texture: '/textures/jupiter/diffuse_4k.jpg',
+      roughness: 0.5,
+      moons: [
+        { name: 'Io',       distance: 20, size: 1.2, speed: 0.05, texture: '/textures/moon/diffuse_4k.jpg' },
+        { name: 'Europa',   distance: 25, size: 1.1, speed: 0.04, texture: '/textures/moon/diffuse_4k.jpg' },
+        { name: 'Ganymede', distance: 30, size: 1.5, speed: 0.03, texture: '/textures/moon/diffuse_4k.jpg' },
+        { name: 'Callisto', distance: 36, size: 1.4, speed: 0.02, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Saturn',  distance: 380, size: 12.0, speed: 0.004, inclination: 2.49 * DEG, texture: '/saturn.png', hasRings: true, moons: [
-        { name: 'Titan', distance: 25, size: 2.0, speed: 0.03, texture: '/moon.png' }
+    { name: 'Saturn',  distance: 380, size: 12.0, speed: 0.004, inclination: 2.49 * DEG,
+      texture: '/textures/saturn/diffuse_4k.jpg',
+      roughness: 0.5, hasRings: true, ringTexture: '/textures/saturn/ring_4k.png',
+      moons: [
+        { name: 'Titan', distance: 25, size: 2.0, speed: 0.03, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Uranus',  distance: 480, size: 7.5,  speed: 0.003, inclination: 0.77 * DEG, texture: '/uranus.png', moons: [
-        { name: 'Titania', distance: 15, size: 0.8, speed: 0.05, texture: '/moon.png' }
+    { name: 'Uranus',  distance: 480, size: 7.5,  speed: 0.003, inclination: 0.77 * DEG,
+      texture: '/textures/uranus/diffuse_4k.jpg',
+      roughness: 0.5,
+      moons: [
+        { name: 'Titania', distance: 15, size: 0.8, speed: 0.05, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Neptune', distance: 560, size: 7.2,  speed: 0.002, inclination: 1.77 * DEG, texture: '/neptune.png', moons: [
-        { name: 'Triton', distance: 15, size: 1.0, speed: 0.04, texture: '/moon.png' }
+    { name: 'Neptune', distance: 560, size: 7.2,  speed: 0.002, inclination: 1.77 * DEG,
+      texture: '/textures/neptune/diffuse_4k.jpg',
+      roughness: 0.5,
+      moons: [
+        { name: 'Triton', distance: 15, size: 1.0, speed: 0.04, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
 ];
 
@@ -936,6 +971,34 @@ const missionData = {
   ],
 };
 
+function getMissionsForTarget(targetName) {
+    const i18nMissions = tm(targetName, 0, 'name');
+    if (i18nMissions && i18nMissions !== `missionData.${targetName}.0.name`) {
+        const missions = [];
+        let idx = 0;
+        while (true) {
+            const name = tm(targetName, idx, 'name');
+            if (!name || name === `missionData.${targetName}.${idx}.name`) break;
+            missions.push({
+                name: tm(targetName, idx, 'name') || missionData[targetName]?.[idx]?.name,
+                emoji: tm(targetName, idx, 'emoji') || missionData[targetName]?.[idx]?.emoji,
+                year: tm(targetName, idx, 'year') || missionData[targetName]?.[idx]?.year,
+                type: tm(targetName, idx, 'type') || missionData[targetName]?.[idx]?.type,
+                status: missionData[targetName]?.[idx]?.status || 'historical',
+                agency: missionData[targetName]?.[idx]?.agency || '',
+                rocket: tm(targetName, idx, 'rocket') || missionData[targetName]?.[idx]?.rocket || '',
+                color: missionData[targetName]?.[idx]?.color || 0x4499ff,
+                steps: tm(targetName, idx, 'steps') || missionData[targetName]?.[idx]?.steps || [],
+                discovery: tm(targetName, idx, 'discovery') || missionData[targetName]?.[idx]?.discovery || '',
+                funFact: tm(targetName, idx, 'funFact') || missionData[targetName]?.[idx]?.funFact || '',
+            });
+            idx++;
+        }
+        return missions;
+    }
+    return missionData[targetName] || null;
+}
+
 // --- SCENE SETUP ---
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200000);
@@ -1015,8 +1078,7 @@ scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
 
 // --- TEXTURE LOADER ---
 const textureLoader = new THREE.TextureLoader();
-const sunTex = textureLoader.load('/sun.png');
-const moonTex = textureLoader.load('/moon.png');
+const sunTex = textureLoader.load('/textures/sun/diffuse_4k.jpg');
 
 // --- SUN ---
 const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 64, 64), new THREE.MeshBasicMaterial({ map: sunTex }));
@@ -1383,7 +1445,15 @@ function createLabel(text, isLarge = false) {
     return new CSS2DObject(div);
 }
 
-const sunLabel = createLabel('☀ Sun', true);
+const bodyLabels = []; // { el: HTMLElement, key: string }
+
+function createBodyLabel(nameKey, isLarge = false) {
+    const obj = createLabel(t(`bodies.${nameKey}`) || nameKey, isLarge);
+    bodyLabels.push({ el: obj.element, key: nameKey });
+    return obj;
+}
+
+const sunLabel = createBodyLabel('Sun', true);
 sunLabel.position.set(0, 42, 0);
 scene.add(sunLabel);
 
@@ -1414,7 +1484,7 @@ planetData.forEach((data) => {
     allClickable.push({ mesh: planetMesh, name: data.name, size: data.size });
 
     // Planet Label
-    const label = createLabel(data.name);
+    const label = createBodyLabel(data.name);
     label.position.set(0, data.size + 3, 0);
     planetMesh.add(label);
 
@@ -1426,14 +1496,48 @@ planetData.forEach((data) => {
     orbitLine.rotation.x = Math.PI / 2;
     inclinationGroup.add(orbitLine);
 
-    // Saturn Rings
+    // Saturn Rings - create multiple ring bands for realistic appearance
     if (data.hasRings) {
-        const rings = new THREE.Mesh(
-            new THREE.RingGeometry(data.size * 1.5, data.size * 2.5, 64),
-            new THREE.MeshStandardMaterial({ color: 0xe5e7eb, side: THREE.DoubleSide, transparent: true, opacity: 0.4 })
-        );
-        rings.rotation.x = Math.PI / 2;
-        planetMesh.add(rings);
+        const ringGroup = new THREE.Group();
+        
+        // Main ring bands with gaps (A Ring, B Ring, C Ring)
+        const ringBands = [
+            { inner: 1.2, outer: 1.35, opacity: 0.25 },   // C Ring (inner, faint)
+            { inner: 1.4, outer: 1.95, opacity: 0.7 },   // A Ring (main)
+            { inner: 1.95, outer: 2.15, opacity: 0.5 },  // A Ring outer edge
+        ];
+        
+        ringBands.forEach(band => {
+            const ringGeo = new THREE.RingGeometry(data.size * band.inner, data.size * band.outer, 128);
+            const ringMat = new THREE.MeshStandardMaterial({
+                color: 0xf5f5dc,  // Cream/ivory color
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: band.opacity,
+                roughness: 0.9,
+                metalness: 0.0,
+            });
+            const ring = new THREE.Mesh(ringGeo, ringMat);
+            ring.rotation.x = Math.PI / 2;
+            ringGroup.add(ring);
+        });
+        
+        // Add subtle Cassini division gap highlight
+        const cassiniGeo = new THREE.RingGeometry(data.size * 1.95, data.size * 1.96, 128);
+        const cassiniMat = new THREE.MeshBasicMaterial({
+            color: 0x1a1a1a,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.3
+        });
+        const cassini = new THREE.Mesh(cassiniGeo, cassiniMat);
+        cassini.rotation.x = Math.PI / 2;
+        ringGroup.add(cassini);
+        
+        // Tilt rings to match Saturn's ~27° axial tilt
+        ringGroup.rotation.z = 0.47; // ~27 degrees in radians
+        
+        planetMesh.add(ringGroup);
     }
 
     // Moons
@@ -1445,7 +1549,7 @@ planetData.forEach((data) => {
 
             const mMesh = new THREE.Mesh(
                 new THREE.SphereGeometry(m.size, 32, 32),
-                new THREE.MeshStandardMaterial({ map: moonTex })
+                new THREE.MeshStandardMaterial({ map: textureLoader.load(m.texture) })
             );
             mMesh.position.x = m.distance + data.size;
             mMesh.userData = { name: m.name, size: m.size };
@@ -1460,7 +1564,7 @@ planetData.forEach((data) => {
                 marker.position.z = m.size + 0.01;
                 mMesh.add(marker);
 
-                const moonLabel = createLabel(m.name);
+                const moonLabel = createBodyLabel(m.name);
                 moonLabel.position.set(0, m.size + 2, 0);
                 mMesh.add(moonLabel);
             }
@@ -1493,9 +1597,26 @@ const infoCard = document.getElementById('planet-info-card');
 const launchBtn = document.getElementById('launch-btn');
 
 function renderCard(name) {
-    const data = celestialFacts[name] || {
-        type: 'Celestial Body', emoji: '⭐',
-        fact: 'A fascinating object in our solar system.',
+    const i18nData = tf(name, 'type') ? {
+        type: tf(name, 'type'),
+        fact: tf(name, 'fact'),
+        gravity: tf(name, 'gravity'),
+        day: tf(name, 'day'),
+        year: tf(name, 'year'),
+        temp: tf(name, 'temp'),
+        details: tf(name, 'details'),
+        wow: tf(name, 'wow'),
+        emoji: tf(name, 'emoji'),
+        ministats: tf(name, 'ministats'),
+        statPills: tf(name, 'statPills'),
+        wowStrip: tf(name, 'wowStrip'),
+        learn: tf(name, 'learn'),
+        explore: tf(name, 'explore'),
+        game: tf(name, 'game'),
+    } : null;
+    const data = i18nData || celestialFacts[name] || {
+        type: t('ui.celestialBody'), emoji: '⭐',
+        fact: t('ui.fallbackFact'),
         ministats: [], statPills: [], wowStrip: '',
         learn: [], explore: {}
     };
@@ -1532,10 +1653,10 @@ function renderCard(name) {
     if (name === 'Earth' || name === 'Sun') {
         launchBtn.classList.add('hidden');
     } else {
-        const missions = missionData[name];
+        const missions = getMissionsForTarget(name);
         launchBtn.textContent = missions && missions.length > 1
-            ? `🚀 Choose Mission (${missions.length})`
-            : `🚀 Launch Mission`;
+            ? t('ui.chooseMissionCount', { count: missions.length })
+            : t('ui.launchMission');
         launchBtn.classList.remove('hidden');
     }
 
@@ -1569,9 +1690,18 @@ document.getElementById('tab-learn').addEventListener('click', e => {
     if (card) card.classList.toggle('open');
 });
 
-// Close button
+// Close button - also unfocus the planet
 document.getElementById('info-card-close').addEventListener('click', () => {
     infoCard.classList.add('hidden');
+    // Clear focus state
+    lockedTarget = null;
+    focusTarget = null;
+    isFocusing = false;
+    // Reset camera to default view
+    if (focusInfoEl) {
+        focusInfoEl.textContent = t('ui.focusedSolarSystem');
+        focusInfoEl.style.opacity = '0.6';
+    }
 });
 
 // Drag to move
@@ -1617,7 +1747,7 @@ function focusOn(meshEntry) {
     focusOrbitDist = meshEntry.size * 6 + 20;
 
     if (focusInfoEl) {
-        focusInfoEl.textContent = `📍 Focused: ${meshEntry.name}`;
+        focusInfoEl.textContent = t('ui.focused', { name: meshEntry.name });
         focusInfoEl.style.opacity = '1';
     }
 
@@ -1700,12 +1830,12 @@ const arrClose = document.getElementById('arr-close');
 let activeMission = null; // the currently in-flight mission object
 
 function showMissionPicker(target) {
-    const missions = missionData[target.name];
+    const missions = getMissionsForTarget(target.name);
     if (!missions || missions.length === 0) return;
-    missionPickerSubtitle.textContent = `Destination: ${target.name}`;
+    missionPickerSubtitle.textContent = t('ui.destination', { name: target.name });
     missionCards.innerHTML = '';
     missions.forEach(m => {
-        const statusLabel = m.status === 'active' ? '🟢 Active' : m.status === 'planned' ? '🟡 Planned' : '⚪ Historical';
+        const statusLabel = m.status === 'active' ? t('ui.active') : m.status === 'planned' ? t('ui.planned') : t('ui.historical');
         const card = document.createElement('div');
         card.className = 'mission-card';
         card.innerHTML = `
@@ -1721,6 +1851,7 @@ function showMissionPicker(target) {
             <div class="mc-goal">${m.steps[0]}</div>
             <button class="mc-launch-btn">Launch! 🚀</button>
         `;
+        card.querySelector('.mc-launch-btn').textContent = t('ui.launchBang');
         card.querySelector('.mc-launch-btn').addEventListener('click', () => {
             hideMissionPicker();
             startCountdown(m, target);
@@ -1739,7 +1870,7 @@ missionPickerClose.addEventListener('click', hideMissionPicker);
 function startCountdown(mission, target) {
     countdownOverlay.classList.remove('hidden');
     cdMission.textContent = `${mission.emoji} ${mission.name}`;
-    cdLabel.textContent = `Launching to ${target.name}`;
+    cdLabel.textContent = t('ui.launchingTo', { name: target.name });
     let n = 3;
     cdNumber.textContent = n;
     cdNumber.className = 'cd-number cd-pop';
@@ -1752,7 +1883,7 @@ function startCountdown(mission, target) {
             cdNumber.className = 'cd-number cd-pop';
         } else {
             cdNumber.textContent = '🚀';
-            cdLabel.textContent = 'LIFTOFF!';
+            cdLabel.textContent = t('ui.liftoff');
             cdNumber.className = 'cd-number cd-liftoff';
             clearInterval(tick);
             setTimeout(() => {
@@ -1804,7 +1935,7 @@ function doLaunch(mission, target) {
     mlAgency.textContent = mission.agency;
     mlTarget.textContent = target.name;
     mlBar.style.width = '0%';
-    mlPct.textContent = '0% complete';
+    mlPct.textContent = t('ui.percentComplete', { pct: '0' });
     mlFact.textContent = mission.steps[0];
     missionLog.classList.remove('hidden');
 
@@ -1827,7 +1958,9 @@ function hideMissionGame() {
 }
 
 function launchMissionGame(mission, target) {
-    const gameData = celestialFacts[target.name] && celestialFacts[target.name].game;
+    const gameData = (tf(target.name, 'game') && tf(target.name, 'game') !== `celestialFacts.${target.name}.game`)
+        ? tf(target.name, 'game')
+        : (celestialFacts[target.name] && celestialFacts[target.name].game);
     if (!gameData) { onGameSuccess(mission, target); return; }
 
     document.getElementById('mg-mission-label').textContent = `${mission.emoji} ${mission.name} → ${target.name}`;
@@ -1835,7 +1968,7 @@ function launchMissionGame(mission, target) {
     const types = ['gauntlet', 'hazard', 'control'];
     const type = types[Math.floor(Math.random() * types.length)];
 
-    const badges = { gauntlet: '🏁 GAUNTLET', hazard: '🕹️ HAZARD RUN', control: '📡 MISSION CONTROL' };
+    const badges = { gauntlet: t('ui.gauntlet'), hazard: t('ui.hazardRun'), control: t('ui.missionControl') };
     document.getElementById('mg-type-badge').textContent = badges[type];
 
     document.getElementById('mission-game-overlay').classList.remove('hidden');
@@ -1848,7 +1981,7 @@ function launchMissionGame(mission, target) {
 function onGameSuccess(mission, target) {
     hideMissionGame();
     arrEmoji.textContent = mission.emoji;
-    arrMission.textContent = `${mission.name} has arrived at ${target.name}!`;
+    arrMission.textContent = t('ui.arrivedAt', { name: mission.name, name2: target.name });
     arrDiscovery.textContent = '🔭 ' + mission.discovery;
     arrFunfact.textContent = mission.funFact;
     arrivalPanel.classList.remove('hidden');
@@ -1856,9 +1989,9 @@ function onGameSuccess(mission, target) {
 
 function onGameFail(mission, target, gameData) {
     hideMissionGame();
-    document.getElementById('ml-mission-sub').textContent = `${mission.name} · ${target.name} · ${mission.year}`;
+    document.getElementById('ml-mission-sub').textContent = t('ui.missionSubtitle', { name: mission.name, name2: target.name, year: mission.year });
     document.getElementById('ml-reason').textContent = gameData.failReason;
-    document.getElementById('ml-real-fact').innerHTML = `<strong>Real fact:</strong> ${gameData.realFact}`;
+    document.getElementById('ml-real-fact').innerHTML = `${t('ui.realFactLabel')} ${gameData.realFact}`;
     document.getElementById('mission-lost-panel').classList.remove('hidden');
 }
 
@@ -1885,7 +2018,7 @@ function runGauntlet(mission, target, gameData) {
                 `<div class="stage-dot ${j < i ? 'done' : j === i ? 'active' : ''}"></div>`
             ).join('');
 
-        document.getElementById('mg-stage-title').textContent = `${stage.icon} Stage ${i + 1}: ${stage.name}`;
+        document.getElementById('mg-stage-title').textContent = t('ui.stageTitle', { icon: stage.icon, i: i + 1, name: stage.name });
         document.getElementById('mg-stage-prompt').textContent = stage.prompt;
         document.getElementById('mg-timer-text').textContent = '';
 
@@ -2396,6 +2529,33 @@ const toggleUiBtn = document.getElementById('toggle-ui-btn');
 const uiContainer = document.getElementById('ui-container');
 const cpModeTitle = document.getElementById('cp-mode-title');
 
+document.getElementById('lang-select').addEventListener('change', e => {
+    setLang(e.target.value);
+    applyLocaleToDOM();
+    bodyLabels.forEach(({ el, key }) => { el.textContent = t(`bodies.${key}`) || key; });
+    cpModeTitle.textContent = isGalaxyView ? t('ui.galaxyView') : t('ui.solarSystem');
+    if (lockedTarget) {
+        focusInfoEl.textContent = t('ui.focused', { name: lockedTarget.name });
+    } else if (!isGalaxyView) {
+        focusInfoEl.textContent = t('ui.focusedSolarSystem');
+    } else {
+        focusInfoEl.textContent = t('ui.milkyWay');
+    }
+    updateChip('toggle-sync', 'pill-sync', isSynchronous, 'chip-on', '#38bdf8', t('ui.syncOn'), t('ui.syncOff'));
+    updateChip('pause-anim', 'pill-pause', isPaused, 'chip-pause-on', '#fbbf24', t('ui.paused'), t('ui.running'), 'pill-pause-on');
+    updateChip('toggle-labels', 'pill-labels', showLabels, 'chip-on', '#38bdf8', t('ui.labels'), t('ui.labels'));
+    updateChip('toggle-galaxy-btn', 'pill-galaxy', galaxyVisible, 'chip-galaxy', '#a78bfa', t('ui.galaxy'), t('ui.galaxy'), 'pill-galaxy-on');
+    if (lockedTarget && !infoCard.classList.contains('hidden')) {
+        renderCard(lockedTarget.name);
+    }
+});
+
+onLangChange(() => {
+    if (lockedTarget && !infoCard.classList.contains('hidden')) {
+        renderCard(lockedTarget.name);
+    }
+});
+
 // Sync a chip button + its header status pill to a boolean state.
 function updateChip(chipId, pillId, isActive, activeChipClass, activeDotColor, activeLabel, inactiveLabel, activePillClass = 'pill-on') {
     const chip = document.getElementById(chipId);
@@ -2423,19 +2583,19 @@ speedSlider.addEventListener('input', (e) => {
 
 toggleBtn.addEventListener('click', () => {
     isSynchronous = !isSynchronous;
-    updateChip('toggle-sync', 'pill-sync', isSynchronous, 'chip-on', '#38bdf8', 'Sync ON', 'Sync OFF');
+    updateChip('toggle-sync', 'pill-sync', isSynchronous, 'chip-on', '#38bdf8', t('ui.syncOn'), t('ui.syncOff'));
 });
 
 const toggleLabelsBtn = document.getElementById('toggle-labels');
 toggleLabelsBtn.addEventListener('click', () => {
     showLabels = !showLabels;
     labelRenderer.domElement.style.display = showLabels ? 'block' : 'none';
-    updateChip('toggle-labels', 'pill-labels', showLabels, 'chip-on', '#38bdf8', 'Labels', 'Labels');
+    updateChip('toggle-labels', 'pill-labels', showLabels, 'chip-on', '#38bdf8', t('ui.labels'), t('ui.labels'));
 });
 
 pauseBtn.addEventListener('click', () => {
     isPaused = !isPaused;
-    updateChip('pause-anim', 'pill-pause', isPaused, 'chip-pause-on', '#fbbf24', 'Paused', 'Running', 'pill-pause-on');
+    updateChip('pause-anim', 'pill-pause', isPaused, 'chip-pause-on', '#fbbf24', t('ui.paused'), t('ui.running'), 'pill-pause-on');
 });
 
 document.getElementById('reset-pos').addEventListener('click', () => {
@@ -2445,9 +2605,9 @@ document.getElementById('reset-pos').addEventListener('click', () => {
     lockedTarget = null;
     isGalaxyView = false;
     galaxyTransition = null;
-    cpModeTitle.textContent = '🌌 Solar System';
+    cpModeTitle.textContent = t('ui.solarSystem');
     if (focusInfoEl) focusInfoEl.style.opacity = '0.6';
-    if (focusInfoEl) focusInfoEl.textContent = '📍 Focused: Solar System';
+    if (focusInfoEl) focusInfoEl.textContent = t('ui.focusedSolarSystem');
     if (infoCard) infoCard.classList.add('hidden');
     controls.target.set(0, 0, 0);
     camera.position.set(0, 800, 400);
@@ -2458,22 +2618,22 @@ const toggleGalaxyBtn = document.getElementById('toggle-galaxy-btn');
 toggleGalaxyBtn.addEventListener('click', () => {
     galaxyVisible = !galaxyVisible;
     galaxyObjects.forEach(o => { o.visible = galaxyVisible; });
-    updateChip('toggle-galaxy-btn', 'pill-galaxy', galaxyVisible, 'chip-galaxy', '#a78bfa', 'Galaxy', 'Galaxy', 'pill-galaxy-on');
+    updateChip('toggle-galaxy-btn', 'pill-galaxy', galaxyVisible, 'chip-galaxy', '#a78bfa', t('ui.galaxy'), t('ui.galaxy'), 'pill-galaxy-on');
 });
 
 const galaxyBtn = document.getElementById('galaxy-view-btn');
 galaxyBtn.addEventListener('click', () => {
     isGalaxyView = !isGalaxyView;
-    cpModeTitle.textContent = isGalaxyView ? '🔭 Galaxy View' : '🌌 Solar System';
+    cpModeTitle.textContent = isGalaxyView ? t('ui.galaxyView') : t('ui.solarSystem');
     if (isGalaxyView) {
         galaxyTransition = { cam: GALAXY_CAM.clone(), tgt: GCENTER.clone() };
         lockedTarget = null;
         isFocusing = false;
         if (infoCard) infoCard.classList.add('hidden');
-        if (focusInfoEl) { focusInfoEl.textContent = '🌌 Milky Way Galaxy'; focusInfoEl.style.opacity = '1'; }
+        if (focusInfoEl) { focusInfoEl.textContent = t('ui.milkyWay'); focusInfoEl.style.opacity = '1'; }
     } else {
         galaxyTransition = { cam: SOLAR_CAM.clone(), tgt: SOLAR_LOOK.clone() };
-        if (focusInfoEl) { focusInfoEl.textContent = '📍 Focused: Solar System'; focusInfoEl.style.opacity = '0.6'; }
+        if (focusInfoEl) { focusInfoEl.textContent = t('ui.focusedSolarSystem'); focusInfoEl.style.opacity = '0.6'; }
     }
 });
 
@@ -2513,15 +2673,15 @@ function animate() {
         controls.target.copy(worldPos);
 
         if (isFocusing) {
-            // Fly-in: smoothly move camera to a close orbit position
-            // Recalculate desired cam position each frame so it tracks the moving planet
-            const camOffset = camera.position.clone().sub(worldPos).normalize().multiplyScalar(focusOrbitDist);
-            const desiredCamPos = worldPos.clone().add(camOffset);
+            if (!lockedTarget._camOffset) {
+                lockedTarget._camOffset = camera.position.clone().sub(worldPos).normalize();
+            }
+            const desiredCamPos = worldPos.clone().add(lockedTarget._camOffset.clone().multiplyScalar(focusOrbitDist));
             camera.position.lerp(desiredCamPos, 0.08);
 
-            // Stop fly-in when close enough (camera is at orbit distance)
             if (camera.position.distanceTo(worldPos) < focusOrbitDist * 1.1) {
                 isFocusing = false;
+                delete lockedTarget._camOffset;
             }
         }
     }
@@ -2571,7 +2731,7 @@ function animate() {
                 const rawPct = Math.min(r.distTraveled / r.totalDist, 0.99);
                 const pct = Math.round(rawPct * 100);
                 mlBar.style.width = pct + '%';
-                mlPct.textContent = pct + '% complete';
+                mlPct.textContent = t('ui.percentComplete', { pct });
                 // Show educational steps at 0%, 33%, 66%
                 const stepIdx = Math.min(Math.floor(rawPct / 0.33), r.mission.steps.length - 2);
                 if (stepIdx !== r.lastStepShown) {
