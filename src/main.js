@@ -2161,9 +2161,31 @@ const bodyLabels = []; // { el: HTMLElement, key: string }
 
 function createBodyLabel(nameKey, isLarge = false) {
     const obj = createLabel(t(`bodies.${nameKey}`) || nameKey, isLarge);
+    obj.element.dataset.planet = nameKey;
     bodyLabels.push({ el: obj.element, key: nameKey });
     return obj;
 }
+
+// Click on planet label → focus that planet
+let _labelPointerDown = null;
+document.addEventListener('pointerdown', (e) => {
+    const label = e.target.closest('.planet-label');
+    if (!label) return;
+    _labelPointerDown = { x: e.clientX, y: e.clientY, label };
+});
+document.addEventListener('pointerup', (e) => {
+    if (!_labelPointerDown) return;
+    const label = e.target.closest('.planet-label');
+    if (!label || label !== _labelPointerDown.label) { _labelPointerDown = null; return; }
+    const dist = Math.hypot(e.clientX - _labelPointerDown.x, e.clientY - _labelPointerDown.y);
+    _labelPointerDown = null;
+    if (dist > 10) return;
+    const name = label.dataset.planet;
+    if (name) {
+        const entry = allClickable.find(c => c.name === name);
+        if (entry) focusOn(entry);
+    }
+});
 
 const sunLabel = createBodyLabel('Sun', true);
 sunLabel.position.set(0, 42, 0);

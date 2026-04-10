@@ -252,7 +252,8 @@ button:active {
     border: 1px solid rgba(56, 189, 248, 0.35);
     white-space: nowrap;
     user-select: none;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
     transition: opacity 0.3s;
 }
 
