@@ -1423,6 +1423,7 @@ function endCinematic(skipToGame) {
     motionBlurPass.enabled = false;
     motionBlurPass.uniforms.intensity.value = 0;
     cinematicFlash.style.opacity = '0';
+    cinematicFlash.style.background = 'white';
 
     // Reset rocket scale
     rocketObj.mesh.scale.set(1, 1, 1);
@@ -1620,6 +1621,10 @@ function updateCinematicWarp(dt) {
     const purpleShift = Math.sin(progress * Math.PI) * 0.3;
     tunnelMat.uniforms.color.value.setRGB(0.27 + purpleShift, 0.33, 1.0);
 
+    // Scene-wide blue/purple tint via overlay
+    const tintIntensity = Math.sin(progress * Math.PI) * 0.15;
+    cinematicFlash.style.background = `rgba(40, 20, 120, ${tintIntensity})`;
+
     const flicker = 0.7 + Math.random() * 0.6;
     cs.rocketObj.fireMesh.scale.set(1, 2.5 * flicker, 1);
     cs.rocketObj.fireMesh.material.color.set(0x4488ff);
@@ -1669,6 +1674,9 @@ function updateCinematicWarpExit(dt) {
     chromaticPass.uniforms.intensity.value = 0.012 * fadeOut;
     motionBlurPass.uniforms.intensity.value = 0.003 * fadeOut;
     updateEnergyWaves(dt);
+
+    // Fade out color tint
+    cinematicFlash.style.background = `rgba(40, 20, 120, ${fadeOut * 0.15})`;
 
     cs.rocketObj.fireMesh.material.color.lerp(new THREE.Color(0xffaa00), progress);
     if (rocket.boosterFlames) {
@@ -1736,7 +1744,21 @@ function updateCinematicFlyby(dt) {
         }
     });
 
+    // Fade out in last 15% of flyby
+    if (progress > 0.85) {
+        const fadeProgress = (progress - 0.85) / 0.15;
+        cinematicFlash.style.background = 'black';
+        cinematicFlash.style.opacity = String(fadeProgress);
+    }
+
     if (progress >= 1) {
+        // Brief hold on black, then transition
+        cinematicFlash.style.opacity = '1';
+        cinematicFlash.style.background = 'black';
+        setTimeout(() => {
+            cinematicFlash.style.opacity = '0';
+            cinematicFlash.style.background = 'white';
+        }, 300);
         endCinematic(true);
     }
 }
