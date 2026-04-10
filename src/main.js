@@ -13,6 +13,9 @@ import taData from './i18n/ta.js';
 import siData from './i18n/si.js';
 
 registerLocale('en', enData);
+
+// Mobile detection for performance scaling
+const isMobile = window.innerWidth <= 480 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 registerLocale('zh', zhData);
 registerLocale('ta', taData);
 registerLocale('si', siData);
@@ -1122,12 +1125,23 @@ function getMissionsForTarget(targetName) {
 // --- SCENE SETUP ---
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 200000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
+const renderer = new THREE.WebGLRenderer({ antialias: !isMobile });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.NoToneMapping;
 renderer.toneMappingExposure = 1.0;
 document.getElementById('app').appendChild(renderer.domElement);
+
+// Handle WebGL context loss (common on mobile when GPU runs low on memory)
+renderer.domElement.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    console.warn('WebGL context lost — will restore');
+});
+renderer.domElement.addEventListener('webglcontextrestored', () => {
+    console.log('WebGL context restored');
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
+});
 
 // --- POST-PROCESSING ---
 const composer = new EffectComposer(renderer);
@@ -1970,7 +1984,7 @@ scene.add(sunLight);
 
 // --- BACKGROUND STARS ---
 
-const starCount = 4000;
+const starCount = isMobile ? 1500 : 4000;
 const starPos   = new Float32Array(starCount * 3);
 const starCol   = new Float32Array(starCount * 3);
 const starColors = [
@@ -2009,10 +2023,39 @@ scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
 
 // --- TEXTURE LOADER ---
 const textureLoader = new THREE.TextureLoader();
+
+// On mobile, downscale textures to avoid GPU memory exhaustion
+function downscaleTexture(texture, maxSize) {
+    if (!isMobile) return texture;
+    const img = texture.image;
+    if (!img || (img.width <= maxSize && img.height <= maxSize)) return texture;
+    const scale = maxSize / Math.max(img.width, img.height);
+    const w = Math.round(img.width * scale);
+    const h = Math.round(img.height * scale);
+    const canvas = document.createElement('canvas');
+    canvas.width = w; canvas.height = h;
+    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+    texture.image = canvas;
+    texture.needsUpdate = true;
+    return texture;
+}
+
+// Wrap textureLoader.load so all planet/moon textures are auto-downscaled on mobile
+const _origLoad = textureLoader.load.bind(textureLoader);
+if (isMobile) {
+    textureLoader.load = function(url, onLoad, onProgress, onError) {
+        return _origLoad(url, (tex) => {
+            downscaleTexture(tex, 1024);
+            if (onLoad) onLoad(tex);
+        }, onProgress, onError);
+    };
+}
+
 const sunTex = textureLoader.load('/textures/sun/diffuse_4k.jpg');
 
-// Equirectangular star panorama background
-textureLoader.load('/textures/background/stars_milky_way_8k.jpg', (texture) => {
+// Equirectangular star panorama background — use original loader for custom maxSize
+_origLoad('/textures/background/stars_milky_way_8k.jpg', (texture) => {
+    if (isMobile) downscaleTexture(texture, 2048);
     texture.mapping = THREE.EquirectangularReflectionMapping;
     texture.colorSpace = THREE.SRGBColorSpace;
     scene.background = texture;
@@ -2048,7 +2091,7 @@ const sunMaterial = new THREE.ShaderMaterial({
 });
 sunTex.wrapS = THREE.RepeatWrapping;
 sunTex.wrapT = THREE.RepeatWrapping;
-const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 64, 64), sunMaterial);
+const sun = new THREE.Mesh(new THREE.SphereGeometry(35, isMobile ? 32 : 64, isMobile ? 32 : 64), sunMaterial);
 scene.add(sun);
 let sunCurrentSize = 35;
 let sunTargetSize = 35;
@@ -2177,7 +2220,7 @@ planetData.forEach((data) => {
         materialOptions.emissiveIntensity = 0.3;
     }
 
-    const segments = data.size >= 7 ? 128 : 64;
+    const segments = isMobile ? 32 : (data.size >= 7 ? 128 : 64);
     const planetMesh = new THREE.Mesh(
         new THREE.SphereGeometry(data.size, segments, segments),
         new THREE.MeshStandardMaterial(materialOptions)
@@ -2344,7 +2387,7 @@ planetData.forEach((data) => {
                 moonMatOptions.bumpScale = 0.5;
             }
             const mMesh = new THREE.Mesh(
-                new THREE.SphereGeometry(m.size, 64, 64),
+                new THREE.SphereGeometry(m.size, isMobile ? 24 : 64, isMobile ? 24 : 64),
                 new THREE.MeshStandardMaterial(moonMatOptions)
             );
             mMesh.position.x = m.distance + data.size;
@@ -5709,7 +5752,11 @@ function animate() {
     }
 
     controls.update();
-    composer.render();
+    if (isMobile) {
+        renderer.render(scene, camera);
+    } else {
+        composer.render();
+    }
     labelRenderer.render(scene, camera);
 }
 animate();
