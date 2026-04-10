@@ -1349,6 +1349,382 @@ function clearEnergyWaves() {
     energyWaves.length = 0;
 }
 
+// --- CINEMATIC STATE MACHINE ---
+const cinematicSkipBtn = document.getElementById('cinematic-skip');
+const cinematicFlash = document.getElementById('cinematic-flash');
+let cinematicState = null;
+let preCinematicCamera = null;
+let waveSpawnTimer = 0;
+
+const PHASE_DURATIONS = {
+    launch: 1.5,
+    ascent: 1.0,
+    warp: 1.5,
+    warpExit: 0.5,
+    deceleration: 0.5,
+    flyby: 2.0,
+};
+
+function startCinematic(rocketObj) {
+    preCinematicCamera = {
+        position: camera.position.clone(),
+        quaternion: camera.quaternion.clone(),
+        controlsTarget: controls.target.clone(),
+    };
+    controls.enabled = false;
+
+    const earthPos = rocketObj.mesh.position.clone();
+    const targetPos = new THREE.Vector3();
+    rocketObj.target.mesh.getWorldPosition(targetPos);
+    const direction = targetPos.clone().sub(earthPos).normalize();
+
+    cinematicState = {
+        phase: 'launch',
+        elapsed: 0,
+        rocketObj,
+        earthPos: earthPos.clone(),
+        targetPos,
+        direction,
+        totalDist: earthPos.distanceTo(targetPos),
+        shakeIntensity: 0,
+        shakeDecay: 0,
+    };
+
+    cinematicSkipBtn.classList.remove('hidden');
+
+    const camOffset = direction.clone().multiplyScalar(-3)
+        .add(new THREE.Vector3(0, -1.5, 0))
+        .add(new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(2));
+    camera.position.copy(earthPos).add(camOffset);
+    camera.lookAt(earthPos.clone().add(new THREE.Vector3(0, 2, 0)));
+}
+
+function endCinematic(skipToGame) {
+    if (!cinematicState) return;
+    const { rocketObj } = cinematicState;
+
+    updateStarStreaks(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+    updateParticleTunnel(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+    clearEnergyWaves();
+    chromaticPass.enabled = false;
+    chromaticPass.uniforms.intensity.value = 0;
+    motionBlurPass.enabled = false;
+    motionBlurPass.uniforms.intensity.value = 0;
+    cinematicFlash.style.opacity = '0';
+
+    scene.remove(rocketObj.mesh);
+    scene.remove(rocketObj.trailLine);
+    const idx = activeRockets.indexOf(rocketObj);
+    if (idx !== -1) activeRockets.splice(idx, 1);
+    if (activeMission === rocketObj) activeMission = null;
+
+    missionLog.classList.add('hidden');
+    cinematicSkipBtn.classList.add('hidden');
+
+    const targetPos = new THREE.Vector3();
+    rocketObj.target.mesh.getWorldPosition(targetPos);
+    const orbitDist = (rocketObj.target.size || 4) * 3;
+    camera.position.copy(targetPos).add(new THREE.Vector3(orbitDist, orbitDist * 0.5, orbitDist));
+    controls.target.copy(targetPos);
+    controls.enabled = true;
+
+    lockedTarget = rocketObj.target;
+    isFocusing = false;
+
+    cinematicState = null;
+    preCinematicCamera = null;
+    waveSpawnTimer = 0;
+
+    if (skipToGame) {
+        launchMissionGame(rocketObj.mission, rocketObj.target);
+    }
+}
+
+cinematicSkipBtn.addEventListener('click', () => endCinematic(true));
+document.addEventListener('keydown', (e) => {
+    if (cinematicState && (e.key === 'Escape' || e.key === ' ')) {
+        e.preventDefault();
+        endCinematic(true);
+    }
+});
+
+function updateCinematicLaunch(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.launch;
+    const rocket = cs.rocketObj.mesh;
+
+    const easeIn = progress * progress;
+    const liftDist = easeIn * 8;
+    rocket.position.copy(cs.earthPos).addScaledVector(cs.direction, liftDist);
+
+    if (cs.elapsed < 0.5) {
+        const jitter = (1 - cs.elapsed / 0.5) * 0.02;
+        rocket.position.x += (Math.random() - 0.5) * jitter;
+        rocket.position.z += (Math.random() - 0.5) * jitter;
+    }
+
+    const up = new THREE.Vector3(0, 1, 0);
+    rocket.quaternion.slerp(
+        new THREE.Quaternion().setFromUnitVectors(up, cs.direction), 0.2
+    );
+
+    const camLookTarget = rocket.position.clone().add(cs.direction.clone().multiplyScalar(3));
+    camera.lookAt(camLookTarget);
+
+    if (cs.elapsed < 0.3) {
+        const shakeAmt = 0.03 * (1 - cs.elapsed / 0.3);
+        camera.position.x += (Math.random() - 0.5) * shakeAmt;
+        camera.position.y += (Math.random() - 0.5) * shakeAmt;
+    }
+
+    if (cs.elapsed < 0.5) {
+        waveSpawnTimer += dt;
+        if (waveSpawnTimer >= 0.1) {
+            waveSpawnTimer = 0;
+            const basePos = rocket.position.clone().addScaledVector(cs.direction, -2);
+            spawnEnergyWave(basePos, cs.direction);
+            if (energyWaves.length > 0) {
+                energyWaves[energyWaves.length - 1].mesh.material.color.set(0xff8800);
+            }
+        }
+        updateEnergyWaves(dt);
+    }
+
+    const flameScale = 0.5 + progress * 1.5;
+    cs.rocketObj.fireMesh.scale.set(1, flameScale * (0.7 + Math.random() * 0.6), 1);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => bf.scale.set(1, flameScale * (0.6 + Math.random() * 0.8), 1));
+    }
+
+    if (cs.elapsed >= PHASE_DURATIONS.launch) {
+        clearEnergyWaves();
+        cs.phase = 'ascent';
+        cs.elapsed = 0;
+    }
+}
+
+function updateCinematicAscent(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.ascent;
+    const rocket = cs.rocketObj.mesh;
+
+    const accelDist = 8 + progress * progress * 15;
+    rocket.position.copy(cs.earthPos).addScaledVector(cs.direction, accelDist);
+
+    const up = new THREE.Vector3(0, 1, 0);
+    rocket.quaternion.slerp(
+        new THREE.Quaternion().setFromUnitVectors(up, cs.direction), 0.3
+    );
+
+    const right = new THREE.Vector3().crossVectors(cs.direction, new THREE.Vector3(0, 1, 0)).normalize();
+    const chaseCamOffset = cs.direction.clone().multiplyScalar(-6)
+        .add(new THREE.Vector3(0, 3, 0))
+        .add(right.clone().multiplyScalar(1.5));
+    const desiredCamPos = rocket.position.clone().add(chaseCamOffset);
+    camera.position.lerp(desiredCamPos, 0.08);
+    camera.lookAt(rocket.position.clone().addScaledVector(cs.direction, 5));
+
+    const flicker = 0.7 + Math.random() * 0.6;
+    cs.rocketObj.fireMesh.scale.set(1, 2.0 * flicker, 1);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => bf.scale.set(1, 1.5 * (0.6 + Math.random() * 0.8), 1));
+    }
+
+    if (progress > 0.7) {
+        const warpProgress = (progress - 0.7) / 0.3;
+        cinematicFlash.style.opacity = String(warpProgress * 0.8);
+        const shakeAmt = warpProgress * 0.05;
+        camera.position.x += (Math.random() - 0.5) * shakeAmt;
+        camera.position.y += (Math.random() - 0.5) * shakeAmt;
+        updateStarStreaks(rocket.position, cs.direction, warpProgress * 0.5, 0.5 + warpProgress * 2);
+        chromaticPass.enabled = true;
+        chromaticPass.uniforms.intensity.value = warpProgress * 0.01;
+        cs.rocketObj.fireMesh.material.color.lerp(new THREE.Color(0x4488ff), warpProgress * 0.5);
+    }
+
+    if (cs.elapsed >= PHASE_DURATIONS.ascent) {
+        cs.phase = 'warp';
+        cs.elapsed = 0;
+        cinematicFlash.style.opacity = '0.8';
+        setTimeout(() => { if (cinematicState && cinematicState.phase === 'warp') cinematicFlash.style.opacity = '0'; }, 200);
+    }
+}
+
+function updateCinematicWarp(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.warp;
+    const rocket = cs.rocketObj.mesh;
+
+    const warpStart = cs.earthPos.clone().addScaledVector(cs.direction, 25);
+    const warpEnd = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 5);
+    rocket.position.lerpVectors(warpStart, warpEnd, progress);
+
+    const up = new THREE.Vector3(0, 1, 0);
+    rocket.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(up, cs.direction));
+
+    const right = new THREE.Vector3().crossVectors(cs.direction, new THREE.Vector3(0, 1, 0)).normalize();
+    const upDir = new THREE.Vector3().crossVectors(right, cs.direction).normalize();
+    const sideDist = 8 + Math.sin(cs.elapsed * 2) * 1.5;
+    const upDist = 2 + Math.sin(cs.elapsed * 1.3) * 1;
+    const camPos = rocket.position.clone()
+        .addScaledVector(right, sideDist)
+        .addScaledVector(upDir, upDist)
+        .addScaledVector(cs.direction, -2);
+    camera.position.copy(camPos);
+    camera.lookAt(rocket.position);
+
+    updateStarStreaks(rocket.position, cs.direction, 0.9, 4 + Math.sin(cs.elapsed * 3) * 1);
+    updateParticleTunnel(rocket.position, cs.direction, 0.8, dt);
+    chromaticPass.uniforms.intensity.value = 0.012 + Math.sin(cs.elapsed * 4) * 0.003;
+    motionBlurPass.enabled = true;
+    motionBlurPass.uniforms.intensity.value = 0.003;
+    motionBlurPass.uniforms.direction.value.set(0.5, 0.0);
+
+    waveSpawnTimer += dt;
+    if (waveSpawnTimer >= 0.3) {
+        waveSpawnTimer = 0;
+        spawnEnergyWave(rocket.position.clone(), cs.direction);
+    }
+    updateEnergyWaves(dt);
+
+    const purpleShift = Math.sin(progress * Math.PI) * 0.3;
+    tunnelMat.uniforms.color.value.setRGB(0.27 + purpleShift, 0.33, 1.0);
+
+    const flicker = 0.7 + Math.random() * 0.6;
+    cs.rocketObj.fireMesh.scale.set(1, 2.5 * flicker, 1);
+    cs.rocketObj.fireMesh.material.color.set(0x4488ff);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => {
+            bf.scale.set(1, 2.0 * (0.6 + Math.random() * 0.8), 1);
+            bf.material.color.set(0x3377ee);
+        });
+    }
+
+    if (activeMission === cs.rocketObj) {
+        const pct = Math.round(progress * 100);
+        mlBar.style.width = pct + '%';
+        mlPct.textContent = t('ui.percentComplete', { pct });
+        const stepIdx = Math.min(Math.floor(progress / 0.33), cs.rocketObj.mission.steps.length - 2);
+        if (stepIdx !== cs.rocketObj.lastStepShown) {
+            cs.rocketObj.lastStepShown = stepIdx;
+            mlFact.textContent = cs.rocketObj.mission.steps[stepIdx + 1] || cs.rocketObj.mission.steps[cs.rocketObj.mission.steps.length - 1];
+            mlFact.className = 'ml-fact ml-fact-new';
+            setTimeout(() => { mlFact.className = 'ml-fact'; }, 600);
+        }
+    }
+
+    if (cs.elapsed >= PHASE_DURATIONS.warp) {
+        cs.phase = 'warpExit';
+        cs.elapsed = 0;
+        cinematicFlash.style.opacity = '0.7';
+        setTimeout(() => { if (cinematicState) cinematicFlash.style.opacity = '0'; }, 250);
+    }
+}
+
+function updateCinematicWarpExit(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.warpExit;
+    const rocket = cs.rocketObj.mesh;
+
+    const nearTarget = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 5);
+    rocket.position.copy(nearTarget);
+
+    const shakeAmt = 0.04 * (1 - progress);
+    camera.position.x += (Math.random() - 0.5) * shakeAmt;
+    camera.position.y += (Math.random() - 0.5) * shakeAmt;
+
+    const fadeOut = 1 - progress;
+    updateStarStreaks(rocket.position, cs.direction, fadeOut * 0.9, 4 * fadeOut);
+    updateParticleTunnel(rocket.position, cs.direction, fadeOut * 0.8, dt);
+    chromaticPass.uniforms.intensity.value = 0.012 * fadeOut;
+    motionBlurPass.uniforms.intensity.value = 0.003 * fadeOut;
+    updateEnergyWaves(dt);
+
+    cs.rocketObj.fireMesh.material.color.lerp(new THREE.Color(0xffaa00), progress);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => bf.material.color.lerp(new THREE.Color(0xff6600), progress));
+    }
+
+    if (progress >= 1) {
+        cs.phase = 'deceleration';
+        cs.elapsed = 0;
+        chromaticPass.enabled = false;
+        motionBlurPass.enabled = false;
+    }
+}
+
+function updateCinematicDeceleration(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.deceleration;
+    const rocket = cs.rocketObj.mesh;
+
+    const easeOut = 1 - (1 - progress) * (1 - progress);
+    const startPos = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 5);
+    const endPos = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 2.5);
+    rocket.position.lerpVectors(startPos, endPos, easeOut);
+
+    const right = new THREE.Vector3().crossVectors(cs.direction, new THREE.Vector3(0, 1, 0)).normalize();
+    const sweepAngle = progress * Math.PI * 0.6;
+    const camDist = 10;
+    const camPos = rocket.position.clone()
+        .addScaledVector(cs.direction, -camDist * Math.cos(sweepAngle))
+        .addScaledVector(right, camDist * Math.sin(sweepAngle))
+        .add(new THREE.Vector3(0, 3, 0));
+    camera.position.copy(camPos);
+    camera.lookAt(rocket.position);
+
+    const reverseFlame = 1 - easeOut;
+    cs.rocketObj.fireMesh.scale.set(1, reverseFlame * (0.7 + Math.random() * 0.6), 1);
+
+    if (progress >= 1) {
+        cs.phase = 'flyby';
+        cs.elapsed = 0;
+        missionLog.classList.add('hidden');
+    }
+}
+
+function updateCinematicFlyby(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.flyby;
+    const targetSize = cs.rocketObj.target.size || 4;
+
+    const planetPos = new THREE.Vector3();
+    cs.rocketObj.target.mesh.getWorldPosition(planetPos);
+
+    const orbitRadius = targetSize * 3;
+    const angle = progress * Math.PI * 2;
+    const camX = planetPos.x + orbitRadius * Math.cos(angle);
+    const camZ = planetPos.z + orbitRadius * Math.sin(angle);
+    const camY = planetPos.y + orbitRadius * 0.4 * Math.sin(progress * Math.PI);
+    camera.position.set(camX, camY, camZ);
+    camera.lookAt(planetPos);
+
+    const rocketOpacity = Math.max(0, 1 - progress * 3);
+    cs.rocketObj.mesh.traverse(child => {
+        if (child.material && child.material.transparent) {
+            child.material.opacity = rocketOpacity;
+        }
+    });
+
+    if (progress >= 1) {
+        endCinematic(true);
+    }
+}
+
+function updateCinematic(dt) {
+    if (!cinematicState) return;
+    cinematicState.elapsed += dt;
+
+    switch (cinematicState.phase) {
+        case 'launch':       updateCinematicLaunch(dt); break;
+        case 'ascent':       updateCinematicAscent(dt); break;
+        case 'warp':         updateCinematicWarp(dt); break;
+        case 'warpExit':     updateCinematicWarpExit(dt); break;
+        case 'deceleration': updateCinematicDeceleration(dt); break;
+        case 'flyby':        updateCinematicFlyby(dt); break;
+    }
+}
+
 // CSS2D Renderer for labels
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
