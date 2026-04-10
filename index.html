@@ -71,7 +71,26 @@
         DRAG TO ROTATE &bull; SCROLL TO ZOOM &bull; CLICK PLANET TO FOCUS
     </div>
 
-    <div id="focus-info">📍 Focused: Solar System</div>
+    <div id="planet-nav">
+        <div class="nav-dot" data-planet="Sun"     style="--dot-color:#ffcc00" title="Sun"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Mercury" style="--dot-color:#8c8c8c" title="Mercury"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Venus"   style="--dot-color:#e8a735" title="Venus"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Earth"   style="--dot-color:#4488ff" title="Earth"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Mars"    style="--dot-color:#c1440e" title="Mars"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Jupiter" style="--dot-color:#c8a55a" title="Jupiter"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Saturn"  style="--dot-color:#e8c46a" title="Saturn"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Uranus"  style="--dot-color:#7de8e8" title="Uranus"><span class="nav-dot-circle"></span></div>
+        <span class="nav-sep">·</span>
+        <div class="nav-dot" data-planet="Neptune" style="--dot-color:#3355ff" title="Neptune"><span class="nav-dot-circle"></span></div>
+        <div class="nav-label" id="nav-label"></div>
+    </div>
 
     <div id="planet-info-card" class="info-card hidden">
         <!-- Header -->

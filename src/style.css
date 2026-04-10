@@ -262,25 +262,81 @@ button:active {
     color: #fbbf24;
 }
 
-/* ---- Focus Info Badge ---- */
-#focus-info {
-    position: absolute;
-    bottom: 30px;
+/* Planet Navigation Strip */
+#planet-nav {
+    position: fixed;
+    top: 18px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(15, 23, 42, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    color: #38bdf8;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 18px;
-    border-radius: 99px;
-    opacity: 0.6;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 8px 16px;
+    z-index: 100;
+    user-select: none;
+}
+
+.nav-dot {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.25s ease;
+}
+
+.nav-dot-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--dot-color);
+    display: block;
+    transition: width 0.25s ease, height 0.25s ease, box-shadow 0.25s ease;
+}
+
+.nav-dot:hover .nav-dot-circle {
+    width: 16px;
+    height: 16px;
+    box-shadow: 0 0 8px var(--dot-color);
+}
+
+.nav-dot.active .nav-dot-circle {
+    width: 18px;
+    height: 18px;
+    box-shadow: 0 0 12px var(--dot-color), 0 0 24px var(--dot-color);
+}
+
+.nav-dot.active {
+    transform: scale(1.2);
+}
+
+.nav-sep {
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 10px;
+    line-height: 1;
+}
+
+.nav-label {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
     white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#planet-nav:has(.nav-dot.active) .nav-label {
+    opacity: 1;
 }
 
 /* ---- Mobile Responsiveness ---- */
@@ -303,9 +359,14 @@ button:active {
         font-size: 10px;
     }
 
-    #focus-info {
-        bottom: 15px;
-        font-size: 11px;
+    #planet-nav {
+        padding: 6px 10px;
+        gap: 4px;
+        top: 10px;
+    }
+    .nav-dot-circle {
+        width: 9px;
+        height: 9px;
     }
 
     .planet-label {
