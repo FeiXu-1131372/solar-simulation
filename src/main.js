@@ -1197,14 +1197,28 @@ planetData.forEach((data) => {
         materialOptions.normalScale = new THREE.Vector2(1.0, 1.0);
     }
     if (data.specularMap) {
+        // Specular map: bright = reflective. Roughness map: bright = rough.
+        // We need to invert the specular map via onBeforeCompile.
+        materialOptions.roughness = 0.8;
+        materialOptions.metalness = 0.1;
         const specTex = textureLoader.load(data.specularMap);
         materialOptions.roughnessMap = specTex;
-        materialOptions.roughness = 1.0;
-        materialOptions.metalness = 0.1;
+        materialOptions.onBeforeCompile = (shader) => {
+            // Invert roughness map sample so bright specular = low roughness (shiny oceans)
+            shader.fragmentShader = shader.fragmentShader.replace(
+                '#include <roughnessmap_fragment>',
+                `float roughnessFactor = roughness;
+                 #ifdef USE_ROUGHNESSMAP
+                   vec4 texelRoughness = texture2D( roughnessMap, vRoughnessMapUv );
+                   roughnessFactor *= (1.0 - texelRoughness.g);
+                 #endif`
+            );
+        };
     }
 
+    const segments = data.size >= 7 ? 128 : 64;
     const planetMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(data.size, 128, 128),
+        new THREE.SphereGeometry(data.size, segments, segments),
         new THREE.MeshStandardMaterial(materialOptions)
     );
     planetMesh.position.x = data.distance;
