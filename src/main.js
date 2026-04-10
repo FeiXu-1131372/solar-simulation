@@ -5,6 +5,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRe
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { registerLocale, setLang, getLang, t, tf, tm, applyLocaleToDOM, onLangChange } from './i18n/index.js';
 import enData from './i18n/en.js';
 import zhData from './i18n/zh.js';
@@ -1022,6 +1023,76 @@ const bloomPass = new UnrealBloomPass(
     0.9    // threshold — only the brightest pixels bloom
 );
 composer.addPass(bloomPass);
+
+// --- CINEMATIC POST-PROCESSING ---
+const chromaticAberrationShader = {
+    uniforms: {
+        tDiffuse: { value: null },
+        intensity: { value: 0.0 },
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float intensity;
+        varying vec2 vUv;
+        void main() {
+            vec2 dir = vUv - vec2(0.5);
+            float dist = length(dir);
+            vec2 offset = dir * dist * intensity;
+            float r = texture2D(tDiffuse, vUv + offset).r;
+            float g = texture2D(tDiffuse, vUv).g;
+            float b = texture2D(tDiffuse, vUv - offset).b;
+            gl_FragColor = vec4(r, g, b, 1.0);
+        }
+    `,
+};
+const chromaticPass = new ShaderPass(chromaticAberrationShader);
+chromaticPass.enabled = false;
+composer.addPass(chromaticPass);
+
+const motionBlurShader = {
+    uniforms: {
+        tDiffuse: { value: null },
+        intensity: { value: 0.0 },
+        direction: { value: new THREE.Vector2(0.0, 0.0) },
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float intensity;
+        uniform vec2 direction;
+        varying vec2 vUv;
+        void main() {
+            vec2 dir = direction * intensity;
+            vec4 color = vec4(0.0);
+            color += texture2D(tDiffuse, vUv - 4.0 * dir) * 0.05;
+            color += texture2D(tDiffuse, vUv - 3.0 * dir) * 0.09;
+            color += texture2D(tDiffuse, vUv - 2.0 * dir) * 0.12;
+            color += texture2D(tDiffuse, vUv - 1.0 * dir) * 0.15;
+            color += texture2D(tDiffuse, vUv) * 0.18;
+            color += texture2D(tDiffuse, vUv + 1.0 * dir) * 0.15;
+            color += texture2D(tDiffuse, vUv + 2.0 * dir) * 0.12;
+            color += texture2D(tDiffuse, vUv + 3.0 * dir) * 0.09;
+            color += texture2D(tDiffuse, vUv + 4.0 * dir) * 0.05;
+            gl_FragColor = color;
+        }
+    `,
+};
+const motionBlurPass = new ShaderPass(motionBlurShader);
+motionBlurPass.enabled = false;
+composer.addPass(motionBlurPass);
 
 // CSS2D Renderer for labels
 const labelRenderer = new CSS2DRenderer();
