@@ -1549,6 +1549,17 @@ button:active {
     border: 1px solid rgba(139, 92, 246, 0.25) !important;
     color: #c4b5fd !important;
 }
+.chip-scale {
+    background: rgba(245, 158, 11, 0.10) !important;
+    color: #f59e0b !important;
+    border-color: rgba(245, 158, 11, 0.25) !important;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+}
+.chip-scale:hover {
+    background: rgba(245, 158, 11, 0.18) !important;
+}
 
 /* ---- Speed Slider ---- */
 .cp-slider-wrap {

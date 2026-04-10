@@ -5111,6 +5111,44 @@ pauseBtn.addEventListener('click', () => {
     updateChip('pause-anim', 'pill-pause', isPaused, 'chip-pause-on', '#fbbf24', t('ui.paused'), t('ui.running'), 'pill-pause-on');
 });
 
+const scaleModeBtn = document.getElementById('scale-mode-btn');
+const SCALE_ORDER = ['compressed', 'logarithmic', 'realistic'];
+const SCALE_LABELS = { compressed: '🔭 Compressed', logarithmic: '🔭 Logarithmic', realistic: '🔭 Realistic' };
+
+scaleModeBtn.addEventListener('click', () => {
+    const idx = SCALE_ORDER.indexOf(currentScaleMode);
+    const nextMode = SCALE_ORDER[(idx + 1) % SCALE_ORDER.length];
+    setScaleMode(nextMode);
+});
+
+function setScaleMode(mode) {
+    currentScaleMode = mode;
+    scaleModeBtn.innerHTML = `<span class="chip-dot" style="background:#f59e0b"></span> ${SCALE_LABELS[mode]}`;
+
+    const preset = SCALE_MODES[mode];
+
+    // Set target sizes and distances for all planets
+    planets.forEach(p => {
+        const target = preset[p.data.name];
+        if (target) {
+            p.targetSize = target.size;
+            p.targetDistance = target.distance;
+        }
+    });
+
+    // Set Sun targets
+    const sunPreset = preset.Sun;
+    if (sunPreset) {
+        sunTargetSize = sunPreset.size;
+        const sunScale = sunPreset.size / 35;
+        sunTargetGlow = 100 * sunScale;
+        sunTargetHalo = 160 * sunScale;
+    }
+
+    // Start transition
+    scaleTransition = { active: true };
+}
+
 document.getElementById('reset-pos').addEventListener('click', () => {
     clock = 0;
     isFocusing = false;
