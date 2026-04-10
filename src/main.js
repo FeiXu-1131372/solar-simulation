@@ -1495,6 +1495,61 @@ planetData.forEach((data) => {
     orbitPivot.add(planetMesh);
     allClickable.push({ mesh: planetMesh, name: data.name, size: data.size });
 
+    // Cloud layer
+    let cloudMesh = null;
+    if (data.cloudMap) {
+        const cloudTex = textureLoader.load(data.cloudMap);
+        cloudMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(data.size * 1.01, 128, 128),
+            new THREE.MeshStandardMaterial({
+                map: cloudTex,
+                transparent: true,
+                opacity: 0.6,
+                depthWrite: false,
+                roughness: 1.0,
+                metalness: 0.0,
+            })
+        );
+        planetMesh.add(cloudMesh);
+    }
+
+    // Atmosphere glow (Fresnel-based)
+    if (data.hasAtmosphere) {
+        const atmosphereGeo = new THREE.SphereGeometry(data.size * 1.025, 128, 128);
+        const atmosphereMat = new THREE.ShaderMaterial({
+            vertexShader: `
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                void main() {
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 glowColor;
+                uniform float intensity;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                void main() {
+                    vec3 viewDir = normalize(-vPosition);
+                    float fresnel = 1.0 - dot(viewDir, vNormal);
+                    fresnel = pow(fresnel, 3.0) * intensity;
+                    gl_FragColor = vec4(glowColor, fresnel);
+                }
+            `,
+            uniforms: {
+                glowColor: { value: new THREE.Color(data.atmosphereColor) },
+                intensity: { value: 1.2 },
+            },
+            transparent: true,
+            side: THREE.FrontSide,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+        });
+        planetMesh.add(new THREE.Mesh(atmosphereGeo, atmosphereMat));
+    }
+
     // Planet Label
     const label = createBodyLabel(data.name);
     label.position.set(0, data.size + 3, 0);
@@ -1594,7 +1649,7 @@ planetData.forEach((data) => {
         });
     }
 
-    planets.push({ mesh: planetMesh, orbitPivot, data, moons });
+    planets.push({ mesh: planetMesh, orbitPivot, data, moons, cloudMesh });
 });
 
 // --- CONTROLS ---
@@ -2669,6 +2724,9 @@ function animate() {
         planets.forEach(p => {
             p.orbitPivot.rotation.y = clock * p.data.speed;
             p.mesh.rotation.y += 0.01 * simSpeed;
+            if (p.cloudMesh) {
+                p.cloudMesh.rotation.y += 0.012 * simSpeed;
+            }
 
             p.moons.forEach(m => {
                 m.pivot.rotation.y = clock * m.data.speed;
