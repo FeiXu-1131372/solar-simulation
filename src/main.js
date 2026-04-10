@@ -1081,7 +1081,7 @@ const textureLoader = new THREE.TextureLoader();
 const sunTex = textureLoader.load('/textures/sun/diffuse_4k.jpg');
 
 // --- SUN ---
-const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 64, 64), new THREE.MeshBasicMaterial({ map: sunTex }));
+const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 128, 128), new THREE.MeshBasicMaterial({ map: sunTex }));
 scene.add(sun);
 
 // Sun glow — sprites always face the camera so they look perfect from any angle
