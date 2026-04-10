@@ -381,23 +381,34 @@ button:active {
 /* ---- Mobile Responsiveness ---- */
 @media (max-width: 480px) {
     #ui-container {
-        top: 50px;
-        left: 12px;
-        width: calc(100% - 24px);
+        position: fixed;
+        top: auto;
+        bottom: 58px;
+        bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+        left: 8px;
+        right: 8px;
+        width: auto;
         max-width: none;
+        border-radius: 16px;
+        border-top: none;
+        z-index: 110;
     }
-
+    #ui-container.hidden {
+        transform: translateY(20px);
+        opacity: 0;
+        pointer-events: none;
+    }
     .cp-body {
         max-height: 45vh;
     }
 
     .floating-btn {
-        top: 15px;
-        right: 15px;
+        display: none;
     }
 
     .info-help {
-        bottom: 15px;
+        bottom: 62px;
+        bottom: calc(62px + env(safe-area-inset-bottom, 0px));
         left: 50%;
         right: auto;
         transform: translateX(-50%);
@@ -482,8 +493,10 @@ button:active {
     }
 
     .fullscreen-btn {
-        bottom: 15px;
-        left: 15px;
+        top: 15px;
+        right: 15px;
+        bottom: auto;
+        left: auto;
         width: 36px;
         height: 36px;
     }
