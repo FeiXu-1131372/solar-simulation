@@ -780,19 +780,48 @@ button:active {
 /* Mobile */
 @media (max-width: 480px) {
     .info-card {
-        bottom: 40px;
-        left: 10px;
-        right: 10px;
+        bottom: 58px;
+        bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+        left: 8px;
+        right: 8px;
         width: auto;
-        max-height: 45vh;
-        padding: 14px;
+        max-height: 35vh;
+        padding: 12px;
         border-radius: 16px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(139,92,246,0.4) transparent;
+    }
+    .info-card::-webkit-scrollbar {
+        display: block;
+        width: 4px;
+    }
+    .info-card::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .info-card::-webkit-scrollbar-thumb {
+        background: rgba(139,92,246,0.4);
+        border-radius: 2px;
     }
     .card-header {
         cursor: default;
+        gap: 8px;
+        margin-bottom: 6px;
     }
     .card-header:active {
         cursor: default;
+    }
+    .planet-emoji {
+        font-size: 28px;
+    }
+    .planet-title h2 {
+        font-size: 16px;
+    }
+    .tabs {
+        margin-bottom: 8px;
+    }
+    .tab-btn {
+        font-size: 10px;
+        padding: 5px 2px;
     }
 }
 
