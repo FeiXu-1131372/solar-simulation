@@ -5,6 +5,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRe
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { registerLocale, setLang, getLang, t, tf, tm, applyLocaleToDOM, onLangChange } from './i18n/index.js';
 import enData from './i18n/en.js';
 import zhData from './i18n/zh.js';
@@ -1023,21 +1024,161 @@ const bloomPass = new UnrealBloomPass(
 );
 composer.addPass(bloomPass);
 
-// CSS2D Renderer for labels
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(window.innerWidth, window.innerHeight);
-labelRenderer.domElement.style.position = 'absolute';
-labelRenderer.domElement.style.top = '0';
-labelRenderer.domElement.style.pointerEvents = 'none';
-document.body.appendChild(labelRenderer.domElement);
+// --- CINEMATIC POST-PROCESSING ---
+const chromaticAberrationShader = {
+    uniforms: {
+        tDiffuse: { value: null },
+        intensity: { value: 0.0 },
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float intensity;
+        varying vec2 vUv;
+        void main() {
+            vec2 dir = vUv - vec2(0.5);
+            float dist = length(dir);
+            vec2 offset = dir * dist * intensity;
+            float r = texture2D(tDiffuse, vUv + offset).r;
+            float g = texture2D(tDiffuse, vUv).g;
+            float b = texture2D(tDiffuse, vUv - offset).b;
+            gl_FragColor = vec4(r, g, b, 1.0);
+        }
+    `,
+};
+const chromaticPass = new ShaderPass(chromaticAberrationShader);
+chromaticPass.enabled = false;
+composer.addPass(chromaticPass);
 
-// --- LIGHTING ---
-scene.add(new THREE.AmbientLight(0x333355, 1.5));
-const sunLight = new THREE.PointLight(0xfff5e0, 3.0, 0, 0);
-scene.add(sunLight);
+const motionBlurShader = {
+    uniforms: {
+        tDiffuse: { value: null },
+        intensity: { value: 0.0 },
+        direction: { value: new THREE.Vector2(0.0, 0.0) },
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D tDiffuse;
+        uniform float intensity;
+        uniform vec2 direction;
+        varying vec2 vUv;
+        void main() {
+            vec2 dir = direction * intensity;
+            vec4 color = vec4(0.0);
+            color += texture2D(tDiffuse, vUv - 4.0 * dir) * 0.05;
+            color += texture2D(tDiffuse, vUv - 3.0 * dir) * 0.09;
+            color += texture2D(tDiffuse, vUv - 2.0 * dir) * 0.12;
+            color += texture2D(tDiffuse, vUv - 1.0 * dir) * 0.15;
+            color += texture2D(tDiffuse, vUv) * 0.18;
+            color += texture2D(tDiffuse, vUv + 1.0 * dir) * 0.15;
+            color += texture2D(tDiffuse, vUv + 2.0 * dir) * 0.12;
+            color += texture2D(tDiffuse, vUv + 3.0 * dir) * 0.09;
+            color += texture2D(tDiffuse, vUv + 4.0 * dir) * 0.05;
+            gl_FragColor = color;
+        }
+    `,
+};
+const motionBlurPass = new ShaderPass(motionBlurShader);
+motionBlurPass.enabled = false;
+composer.addPass(motionBlurPass);
 
-// --- BACKGROUND STARS ---
-// Circular soft-glow sprite — prevents the default square fragment shape
+// --- CINEMATIC STAR STREAKS ---
+const STREAK_COUNT = 120;
+const streakPositions = new Float32Array(STREAK_COUNT * 6); // 2 vertices per line (start + end)
+const streakColors = new Float32Array(STREAK_COUNT * 6);    // RGB per vertex
+const streakGeo = new THREE.BufferGeometry();
+streakGeo.setAttribute('position', new THREE.BufferAttribute(streakPositions, 3));
+streakGeo.setAttribute('color', new THREE.BufferAttribute(streakColors, 3));
+const streakMat = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+});
+const streakLines = new THREE.LineSegments(streakGeo, streakMat);
+streakLines.frustumCulled = false;
+streakLines.visible = false;
+scene.add(streakLines);
+
+// Each streak has a random direction in a cone around the forward axis
+const streakData = [];
+for (let i = 0; i < STREAK_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.random() * 0.8 + 0.1; // cone spread 0.1-0.9 radians
+    streakData.push({
+        theta,
+        phi,
+        baseLength: 5 + Math.random() * 15,
+        brightness: 0.5 + Math.random() * 0.5,
+        speed: 0.8 + Math.random() * 0.4,
+    });
+}
+
+function updateStarStreaks(rocketPos, forwardDir, intensity, lengthMult) {
+    if (intensity <= 0) {
+        streakLines.visible = false;
+        return;
+    }
+    streakLines.visible = true;
+    streakMat.opacity = intensity;
+
+    // Build a local frame from forwardDir
+    const right = new THREE.Vector3();
+    const up = new THREE.Vector3(0, 1, 0);
+    if (Math.abs(forwardDir.dot(up)) > 0.99) up.set(1, 0, 0);
+    right.crossVectors(forwardDir, up).normalize();
+    up.crossVectors(right, forwardDir).normalize();
+
+    for (let i = 0; i < STREAK_COUNT; i++) {
+        const s = streakData[i];
+        // Direction in cone around forward
+        const sinP = Math.sin(s.phi);
+        const cosP = Math.cos(s.phi);
+        const dir = new THREE.Vector3()
+            .addScaledVector(forwardDir, cosP)
+            .addScaledVector(right, sinP * Math.cos(s.theta))
+            .addScaledVector(up, sinP * Math.sin(s.theta))
+            .normalize();
+
+        const dist = 30 + s.phi * 40; // farther streaks at wider angles
+        const start = rocketPos.clone().add(dir.clone().multiplyScalar(dist));
+        const end = start.clone().add(dir.clone().multiplyScalar(s.baseLength * lengthMult));
+
+        const idx = i * 6;
+        streakPositions[idx]     = start.x;
+        streakPositions[idx + 1] = start.y;
+        streakPositions[idx + 2] = start.z;
+        streakPositions[idx + 3] = end.x;
+        streakPositions[idx + 4] = end.y;
+        streakPositions[idx + 5] = end.z;
+
+        const b = s.brightness * intensity;
+        // Blue-white tint
+        streakColors[idx]     = 0.7 * b;
+        streakColors[idx + 1] = 0.8 * b;
+        streakColors[idx + 2] = 1.0 * b;
+        streakColors[idx + 3] = 0.5 * b;
+        streakColors[idx + 4] = 0.6 * b;
+        streakColors[idx + 5] = 0.9 * b;
+    }
+    streakGeo.attributes.position.needsUpdate = true;
+    streakGeo.attributes.color.needsUpdate = true;
+}
+
+// Circular soft-glow sprite — used for tunnel particles and background stars
 function makeStarSprite() {
     const c = document.createElement('canvas');
     c.width = c.height = 64;
@@ -1052,6 +1193,604 @@ function makeStarSprite() {
     return new THREE.CanvasTexture(c);
 }
 const starSpriteTex = makeStarSprite();
+
+// --- CINEMATIC PARTICLE TUNNEL ---
+const TUNNEL_PARTICLE_COUNT = 400;
+const tunnelPositions = new Float32Array(TUNNEL_PARTICLE_COUNT * 3);
+const tunnelSizes = new Float32Array(TUNNEL_PARTICLE_COUNT);
+const tunnelAlphas = new Float32Array(TUNNEL_PARTICLE_COUNT);
+const tunnelGeo = new THREE.BufferGeometry();
+tunnelGeo.setAttribute('position', new THREE.BufferAttribute(tunnelPositions, 3));
+tunnelGeo.setAttribute('size', new THREE.BufferAttribute(tunnelSizes, 1));
+tunnelGeo.setAttribute('alpha', new THREE.BufferAttribute(tunnelAlphas, 1));
+
+const tunnelMat = new THREE.ShaderMaterial({
+    uniforms: {
+        color: { value: new THREE.Color(0x4488ff) },
+        pointTexture: { value: starSpriteTex },
+    },
+    vertexShader: `
+        attribute float size;
+        attribute float alpha;
+        varying float vAlpha;
+        void main() {
+            vAlpha = alpha;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size * (200.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `,
+    fragmentShader: `
+        uniform vec3 color;
+        uniform sampler2D pointTexture;
+        varying float vAlpha;
+        void main() {
+            vec4 texColor = texture2D(pointTexture, gl_PointCoord);
+            gl_FragColor = vec4(color, texColor.a * vAlpha);
+        }
+    `,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+});
+
+const tunnelParticles = new THREE.Points(tunnelGeo, tunnelMat);
+tunnelParticles.frustumCulled = false;
+tunnelParticles.visible = false;
+scene.add(tunnelParticles);
+
+// Each particle has an offset in a ring around the path
+const tunnelParticleData = [];
+for (let i = 0; i < TUNNEL_PARTICLE_COUNT; i++) {
+    tunnelParticleData.push({
+        angle: Math.random() * Math.PI * 2,
+        radius: 3 + Math.random() * 5,
+        zOffset: (Math.random() - 0.5) * 60, // spread along the tunnel length
+        speed: 20 + Math.random() * 30,       // how fast they scroll backward
+        baseSize: 1.5 + Math.random() * 2.5,
+    });
+}
+
+function updateParticleTunnel(rocketPos, forwardDir, intensity, dt) {
+    if (intensity <= 0) {
+        tunnelParticles.visible = false;
+        return;
+    }
+    tunnelParticles.visible = true;
+
+    const right = new THREE.Vector3();
+    const up = new THREE.Vector3(0, 1, 0);
+    if (Math.abs(forwardDir.dot(up)) > 0.99) up.set(1, 0, 0);
+    right.crossVectors(forwardDir, up).normalize();
+    up.crossVectors(right, forwardDir).normalize();
+
+    for (let i = 0; i < TUNNEL_PARTICLE_COUNT; i++) {
+        const p = tunnelParticleData[i];
+
+        // Scroll particles backward
+        p.zOffset -= p.speed * dt;
+        if (p.zOffset < -30) p.zOffset += 60;
+
+        const ringX = Math.cos(p.angle) * p.radius;
+        const ringY = Math.sin(p.angle) * p.radius;
+
+        const pos = rocketPos.clone()
+            .addScaledVector(forwardDir, p.zOffset)
+            .addScaledVector(right, ringX)
+            .addScaledVector(up, ringY);
+
+        const idx = i * 3;
+        tunnelPositions[idx]     = pos.x;
+        tunnelPositions[idx + 1] = pos.y;
+        tunnelPositions[idx + 2] = pos.z;
+
+        // Fade at edges of tunnel
+        const zFade = 1.0 - Math.abs(p.zOffset) / 30;
+        tunnelSizes[i] = p.baseSize * intensity;
+        tunnelAlphas[i] = Math.max(0, zFade * intensity * 0.7);
+    }
+    tunnelGeo.attributes.position.needsUpdate = true;
+    tunnelGeo.attributes.size.needsUpdate = true;
+    tunnelGeo.attributes.alpha.needsUpdate = true;
+}
+
+// --- CINEMATIC ENERGY WAVES ---
+const MAX_WAVES = 5;
+const energyWaves = [];
+const waveGeometry = new THREE.TorusGeometry(1, 0.08, 8, 64);
+const waveMaterial = new THREE.MeshBasicMaterial({
+    color: 0x44aaff,
+    transparent: true,
+    opacity: 0.6,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+});
+
+function spawnEnergyWave(position, forwardDir) {
+    if (energyWaves.length >= MAX_WAVES) {
+        const oldest = energyWaves.shift();
+        scene.remove(oldest.mesh);
+        oldest.mesh.geometry.dispose();
+    }
+    const mesh = new THREE.Mesh(waveGeometry.clone(), waveMaterial.clone());
+    mesh.position.copy(position);
+    // Orient ring perpendicular to travel direction
+    const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), forwardDir);
+    mesh.quaternion.copy(quat);
+    scene.add(mesh);
+    energyWaves.push({ mesh, age: 0, maxAge: 0.8 });
+}
+
+function updateEnergyWaves(dt) {
+    for (let i = energyWaves.length - 1; i >= 0; i--) {
+        const w = energyWaves[i];
+        w.age += dt;
+        if (w.age >= w.maxAge) {
+            scene.remove(w.mesh);
+            w.mesh.geometry.dispose();
+            w.mesh.material.dispose();
+            energyWaves.splice(i, 1);
+            continue;
+        }
+        const progress = w.age / w.maxAge;
+        const scale = 1 + progress * 8;
+        w.mesh.scale.set(scale, scale, scale);
+        w.mesh.material.opacity = 0.6 * (1 - progress);
+    }
+}
+
+function clearEnergyWaves() {
+    energyWaves.forEach(w => {
+        scene.remove(w.mesh);
+        w.mesh.geometry.dispose();
+        w.mesh.material.dispose();
+    });
+    energyWaves.length = 0;
+}
+
+// --- CINEMATIC STATE MACHINE ---
+const cinematicSkipBtn = document.getElementById('cinematic-skip');
+const cinematicFlash = document.getElementById('cinematic-flash');
+let cinematicState = null;
+let preCinematicCamera = null;
+let waveSpawnTimer = 0;
+
+const PHASE_DURATIONS = {
+    launch: 1.5,
+    ascent: 1.0,
+    warp: 1.5,
+    warpExit: 0.5,
+    deceleration: 0.5,
+    flyby: 2.0,
+};
+
+function startCinematic(rocketObj) {
+    preCinematicCamera = {
+        position: camera.position.clone(),
+        quaternion: camera.quaternion.clone(),
+        controlsTarget: controls.target.clone(),
+    };
+    controls.enabled = false;
+    // Hide planet info card during cinematic
+    if (infoCard) infoCard.classList.add('hidden');
+
+    const earthPos = rocketObj.mesh.position.clone();
+    const targetPos = new THREE.Vector3();
+    rocketObj.target.mesh.getWorldPosition(targetPos);
+    const direction = targetPos.clone().sub(earthPos).normalize();
+
+    cinematicState = {
+        phase: 'launch',
+        elapsed: 0,
+        rocketObj,
+        earthPos: earthPos.clone(),
+        targetPos,
+        direction,
+        totalDist: earthPos.distanceTo(targetPos),
+        shakeIntensity: 0,
+        shakeDecay: 0,
+    };
+
+    cinematicSkipBtn.classList.remove('hidden');
+
+    // Scale rocket up for cinematic visibility
+    rocketObj.mesh.scale.set(2, 2, 2);
+
+    // Store original opacities for flyby fade-out
+    rocketObj.mesh.traverse(child => {
+        if (child.material) {
+            child.material._originalOpacity = child.material.opacity;
+        }
+    });
+
+    const camOffset = direction.clone().multiplyScalar(-3)
+        .add(new THREE.Vector3(0, -1.5, 0))
+        .add(new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(2));
+    camera.position.copy(earthPos).add(camOffset);
+    camera.lookAt(earthPos.clone().add(new THREE.Vector3(0, 2, 0)));
+}
+
+function endCinematic(skipToGame) {
+    if (!cinematicState) return;
+    const { rocketObj } = cinematicState;
+
+    updateStarStreaks(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+    updateParticleTunnel(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+    clearEnergyWaves();
+    chromaticPass.enabled = false;
+    chromaticPass.uniforms.intensity.value = 0;
+    motionBlurPass.enabled = false;
+    motionBlurPass.uniforms.intensity.value = 0;
+    cinematicFlash.style.opacity = '0';
+    cinematicFlash.style.background = 'white';
+
+    // Reset rocket scale
+    rocketObj.mesh.scale.set(1, 1, 1);
+
+    // Reset flame colors (may have been changed to blue during warp)
+    rocketObj.fireMesh.material.color.set(0xffaa00);
+    if (rocketObj.mesh.boosterFlames) {
+        rocketObj.mesh.boosterFlames.forEach(bf => bf.material.color.set(0xff6600));
+    }
+
+    // Reset rocket opacity (may have been faded during flyby)
+    rocketObj.mesh.traverse(child => {
+        if (child.material) {
+            child.material.opacity = child.material._originalOpacity ?? child.material.opacity;
+        }
+    });
+
+    scene.remove(rocketObj.mesh);
+    scene.remove(rocketObj.trailLine);
+    const idx = activeRockets.indexOf(rocketObj);
+    if (idx !== -1) activeRockets.splice(idx, 1);
+    if (activeMission === rocketObj) activeMission = null;
+
+    missionLog.classList.add('hidden');
+    cinematicSkipBtn.classList.add('hidden');
+
+    const targetPos = new THREE.Vector3();
+    rocketObj.target.mesh.getWorldPosition(targetPos);
+    const orbitDist = (rocketObj.target.size || 4) * 3;
+    camera.position.copy(targetPos).add(new THREE.Vector3(orbitDist, orbitDist * 0.5, orbitDist));
+    controls.target.copy(targetPos);
+    // Close any planet info card
+    if (infoCard) infoCard.classList.add('hidden');
+    controls.enabled = true;
+
+    lockedTarget = rocketObj.target;
+    isFocusing = false;
+
+    cinematicState = null;
+    preCinematicCamera = null;
+    waveSpawnTimer = 0;
+
+    if (skipToGame) {
+        launchMissionGame(rocketObj.mission, rocketObj.target);
+    }
+}
+
+cinematicSkipBtn.addEventListener('click', () => endCinematic(true));
+document.addEventListener('keydown', (e) => {
+    if (cinematicState && (e.key === 'Escape' || e.key === ' ')) {
+        e.preventDefault();
+        endCinematic(true);
+    }
+});
+
+function updateCinematicLaunch(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.launch;
+    const rocket = cs.rocketObj.mesh;
+
+    const easeIn = progress * progress;
+    const liftDist = easeIn * 8;
+    rocket.position.copy(cs.earthPos).addScaledVector(cs.direction, liftDist);
+
+    if (cs.elapsed < 0.5) {
+        const jitter = (1 - cs.elapsed / 0.5) * 0.02;
+        rocket.position.x += (Math.random() - 0.5) * jitter;
+        rocket.position.z += (Math.random() - 0.5) * jitter;
+    }
+
+    const up = new THREE.Vector3(0, 1, 0);
+    rocket.quaternion.slerp(
+        new THREE.Quaternion().setFromUnitVectors(up, cs.direction), 0.2
+    );
+
+    const camLookTarget = rocket.position.clone().add(cs.direction.clone().multiplyScalar(3));
+    camera.lookAt(camLookTarget);
+
+    if (cs.elapsed < 0.3) {
+        const shakeAmt = 0.03 * (1 - cs.elapsed / 0.3);
+        camera.position.x += (Math.random() - 0.5) * shakeAmt;
+        camera.position.y += (Math.random() - 0.5) * shakeAmt;
+    }
+
+    if (cs.elapsed < 0.5) {
+        waveSpawnTimer += dt;
+        if (waveSpawnTimer >= 0.1) {
+            waveSpawnTimer = 0;
+            const basePos = rocket.position.clone().addScaledVector(cs.direction, -2);
+            spawnEnergyWave(basePos, cs.direction);
+            if (energyWaves.length > 0) {
+                energyWaves[energyWaves.length - 1].mesh.material.color.set(0xff8800);
+            }
+        }
+        updateEnergyWaves(dt);
+    }
+
+    const flameScale = 0.5 + progress * 1.5;
+    cs.rocketObj.fireMesh.scale.set(1, flameScale * (0.7 + Math.random() * 0.6), 1);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => bf.scale.set(1, flameScale * (0.6 + Math.random() * 0.8), 1));
+    }
+
+    if (cs.elapsed >= PHASE_DURATIONS.launch) {
+        clearEnergyWaves();
+        cs.phase = 'ascent';
+        cs.elapsed = 0;
+    }
+}
+
+function updateCinematicAscent(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.ascent;
+    const rocket = cs.rocketObj.mesh;
+
+    const accelDist = 8 + progress * progress * 15;
+    rocket.position.copy(cs.earthPos).addScaledVector(cs.direction, accelDist);
+
+    const up = new THREE.Vector3(0, 1, 0);
+    rocket.quaternion.slerp(
+        new THREE.Quaternion().setFromUnitVectors(up, cs.direction), 0.3
+    );
+
+    const right = new THREE.Vector3().crossVectors(cs.direction, new THREE.Vector3(0, 1, 0)).normalize();
+    const chaseCamOffset = cs.direction.clone().multiplyScalar(-6)
+        .add(new THREE.Vector3(0, 3, 0))
+        .add(right.clone().multiplyScalar(1.5));
+    const desiredCamPos = rocket.position.clone().add(chaseCamOffset);
+    camera.position.lerp(desiredCamPos, 0.08);
+    camera.lookAt(rocket.position.clone().addScaledVector(cs.direction, 5));
+
+    const flicker = 0.7 + Math.random() * 0.6;
+    cs.rocketObj.fireMesh.scale.set(1, 2.0 * flicker, 1);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => bf.scale.set(1, 1.5 * (0.6 + Math.random() * 0.8), 1));
+    }
+
+    if (progress > 0.7) {
+        const warpProgress = (progress - 0.7) / 0.3;
+        cinematicFlash.style.opacity = String(warpProgress * 0.8);
+        const shakeAmt = warpProgress * 0.05;
+        camera.position.x += (Math.random() - 0.5) * shakeAmt;
+        camera.position.y += (Math.random() - 0.5) * shakeAmt;
+        updateStarStreaks(rocket.position, cs.direction, warpProgress * 0.5, 0.5 + warpProgress * 2);
+        chromaticPass.enabled = true;
+        chromaticPass.uniforms.intensity.value = warpProgress * 0.01;
+        cs.rocketObj.fireMesh.material.color.lerp(new THREE.Color(0x4488ff), warpProgress * 0.5);
+    }
+
+    if (cs.elapsed >= PHASE_DURATIONS.ascent) {
+        cs.phase = 'warp';
+        cs.elapsed = 0;
+        cinematicFlash.style.opacity = '0.8';
+        setTimeout(() => { if (cinematicState && cinematicState.phase === 'warp') cinematicFlash.style.opacity = '0'; }, 200);
+    }
+}
+
+function updateCinematicWarp(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.warp;
+    const rocket = cs.rocketObj.mesh;
+
+    const warpStart = cs.earthPos.clone().addScaledVector(cs.direction, 25);
+    const warpEnd = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 5);
+    rocket.position.lerpVectors(warpStart, warpEnd, progress);
+
+    const up = new THREE.Vector3(0, 1, 0);
+    rocket.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(up, cs.direction));
+
+    const right = new THREE.Vector3().crossVectors(cs.direction, new THREE.Vector3(0, 1, 0)).normalize();
+    const upDir = new THREE.Vector3().crossVectors(right, cs.direction).normalize();
+    const sideDist = 8 + Math.sin(cs.elapsed * 2) * 1.5;
+    const upDist = 2 + Math.sin(cs.elapsed * 1.3) * 1;
+    const camPos = rocket.position.clone()
+        .addScaledVector(right, sideDist)
+        .addScaledVector(upDir, upDist)
+        .addScaledVector(cs.direction, -2);
+    camera.position.copy(camPos);
+    camera.lookAt(rocket.position);
+
+    updateStarStreaks(rocket.position, cs.direction, 0.9, 4 + Math.sin(cs.elapsed * 3) * 1);
+    updateParticleTunnel(rocket.position, cs.direction, 0.8, dt);
+    chromaticPass.uniforms.intensity.value = 0.012 + Math.sin(cs.elapsed * 4) * 0.003;
+    motionBlurPass.enabled = true;
+    motionBlurPass.uniforms.intensity.value = 0.003;
+    motionBlurPass.uniforms.direction.value.set(0.5, 0.0);
+
+    waveSpawnTimer += dt;
+    if (waveSpawnTimer >= 0.3) {
+        waveSpawnTimer = 0;
+        spawnEnergyWave(rocket.position.clone(), cs.direction);
+    }
+    updateEnergyWaves(dt);
+
+    const purpleShift = Math.sin(progress * Math.PI) * 0.3;
+    tunnelMat.uniforms.color.value.setRGB(0.27 + purpleShift, 0.33, 1.0);
+
+    // Scene-wide blue/purple tint via overlay
+    const tintIntensity = Math.sin(progress * Math.PI) * 0.15;
+    cinematicFlash.style.background = `rgba(40, 20, 120, ${tintIntensity})`;
+
+    const flicker = 0.7 + Math.random() * 0.6;
+    cs.rocketObj.fireMesh.scale.set(1, 2.5 * flicker, 1);
+    cs.rocketObj.fireMesh.material.color.set(0x4488ff);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => {
+            bf.scale.set(1, 2.0 * (0.6 + Math.random() * 0.8), 1);
+            bf.material.color.set(0x3377ee);
+        });
+    }
+
+    if (activeMission === cs.rocketObj) {
+        const pct = Math.round(progress * 100);
+        mlBar.style.width = pct + '%';
+        mlPct.textContent = t('ui.percentComplete', { pct });
+        const stepIdx = Math.min(Math.floor(progress / 0.33), cs.rocketObj.mission.steps.length - 2);
+        if (stepIdx !== cs.rocketObj.lastStepShown) {
+            cs.rocketObj.lastStepShown = stepIdx;
+            mlFact.textContent = cs.rocketObj.mission.steps[stepIdx + 1] || cs.rocketObj.mission.steps[cs.rocketObj.mission.steps.length - 1];
+            mlFact.className = 'ml-fact ml-fact-new';
+            setTimeout(() => { mlFact.className = 'ml-fact'; }, 600);
+        }
+    }
+
+    if (cs.elapsed >= PHASE_DURATIONS.warp) {
+        cs.phase = 'warpExit';
+        cs.elapsed = 0;
+        cinematicFlash.style.opacity = '0.7';
+        setTimeout(() => { if (cinematicState) cinematicFlash.style.opacity = '0'; }, 250);
+    }
+}
+
+function updateCinematicWarpExit(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.warpExit;
+    const rocket = cs.rocketObj.mesh;
+
+    const nearTarget = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 5);
+    rocket.position.copy(nearTarget);
+
+    const shakeAmt = 0.04 * (1 - progress);
+    camera.position.x += (Math.random() - 0.5) * shakeAmt;
+    camera.position.y += (Math.random() - 0.5) * shakeAmt;
+
+    const fadeOut = 1 - progress;
+    updateStarStreaks(rocket.position, cs.direction, fadeOut * 0.9, 4 * fadeOut);
+    updateParticleTunnel(rocket.position, cs.direction, fadeOut * 0.8, dt);
+    chromaticPass.uniforms.intensity.value = 0.012 * fadeOut;
+    motionBlurPass.uniforms.intensity.value = 0.003 * fadeOut;
+    updateEnergyWaves(dt);
+
+    // Fade out color tint
+    cinematicFlash.style.background = `rgba(40, 20, 120, ${fadeOut * 0.15})`;
+
+    cs.rocketObj.fireMesh.material.color.lerp(new THREE.Color(0xffaa00), progress);
+    if (rocket.boosterFlames) {
+        rocket.boosterFlames.forEach(bf => bf.material.color.lerp(new THREE.Color(0xff6600), progress));
+    }
+
+    if (progress >= 1) {
+        cs.phase = 'deceleration';
+        cs.elapsed = 0;
+        chromaticPass.enabled = false;
+        motionBlurPass.enabled = false;
+    }
+}
+
+function updateCinematicDeceleration(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.deceleration;
+    const rocket = cs.rocketObj.mesh;
+
+    const easeOut = 1 - (1 - progress) * (1 - progress);
+    const startPos = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 5);
+    const endPos = cs.targetPos.clone().addScaledVector(cs.direction, -(cs.rocketObj.target.size || 4) * 2.5);
+    rocket.position.lerpVectors(startPos, endPos, easeOut);
+
+    const right = new THREE.Vector3().crossVectors(cs.direction, new THREE.Vector3(0, 1, 0)).normalize();
+    const sweepAngle = progress * Math.PI * 0.6;
+    const camDist = 10;
+    const camPos = rocket.position.clone()
+        .addScaledVector(cs.direction, -camDist * Math.cos(sweepAngle))
+        .addScaledVector(right, camDist * Math.sin(sweepAngle))
+        .add(new THREE.Vector3(0, 3, 0));
+    camera.position.copy(camPos);
+    camera.lookAt(rocket.position);
+
+    const reverseFlame = 1 - easeOut;
+    cs.rocketObj.fireMesh.scale.set(1, reverseFlame * (0.7 + Math.random() * 0.6), 1);
+
+    if (progress >= 1) {
+        cs.phase = 'flyby';
+        cs.elapsed = 0;
+        missionLog.classList.add('hidden');
+    }
+}
+
+function updateCinematicFlyby(dt) {
+    const cs = cinematicState;
+    const progress = cs.elapsed / PHASE_DURATIONS.flyby;
+    const targetSize = cs.rocketObj.target.size || 4;
+
+    const planetPos = new THREE.Vector3();
+    cs.rocketObj.target.mesh.getWorldPosition(planetPos);
+
+    const orbitRadius = targetSize * 3;
+    const angle = progress * Math.PI * 2;
+    const camX = planetPos.x + orbitRadius * Math.cos(angle);
+    const camZ = planetPos.z + orbitRadius * Math.sin(angle);
+    const camY = planetPos.y + orbitRadius * 0.4 * Math.sin(progress * Math.PI);
+    camera.position.set(camX, camY, camZ);
+    camera.lookAt(planetPos);
+
+    const rocketOpacity = Math.max(0, 1 - progress * 3);
+    cs.rocketObj.mesh.traverse(child => {
+        if (child.material && child.material.transparent) {
+            child.material.opacity = rocketOpacity;
+        }
+    });
+
+    // Fade out in last 15% of flyby
+    if (progress > 0.85) {
+        const fadeProgress = (progress - 0.85) / 0.15;
+        cinematicFlash.style.background = 'black';
+        cinematicFlash.style.opacity = String(fadeProgress);
+    }
+
+    if (progress >= 1) {
+        // Brief hold on black, then transition
+        cinematicFlash.style.opacity = '1';
+        cinematicFlash.style.background = 'black';
+        setTimeout(() => {
+            cinematicFlash.style.opacity = '0';
+            cinematicFlash.style.background = 'white';
+        }, 300);
+        endCinematic(true);
+    }
+}
+
+function updateCinematic(dt) {
+    if (!cinematicState) return;
+    cinematicState.elapsed += dt;
+
+    switch (cinematicState.phase) {
+        case 'launch':       updateCinematicLaunch(dt); break;
+        case 'ascent':       updateCinematicAscent(dt); break;
+        case 'warp':         updateCinematicWarp(dt); break;
+        case 'warpExit':     updateCinematicWarpExit(dt); break;
+        case 'deceleration': updateCinematicDeceleration(dt); break;
+        case 'flyby':        updateCinematicFlyby(dt); break;
+    }
+}
+
+// CSS2D Renderer for labels
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(labelRenderer.domElement);
+
+// --- LIGHTING ---
+scene.add(new THREE.AmbientLight(0x333355, 1.5));
+const sunLight = new THREE.PointLight(0xfff5e0, 3.0, 0, 0);
+scene.add(sunLight);
+
+// --- BACKGROUND STARS ---
 
 const starCount = 4000;
 const starPos   = new Float32Array(starCount * 3);
@@ -1777,6 +2516,8 @@ function doLaunch(mission, target) {
     missionLog.classList.remove('hidden');
 
     launchBtn.classList.add('hidden');
+    // Start cinematic sequence
+    startCinematic(rocketObj);
 }
 
 // --- MISSION MINI-GAME ---
@@ -2328,6 +3069,7 @@ renderer.domElement.addEventListener('pointerdown', (event) => {
 });
 
 renderer.domElement.addEventListener('pointerup', (event) => {
+    if (cinematicState) return;
     // Ignore if it was a drag/swipe gesture (moved more than 10 pixels)
     const dist = Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y);
     if (dist > 10) return;
@@ -2544,7 +3286,7 @@ function animate() {
     }
 
     // --- CONTINUOUS PLANET TRACKING ---
-    if (lockedTarget) {
+    if (lockedTarget && !cinematicState) {
         const worldPos = new THREE.Vector3();
         lockedTarget.mesh.getWorldPosition(worldPos);
 
@@ -2571,58 +3313,60 @@ function animate() {
     }
 
     // --- ROCKET UPDATES ---
-    for (let i = activeRockets.length - 1; i >= 0; i--) {
-        const r = activeRockets[i];
-        const targetPos = new THREE.Vector3();
-        r.target.mesh.getWorldPosition(targetPos);
-        
-        const distToTarget = r.mesh.position.distanceTo(targetPos);
-        const moveDist = 1.0 + (simSpeed * 1.5); 
-        
-        if (distToTarget <= (r.target.size + 1.5)) {
-            // Arrived
-            scene.remove(r.mesh);
-            scene.remove(r.trailLine);
-            activeRockets.splice(i, 1);
-            if (activeMission === r) activeMission = null;
+    if (!cinematicState) {
+        for (let i = activeRockets.length - 1; i >= 0; i--) {
+            const r = activeRockets[i];
+            const targetPos = new THREE.Vector3();
+            r.target.mesh.getWorldPosition(targetPos);
 
-            // Hide mission log
-            missionLog.classList.add('hidden');
+            const distToTarget = r.mesh.position.distanceTo(targetPos);
+            const moveDist = 1.0 + (simSpeed * 1.5);
 
-            // Launch mini-game before showing arrival panel
-            if (r.mission) {
-                launchMissionGame(r.mission, r.target);
-            }
-        } else {
-            const dir = targetPos.clone().sub(r.mesh.position).normalize();
-            const up = new THREE.Vector3(0, 1, 0);
-            r.mesh.quaternion.slerp(new THREE.Quaternion().setFromUnitVectors(up, dir), 0.15);
-            r.mesh.position.add(dir.clone().multiplyScalar(moveDist));
+            if (distToTarget <= (r.target.size + 1.5)) {
+                // Arrived
+                scene.remove(r.mesh);
+                scene.remove(r.trailLine);
+                activeRockets.splice(i, 1);
+                if (activeMission === r) activeMission = null;
 
-            // Trail
-            r.points.push(r.mesh.position.clone());
-            if (r.points.length > 200) r.points.shift();
-            r.trailGeo.setFromPoints(r.points);
+                // Hide mission log
+                missionLog.classList.add('hidden');
 
-            // Flickering main flame + booster flames
-            const flicker = 0.7 + Math.random() * 0.6;
-            r.fireMesh.scale.set(1, flicker, 1);
-            if (r.mesh.boosterFlames) r.mesh.boosterFlames.forEach(bf => bf.scale.set(1, 0.6 + Math.random() * 0.8, 1));
+                // Launch mini-game before showing arrival panel
+                if (r.mission) {
+                    launchMissionGame(r.mission, r.target);
+                }
+            } else {
+                const dir = targetPos.clone().sub(r.mesh.position).normalize();
+                const up = new THREE.Vector3(0, 1, 0);
+                r.mesh.quaternion.slerp(new THREE.Quaternion().setFromUnitVectors(up, dir), 0.15);
+                r.mesh.position.add(dir.clone().multiplyScalar(moveDist));
 
-            // Track distance and update mission log
-            r.distTraveled += moveDist;
-            if (activeMission === r) {
-                const rawPct = Math.min(r.distTraveled / r.totalDist, 0.99);
-                const pct = Math.round(rawPct * 100);
-                mlBar.style.width = pct + '%';
-                mlPct.textContent = t('ui.percentComplete', { pct });
-                // Show educational steps at 0%, 33%, 66%
-                const stepIdx = Math.min(Math.floor(rawPct / 0.33), r.mission.steps.length - 2);
-                if (stepIdx !== r.lastStepShown) {
-                    r.lastStepShown = stepIdx;
-                    mlFact.textContent = r.mission.steps[stepIdx + 1] || r.mission.steps[r.mission.steps.length - 1];
-                    mlFact.className = 'ml-fact ml-fact-new';
-                    setTimeout(() => { mlFact.className = 'ml-fact'; }, 600);
+                // Trail
+                r.points.push(r.mesh.position.clone());
+                if (r.points.length > 200) r.points.shift();
+                r.trailGeo.setFromPoints(r.points);
+
+                // Flickering main flame + booster flames
+                const flicker = 0.7 + Math.random() * 0.6;
+                r.fireMesh.scale.set(1, flicker, 1);
+                if (r.mesh.boosterFlames) r.mesh.boosterFlames.forEach(bf => bf.scale.set(1, 0.6 + Math.random() * 0.8, 1));
+
+                // Track distance and update mission log
+                r.distTraveled += moveDist;
+                if (activeMission === r) {
+                    const rawPct = Math.min(r.distTraveled / r.totalDist, 0.99);
+                    const pct = Math.round(rawPct * 100);
+                    mlBar.style.width = pct + '%';
+                    mlPct.textContent = t('ui.percentComplete', { pct });
+                    // Show educational steps at 0%, 33%, 66%
+                    const stepIdx = Math.min(Math.floor(rawPct / 0.33), r.mission.steps.length - 2);
+                    if (stepIdx !== r.lastStepShown) {
+                        r.lastStepShown = stepIdx;
+                        mlFact.textContent = r.mission.steps[stepIdx + 1] || r.mission.steps[r.mission.steps.length - 1];
+                        mlFact.className = 'ml-fact ml-fact-new';
+                        setTimeout(() => { mlFact.className = 'ml-fact'; }, 600);
+                    }
                 }
             }
         }
@@ -2637,6 +3381,12 @@ function animate() {
             controls.target.copy(galaxyTransition.tgt);
             galaxyTransition = null;
         }
+    }
+
+    // Cinematic runs independently of pause state
+    if (cinematicState) {
+        const dt = 1 / 60;
+        updateCinematic(dt);
     }
 
     controls.update();
