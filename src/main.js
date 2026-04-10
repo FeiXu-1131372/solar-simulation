@@ -2562,11 +2562,17 @@ function renderCard(name) {
     }
 
     switchCardTab('overview');
-    // Reset to default corner position on each open
-    infoCard.style.left = '';
+    // Reset to default position on each open
     infoCard.style.top = '';
-    infoCard.style.right = '25px';
-    infoCard.style.bottom = '25px';
+    if (window.innerWidth <= 480) {
+        infoCard.style.left = '';
+        infoCard.style.right = '';
+        infoCard.style.bottom = '';
+    } else {
+        infoCard.style.left = '';
+        infoCard.style.right = '25px';
+        infoCard.style.bottom = '25px';
+    }
     infoCard.classList.remove('hidden');
 }
 
@@ -2603,8 +2609,9 @@ document.getElementById('info-card-close').addEventListener('click', () => {
     navLabel.textContent = '';
 });
 
-// Drag to move
+// Drag to move (desktop only)
 (function () {
+    if (window.innerWidth <= 480) return;
     const handle = document.getElementById('card-drag-handle');
     let dragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
 
@@ -5236,6 +5243,19 @@ function updateChip(chipId, pillId, isActive, activeChipClass, activeDotColor, a
 toggleUiBtn.addEventListener('click', () => {
     uiContainer.classList.toggle('hidden');
 });
+
+// Auto-collapse control panel on mobile and show touch-friendly hint
+if (window.innerWidth <= 480) {
+    uiContainer.classList.add('collapsed');
+    document.getElementById('toggle-ui-expand').textContent = '▴';
+}
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    const helpEl = document.querySelector('.info-help');
+    if (helpEl) {
+        helpEl.setAttribute('data-i18n-html', 'ui.helpHintTouch');
+        helpEl.innerHTML = t('ui.helpHintTouch');
+    }
+}
 
 document.getElementById('toggle-ui-expand').addEventListener('click', () => {
     const isCollapsed = uiContainer.classList.toggle('collapsed');

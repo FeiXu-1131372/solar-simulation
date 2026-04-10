@@ -19,6 +19,7 @@ ui: {
     'darkSide': 'Dark Side',
     'overlaySync': 'Synchronous Rotation Activated',
     'helpHint': 'DRAG TO ROTATE &bull; SCROLL TO ZOOM &bull; CLICK PLANET TO FOCUS',
+    'helpHintTouch': 'SWIPE TO ROTATE &bull; PINCH TO ZOOM &bull; TAP PLANET TO FOCUS',
     'focusedSolarSystem': '📍 Focused: Solar System',
     'focused': '📍 Focused: {name}',
     'galaxyView': '🔭 Galaxy View',

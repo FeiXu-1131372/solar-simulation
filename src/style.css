@@ -342,12 +342,16 @@ button:active {
 /* ---- Mobile Responsiveness ---- */
 @media (max-width: 480px) {
     #ui-container {
-        top: 12px;
+        top: 50px;
         left: 12px;
         width: calc(100% - 24px);
         max-width: none;
     }
-    
+
+    .cp-body {
+        max-height: 45vh;
+    }
+
     .floating-btn {
         top: 15px;
         right: 15px;
@@ -355,8 +359,12 @@ button:active {
 
     .info-help {
         bottom: 15px;
-        right: 15px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
         font-size: 10px;
+        text-align: center;
+        white-space: nowrap;
     }
 
     #planet-nav {
@@ -367,6 +375,9 @@ button:active {
     .nav-dot-circle {
         width: 9px;
         height: 9px;
+    }
+    .nav-sep {
+        display: none;
     }
 
     .planet-label {
@@ -665,10 +676,19 @@ button:active {
 /* Mobile */
 @media (max-width: 480px) {
     .info-card {
-        bottom: 70px;
-        right: 15px;
-        width: calc(100% - 30px);
-        padding: 16px;
+        bottom: 40px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        max-height: 55vh;
+        padding: 14px;
+        border-radius: 16px;
+    }
+    .card-header {
+        cursor: default;
+    }
+    .card-header:active {
+        cursor: default;
     }
 }
 

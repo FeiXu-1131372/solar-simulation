@@ -19,6 +19,7 @@ ui: {
     'darkSide': '暗面',
     'overlaySync': '同步自转已激活',
     'helpHint': '拖拽旋转 · 滚轮缩放 · 点击星球聚焦',
+    'helpHintTouch': '滑动旋转 · 双指缩放 · 点击星球聚焦',
     'focusedSolarSystem': '📍 聚焦：太阳系',
     'focused': '📍 聚焦：{name}',
     'galaxyView': '🔭 银河系视图',
