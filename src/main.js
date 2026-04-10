@@ -1453,6 +1453,40 @@ function clearEnergyWaves() {
 const cinematicSkipBtn = document.getElementById('cinematic-skip');
 const cinematicFlash = document.getElementById('cinematic-flash');
 let cinematicState = null;
+let autoPilotState = null;
+
+function startAutoPilot(targetEntry) {
+    if (cinematicState) return;
+    if (autoPilotState) return;
+
+    const fromPos = camera.position.clone();
+    const toWorldPos = new THREE.Vector3();
+    targetEntry.mesh.getWorldPosition(toWorldPos);
+
+    const travelDist = fromPos.distanceTo(toWorldPos);
+    if (travelDist < 200) {
+        focusOn(targetEntry);
+        return;
+    }
+
+    const duration = Math.min(3.0, 1.0 + Math.log10(travelDist) * 0.5);
+    const direction = toWorldPos.clone().sub(fromPos).normalize();
+
+    autoPilotState = {
+        phase: 'liftoff',
+        elapsed: 0,
+        from: fromPos,
+        to: toWorldPos,
+        target: targetEntry,
+        direction: direction,
+        duration: duration,
+        liftoffDuration: 0.5,
+        arrivalDuration: 0.5,
+    };
+
+    controls.enabled = false;
+}
+
 let preCinematicCamera = null;
 let waveSpawnTimer = 0;
 
@@ -1573,6 +1607,25 @@ function endCinematic(skipToGame) {
 
 cinematicSkipBtn.addEventListener('click', () => endCinematic(true));
 document.addEventListener('keydown', (e) => {
+    if (autoPilotState && (e.key === 'Escape' || e.key === ' ')) {
+        chromaticPass.enabled = false;
+        chromaticPass.uniforms.intensity.value = 0;
+        motionBlurPass.enabled = false;
+        motionBlurPass.uniforms.intensity.value = 0;
+        updateStarStreaks(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+        updateParticleTunnel(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+        cinematicFlash.style.opacity = '0';
+
+        controls.enabled = true;
+        focusOn(autoPilotState.target);
+        renderCard(autoPilotState.target.name);
+        const infoCard = document.getElementById('planet-info-card');
+        if (infoCard) infoCard.classList.remove('hidden');
+
+        autoPilotState = null;
+        e.preventDefault();
+        return;
+    }
     if (cinematicState && (e.key === 'Escape' || e.key === ' ')) {
         e.preventDefault();
         endCinematic(true);
@@ -2341,7 +2394,11 @@ navDots.forEach(dot => {
         // Find the matching clickable entry
         const entry = allClickable.find(c => c.name === planetName);
         if (entry) {
-            focusOn(entry);
+            if (currentScaleMode === 'realistic') {
+                startAutoPilot(entry);
+            } else {
+                focusOn(entry);
+            }
             renderCard(planetName);
             if (infoCard) infoCard.classList.remove('hidden');
         }
@@ -5321,6 +5378,72 @@ function animate() {
                 }
             });
         });
+    }
+
+    // --- AUTO-PILOT FLIGHT ---
+    if (autoPilotState) {
+        const ap = autoPilotState;
+        const dt = 0.016;
+        ap.elapsed += dt;
+
+        ap.target.mesh.getWorldPosition(ap.to);
+        ap.direction = ap.to.clone().sub(ap.from).normalize();
+        const orbitDist = (ap.target.size || 10) * 6 + 20;
+
+        if (ap.phase === 'liftoff') {
+            const t = Math.min(ap.elapsed / ap.liftoffDuration, 1.0);
+            updateStarStreaks(camera.position, ap.direction, t * 0.5, 0.5 + t);
+            motionBlurPass.enabled = true;
+            motionBlurPass.uniforms.intensity.value = t * 0.3;
+
+            if (t >= 1.0) {
+                ap.phase = 'warp';
+                ap.elapsed = 0;
+            }
+        } else if (ap.phase === 'warp') {
+            const t = Math.min(ap.elapsed / ap.duration, 1.0);
+            const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+            const arrivePos = ap.to.clone().add(ap.direction.clone().multiplyScalar(-orbitDist));
+            camera.position.lerpVectors(ap.from, arrivePos, ease);
+            controls.target.lerpVectors(ap.from, ap.to, ease);
+
+            updateStarStreaks(camera.position, ap.direction, 0.9, 4 + Math.sin(ap.elapsed * 3));
+            updateParticleTunnel(camera.position, ap.direction, 0.8, dt);
+            chromaticPass.enabled = true;
+            chromaticPass.uniforms.intensity.value = 0.012;
+            motionBlurPass.uniforms.intensity.value = 0.5;
+
+            if (t >= 1.0) {
+                ap.phase = 'arrival';
+                ap.elapsed = 0;
+                cinematicFlash.style.opacity = '0.8';
+                setTimeout(() => { cinematicFlash.style.opacity = '0'; }, 200);
+            }
+        } else if (ap.phase === 'arrival') {
+            const t = Math.min(ap.elapsed / ap.arrivalDuration, 1.0);
+            updateStarStreaks(camera.position, ap.direction, (1 - t) * 0.9, 4 * (1 - t));
+            updateParticleTunnel(camera.position, ap.direction, (1 - t) * 0.8, dt);
+            chromaticPass.uniforms.intensity.value = 0.012 * (1 - t);
+            motionBlurPass.uniforms.intensity.value = 0.5 * (1 - t);
+
+            if (t >= 1.0) {
+                chromaticPass.enabled = false;
+                chromaticPass.uniforms.intensity.value = 0;
+                motionBlurPass.enabled = false;
+                motionBlurPass.uniforms.intensity.value = 0;
+                updateStarStreaks(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+                updateParticleTunnel(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+
+                controls.enabled = true;
+                focusOn(ap.target);
+                renderCard(ap.target.name);
+                const infoCard = document.getElementById('planet-info-card');
+                if (infoCard) infoCard.classList.remove('hidden');
+
+                autoPilotState = null;
+            }
+        }
     }
 
     // --- CONTINUOUS PLANET TRACKING ---
