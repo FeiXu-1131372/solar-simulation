@@ -1178,21 +1178,7 @@ function updateStarStreaks(rocketPos, forwardDir, intensity, lengthMult) {
     streakGeo.attributes.color.needsUpdate = true;
 }
 
-// CSS2D Renderer for labels
-const labelRenderer = new CSS2DRenderer();
-labelRenderer.setSize(window.innerWidth, window.innerHeight);
-labelRenderer.domElement.style.position = 'absolute';
-labelRenderer.domElement.style.top = '0';
-labelRenderer.domElement.style.pointerEvents = 'none';
-document.body.appendChild(labelRenderer.domElement);
-
-// --- LIGHTING ---
-scene.add(new THREE.AmbientLight(0x333355, 1.5));
-const sunLight = new THREE.PointLight(0xfff5e0, 3.0, 0, 0);
-scene.add(sunLight);
-
-// --- BACKGROUND STARS ---
-// Circular soft-glow sprite — prevents the default square fragment shape
+// Circular soft-glow sprite — used for tunnel particles and background stars
 function makeStarSprite() {
     const c = document.createElement('canvas');
     c.width = c.height = 64;
@@ -1207,6 +1193,121 @@ function makeStarSprite() {
     return new THREE.CanvasTexture(c);
 }
 const starSpriteTex = makeStarSprite();
+
+// --- CINEMATIC PARTICLE TUNNEL ---
+const TUNNEL_PARTICLE_COUNT = 400;
+const tunnelPositions = new Float32Array(TUNNEL_PARTICLE_COUNT * 3);
+const tunnelSizes = new Float32Array(TUNNEL_PARTICLE_COUNT);
+const tunnelAlphas = new Float32Array(TUNNEL_PARTICLE_COUNT);
+const tunnelGeo = new THREE.BufferGeometry();
+tunnelGeo.setAttribute('position', new THREE.BufferAttribute(tunnelPositions, 3));
+tunnelGeo.setAttribute('size', new THREE.BufferAttribute(tunnelSizes, 1));
+tunnelGeo.setAttribute('alpha', new THREE.BufferAttribute(tunnelAlphas, 1));
+
+const tunnelMat = new THREE.ShaderMaterial({
+    uniforms: {
+        color: { value: new THREE.Color(0x4488ff) },
+        pointTexture: { value: starSpriteTex },
+    },
+    vertexShader: `
+        attribute float size;
+        attribute float alpha;
+        varying float vAlpha;
+        void main() {
+            vAlpha = alpha;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = size * (200.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+        }
+    `,
+    fragmentShader: `
+        uniform vec3 color;
+        uniform sampler2D pointTexture;
+        varying float vAlpha;
+        void main() {
+            vec4 texColor = texture2D(pointTexture, gl_PointCoord);
+            gl_FragColor = vec4(color, texColor.a * vAlpha);
+        }
+    `,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+});
+
+const tunnelParticles = new THREE.Points(tunnelGeo, tunnelMat);
+tunnelParticles.frustumCulled = false;
+tunnelParticles.visible = false;
+scene.add(tunnelParticles);
+
+// Each particle has an offset in a ring around the path
+const tunnelParticleData = [];
+for (let i = 0; i < TUNNEL_PARTICLE_COUNT; i++) {
+    tunnelParticleData.push({
+        angle: Math.random() * Math.PI * 2,
+        radius: 3 + Math.random() * 5,
+        zOffset: (Math.random() - 0.5) * 60, // spread along the tunnel length
+        speed: 20 + Math.random() * 30,       // how fast they scroll backward
+        baseSize: 1.5 + Math.random() * 2.5,
+    });
+}
+
+function updateParticleTunnel(rocketPos, forwardDir, intensity, dt) {
+    if (intensity <= 0) {
+        tunnelParticles.visible = false;
+        return;
+    }
+    tunnelParticles.visible = true;
+
+    const right = new THREE.Vector3();
+    const up = new THREE.Vector3(0, 1, 0);
+    if (Math.abs(forwardDir.dot(up)) > 0.99) up.set(1, 0, 0);
+    right.crossVectors(forwardDir, up).normalize();
+    up.crossVectors(right, forwardDir).normalize();
+
+    for (let i = 0; i < TUNNEL_PARTICLE_COUNT; i++) {
+        const p = tunnelParticleData[i];
+
+        // Scroll particles backward
+        p.zOffset -= p.speed * dt;
+        if (p.zOffset < -30) p.zOffset += 60;
+
+        const ringX = Math.cos(p.angle) * p.radius;
+        const ringY = Math.sin(p.angle) * p.radius;
+
+        const pos = rocketPos.clone()
+            .addScaledVector(forwardDir, p.zOffset)
+            .addScaledVector(right, ringX)
+            .addScaledVector(up, ringY);
+
+        const idx = i * 3;
+        tunnelPositions[idx]     = pos.x;
+        tunnelPositions[idx + 1] = pos.y;
+        tunnelPositions[idx + 2] = pos.z;
+
+        // Fade at edges of tunnel
+        const zFade = 1.0 - Math.abs(p.zOffset) / 30;
+        tunnelSizes[i] = p.baseSize * intensity;
+        tunnelAlphas[i] = Math.max(0, zFade * intensity * 0.7);
+    }
+    tunnelGeo.attributes.position.needsUpdate = true;
+    tunnelGeo.attributes.size.needsUpdate = true;
+    tunnelGeo.attributes.alpha.needsUpdate = true;
+}
+
+// CSS2D Renderer for labels
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'absolute';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+document.body.appendChild(labelRenderer.domElement);
+
+// --- LIGHTING ---
+scene.add(new THREE.AmbientLight(0x333355, 1.5));
+const sunLight = new THREE.PointLight(0xfff5e0, 3.0, 0, 0);
+scene.add(sunLight);
+
+// --- BACKGROUND STARS ---
 
 const starCount = 4000;
 const starPos   = new Float32Array(starCount * 3);
