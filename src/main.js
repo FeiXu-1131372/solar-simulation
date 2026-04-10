@@ -23,6 +23,13 @@ registerLocale('zh', zhData);
 registerLocale('ta', taData);
 registerLocale('si', siData);
 
+// Default to Chinese on mobile
+if (isMobile) {
+    setLang('zh');
+    const langSelect = document.getElementById('lang-select');
+    if (langSelect) langSelect.value = 'zh';
+}
+
 // --- DATA ---
 const DEG = Math.PI / 180;
 
@@ -2473,7 +2480,7 @@ function renderCard(name) {
     };
 
     document.getElementById('info-emoji').textContent = data.emoji || '⭐';
-    document.getElementById('info-name').textContent = name;
+    document.getElementById('info-name').textContent = t(`bodies.${name}`) || name;
     document.getElementById('info-type').textContent = data.type;
     document.getElementById('info-ministats').innerHTML =
         (data.ministats || []).map(s => `<span class="mini-stat">${s}</span>`).join('');
@@ -2597,7 +2604,7 @@ function focusOn(meshEntry) {
 
     navDots.forEach(d => d.classList.remove('active'));
     const activeDot = planetNav.querySelector(`.nav-dot[data-planet="${meshEntry.name}"]`);
-    if (activeDot) { activeDot.classList.add('active'); navLabel.textContent = meshEntry.name; }
+    if (activeDot) { activeDot.classList.add('active'); navLabel.textContent = t(`bodies.${meshEntry.name}`) || meshEntry.name; }
 
     renderCard(meshEntry.name);
 }
@@ -2680,7 +2687,7 @@ let activeMission = null; // the currently in-flight mission object
 function showMissionPicker(target) {
     const missions = getMissionsForTarget(target.name);
     if (!missions || missions.length === 0) return;
-    missionPickerSubtitle.textContent = t('ui.destination', { name: target.name });
+    missionPickerSubtitle.textContent = t('ui.destination', { name: t(`bodies.${target.name}`) || target.name });
     missionCards.innerHTML = '';
     missions.forEach(m => {
         const statusLabel = m.status === 'active' ? t('ui.active') : m.status === 'planned' ? t('ui.planned') : t('ui.historical');
@@ -2718,7 +2725,7 @@ missionPickerClose.addEventListener('click', hideMissionPicker);
 function startCountdown(mission, target) {
     countdownOverlay.classList.remove('hidden');
     cdMission.textContent = `${mission.emoji} ${mission.name}`;
-    cdLabel.textContent = t('ui.launchingTo', { name: target.name });
+    cdLabel.textContent = t('ui.launchingTo', { name: t(`bodies.${target.name}`) || target.name });
     let n = 3;
     cdNumber.textContent = n;
     cdNumber.className = 'cd-number cd-pop';
@@ -2789,7 +2796,7 @@ function doLaunch(mission, target) {
     mlEmoji.textContent = mission.emoji;
     mlName.textContent = mission.name;
     mlAgency.textContent = mission.agency;
-    mlTarget.textContent = target.name;
+    mlTarget.textContent = t(`bodies.${target.name}`) || target.name;
     mlBar.style.width = '0%';
     mlPct.textContent = t('ui.percentComplete', { pct: '0' });
     mlFact.textContent = mission.steps[0];
@@ -2940,7 +2947,7 @@ function launchMissionGame(mission, target) {
         : (celestialFacts[target.name] && celestialFacts[target.name].game);
     if (!gameData) { onGameSuccess(mission, target); return; }
 
-    document.getElementById('mg-mission-label').textContent = `${mission.emoji} ${mission.name} → ${target.name}`;
+    document.getElementById('mg-mission-label').textContent = `${mission.emoji} ${mission.name} → ${t(`bodies.${target.name}`) || target.name}`;
 
     const types = ['slingshot', 'docking', 'asteroidNav', 'memory', 'lander'];
     const type = types[Math.floor(Math.random() * types.length)];
@@ -2970,7 +2977,7 @@ function launchMissionGame(mission, target) {
 function onGameSuccess(mission, target) {
     hideMissionGame();
     arrEmoji.textContent = mission.emoji;
-    arrMission.textContent = t('ui.arrivedAt', { name: mission.name, name2: target.name });
+    arrMission.textContent = t('ui.arrivedAt', { name: mission.name, name2: t(`bodies.${target.name}`) || target.name });
     arrDiscovery.textContent = '🔭 ' + mission.discovery;
     arrFunfact.textContent = mission.funFact;
     arrivalPanel.classList.remove('hidden');
@@ -5152,7 +5159,7 @@ document.getElementById('lang-select').addEventListener('change', e => {
     if (lockedTarget) {
         navDots.forEach(d => d.classList.remove('active'));
         const activeDot = planetNav.querySelector(`.nav-dot[data-planet="${lockedTarget.name}"]`);
-        if (activeDot) { activeDot.classList.add('active'); navLabel.textContent = lockedTarget.name; }
+        if (activeDot) { activeDot.classList.add('active'); navLabel.textContent = t(`bodies.${lockedTarget.name}`) || lockedTarget.name; }
     } else {
         navDots.forEach(d => d.classList.remove('active'));
         navLabel.textContent = '';
@@ -5171,6 +5178,12 @@ onLangChange(() => {
         renderCard(lockedTarget.name);
     }
 });
+
+// Apply translations to DOM on initial load (needed when default lang is not English)
+if (getLang() !== 'en') {
+    applyLocaleToDOM();
+    bodyLabels.forEach(({ el, key }) => { el.textContent = t(`bodies.${key}`) || key; });
+}
 
 // Sync a chip button + its header status pill to a boolean state.
 function updateChip(chipId, pillId, isActive, activeChipClass, activeDotColor, activeLabel, inactiveLabel, activePillClass = 'pill-on') {
