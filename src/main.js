@@ -2464,6 +2464,8 @@ function doLaunch(mission, target) {
     missionLog.classList.remove('hidden');
 
     launchBtn.classList.add('hidden');
+    // Start cinematic sequence
+    startCinematic(rocketObj);
 }
 
 // --- MISSION MINI-GAME ---
@@ -3231,7 +3233,7 @@ function animate() {
     }
 
     // --- CONTINUOUS PLANET TRACKING ---
-    if (lockedTarget) {
+    if (lockedTarget && !cinematicState) {
         const worldPos = new THREE.Vector3();
         lockedTarget.mesh.getWorldPosition(worldPos);
 
@@ -3258,58 +3260,60 @@ function animate() {
     }
 
     // --- ROCKET UPDATES ---
-    for (let i = activeRockets.length - 1; i >= 0; i--) {
-        const r = activeRockets[i];
-        const targetPos = new THREE.Vector3();
-        r.target.mesh.getWorldPosition(targetPos);
-        
-        const distToTarget = r.mesh.position.distanceTo(targetPos);
-        const moveDist = 1.0 + (simSpeed * 1.5); 
-        
-        if (distToTarget <= (r.target.size + 1.5)) {
-            // Arrived
-            scene.remove(r.mesh);
-            scene.remove(r.trailLine);
-            activeRockets.splice(i, 1);
-            if (activeMission === r) activeMission = null;
+    if (!cinematicState) {
+        for (let i = activeRockets.length - 1; i >= 0; i--) {
+            const r = activeRockets[i];
+            const targetPos = new THREE.Vector3();
+            r.target.mesh.getWorldPosition(targetPos);
 
-            // Hide mission log
-            missionLog.classList.add('hidden');
+            const distToTarget = r.mesh.position.distanceTo(targetPos);
+            const moveDist = 1.0 + (simSpeed * 1.5);
 
-            // Launch mini-game before showing arrival panel
-            if (r.mission) {
-                launchMissionGame(r.mission, r.target);
-            }
-        } else {
-            const dir = targetPos.clone().sub(r.mesh.position).normalize();
-            const up = new THREE.Vector3(0, 1, 0);
-            r.mesh.quaternion.slerp(new THREE.Quaternion().setFromUnitVectors(up, dir), 0.15);
-            r.mesh.position.add(dir.clone().multiplyScalar(moveDist));
+            if (distToTarget <= (r.target.size + 1.5)) {
+                // Arrived
+                scene.remove(r.mesh);
+                scene.remove(r.trailLine);
+                activeRockets.splice(i, 1);
+                if (activeMission === r) activeMission = null;
 
-            // Trail
-            r.points.push(r.mesh.position.clone());
-            if (r.points.length > 200) r.points.shift();
-            r.trailGeo.setFromPoints(r.points);
+                // Hide mission log
+                missionLog.classList.add('hidden');
 
-            // Flickering main flame + booster flames
-            const flicker = 0.7 + Math.random() * 0.6;
-            r.fireMesh.scale.set(1, flicker, 1);
-            if (r.mesh.boosterFlames) r.mesh.boosterFlames.forEach(bf => bf.scale.set(1, 0.6 + Math.random() * 0.8, 1));
+                // Launch mini-game before showing arrival panel
+                if (r.mission) {
+                    launchMissionGame(r.mission, r.target);
+                }
+            } else {
+                const dir = targetPos.clone().sub(r.mesh.position).normalize();
+                const up = new THREE.Vector3(0, 1, 0);
+                r.mesh.quaternion.slerp(new THREE.Quaternion().setFromUnitVectors(up, dir), 0.15);
+                r.mesh.position.add(dir.clone().multiplyScalar(moveDist));
 
-            // Track distance and update mission log
-            r.distTraveled += moveDist;
-            if (activeMission === r) {
-                const rawPct = Math.min(r.distTraveled / r.totalDist, 0.99);
-                const pct = Math.round(rawPct * 100);
-                mlBar.style.width = pct + '%';
-                mlPct.textContent = t('ui.percentComplete', { pct });
-                // Show educational steps at 0%, 33%, 66%
-                const stepIdx = Math.min(Math.floor(rawPct / 0.33), r.mission.steps.length - 2);
-                if (stepIdx !== r.lastStepShown) {
-                    r.lastStepShown = stepIdx;
-                    mlFact.textContent = r.mission.steps[stepIdx + 1] || r.mission.steps[r.mission.steps.length - 1];
-                    mlFact.className = 'ml-fact ml-fact-new';
-                    setTimeout(() => { mlFact.className = 'ml-fact'; }, 600);
+                // Trail
+                r.points.push(r.mesh.position.clone());
+                if (r.points.length > 200) r.points.shift();
+                r.trailGeo.setFromPoints(r.points);
+
+                // Flickering main flame + booster flames
+                const flicker = 0.7 + Math.random() * 0.6;
+                r.fireMesh.scale.set(1, flicker, 1);
+                if (r.mesh.boosterFlames) r.mesh.boosterFlames.forEach(bf => bf.scale.set(1, 0.6 + Math.random() * 0.8, 1));
+
+                // Track distance and update mission log
+                r.distTraveled += moveDist;
+                if (activeMission === r) {
+                    const rawPct = Math.min(r.distTraveled / r.totalDist, 0.99);
+                    const pct = Math.round(rawPct * 100);
+                    mlBar.style.width = pct + '%';
+                    mlPct.textContent = t('ui.percentComplete', { pct });
+                    // Show educational steps at 0%, 33%, 66%
+                    const stepIdx = Math.min(Math.floor(rawPct / 0.33), r.mission.steps.length - 2);
+                    if (stepIdx !== r.lastStepShown) {
+                        r.lastStepShown = stepIdx;
+                        mlFact.textContent = r.mission.steps[stepIdx + 1] || r.mission.steps[r.mission.steps.length - 1];
+                        mlFact.className = 'ml-fact ml-fact-new';
+                        setTimeout(() => { mlFact.className = 'ml-fact'; }, 600);
+                    }
                 }
             }
         }
@@ -3324,6 +3328,12 @@ function animate() {
             controls.target.copy(galaxyTransition.tgt);
             galaxyTransition = null;
         }
+    }
+
+    // Cinematic runs independently of pause state
+    if (cinematicState) {
+        const dt = 1 / 60;
+        updateCinematic(dt);
     }
 
     controls.update();
