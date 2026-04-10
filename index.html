@@ -30,7 +30,7 @@
         <div class="cp-body">
             <div class="cp-section">
                 <div class="cp-label" data-i18n="ui.language">🌐 Language</div>
-                <select id="lang-select" style="width:100%;padding:6px 10px;border-radius:8px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;font-size:13px;cursor:pointer;">
+                <select id="lang-select">
                     <option value="en">English</option>
                     <option value="zh">中文 (Chinese)</option>
                     <option value="ta">தமிழ் (Tamil)</option>
@@ -129,10 +129,6 @@
         </div>
     </div>
 
-    <div class="texture-credits" style="position:fixed;bottom:4px;right:8px;font-size:10px;color:rgba(255,255,255,0.3);pointer-events:none;z-index:1;">
-      Textures: <a href="https://www.solarsystemscope.com/textures/" style="color:rgba(255,255,255,0.4);pointer-events:auto;" target="_blank" rel="noopener">Solar System Scope</a> (CC BY 4.0)
-    </div>
-
     <script type="module" src="/src/main.js"></script>
 
     <!-- Mission Picker -->
@@ -191,6 +187,27 @@
         <div class="mission-overlay-header">
             <span id="mg-mission-label"></span>
             <span id="mg-type-badge" class="mg-type-badge"></span>
+            <button id="mg-cancel-btn" type="button" class="mg-cancel-btn" aria-label="Cancel">✕</button>
+        </div>
+
+        <!-- How To Play screen (shown before game starts) -->
+        <div id="mg-howtoplay" class="mg-section hidden">
+            <div id="mg-htp-icon" class="mg-htp-icon"></div>
+            <div id="mg-htp-title" class="mg-htp-title"></div>
+            <div id="mg-htp-steps" class="mg-htp-steps"></div>
+            <button id="mg-htp-btn" type="button" class="mg-fire-btn" style="margin-top:14px;">🚀 Let's Go!</button>
+        </div>
+
+        <!-- Inline Game Over screen -->
+        <div id="mg-gameover" class="mg-section hidden">
+            <div class="mg-go-explosion">💥</div>
+            <div class="mg-go-title">Mission Failed</div>
+            <div id="mg-go-reason" class="mg-go-reason"></div>
+            <div id="mg-go-fact" class="mg-go-fact"></div>
+            <div class="mg-go-btns">
+                <button id="mg-go-retry" type="button" class="mg-fire-btn" style="flex:1;">🔄 Try Again</button>
+                <button id="mg-go-quit" type="button" class="mg-choice-btn" style="flex:0 0 auto;padding:13px 14px;">✕</button>
+            </div>
         </div>
 
         <!-- Gauntlet section -->
@@ -238,6 +255,61 @@
                 <div class="mg-timer-bar"><div id="mg-control-timer-fill" class="mg-timer-fill"></div></div>
                 <span id="mg-control-timer-text" class="mg-timer-text"></span>
             </div>
+        </div>
+
+        <!-- Gravity Slingshot section -->
+        <div id="mg-slingshot" class="mg-section hidden">
+          <canvas id="mg-slingshot-canvas" width="370" height="280" aria-label="Gravity Slingshot: drag to aim and launch your probe"></canvas>
+          <div class="mg-lives-row">
+            <span class="mg-lives-label">Attempts:</span>
+            <span id="mg-slingshot-attempts"></span>
+            <span id="mg-slingshot-hint" class="mg-hazard-hint" style="margin-left:auto;font-style:italic;font-size:10px;color:#475569;">Drag from probe to aim</span>
+          </div>
+        </div>
+
+        <!-- Space Docking section -->
+        <div id="mg-docking" class="mg-section hidden">
+          <canvas id="mg-docking-canvas" width="370" height="260" aria-label="Space Docking: use thrust controls to dock with the station"></canvas>
+          <div class="mg-lives-row">
+            <span id="mg-dock-fuel" style="font-size:11px;color:#4ade80;font-weight:700;">⛽ 100%</span>
+            <span id="mg-dock-speed" style="font-size:11px;color:#38bdf8;font-weight:700;margin-left:8px;">↕ 0.0</span>
+            <span id="mg-dock-status" style="font-size:11px;color:#fbbf24;font-weight:700;margin-left:auto;"></span>
+            <span id="mg-docking-timer" class="mg-hazard-timer" style="margin-left:8px;"></span>
+          </div>
+          <p class="mg-hazard-hint">Hold ▲ or bottom of screen to thrust. ◄► or sides to steer.</p>
+        </div>
+
+        <!-- Asteroid Navigator section -->
+        <div id="mg-asteroid-nav" class="mg-section hidden">
+          <canvas id="mg-asteroid-canvas" width="370" height="260" aria-label="Asteroid Navigator: dodge asteroids to reach your destination"></canvas>
+          <div class="mg-lives-row">
+            <span class="mg-lives-label">Shields:</span>
+            <span id="mg-asteroid-shields"></span>
+            <span id="mg-asteroid-score" style="margin-left:auto;color:#fbbf24;font-weight:700;font-size:11px;">★ 0</span>
+            <span id="mg-asteroid-timer" class="mg-hazard-timer"></span>
+          </div>
+          <p class="mg-hazard-hint">Swipe or tap top/bottom to move lanes. Arrow keys on desktop.</p>
+        </div>
+
+        <!-- Orbital Memory section -->
+        <div id="mg-memory" class="mg-section hidden">
+          <canvas id="mg-memory-canvas" width="370" height="300" aria-label="Orbital Memory: tap orbiting cards to flip and match pairs"></canvas>
+          <div class="mg-lives-row">
+            <span id="mg-memory-pairs" style="font-size:11px;color:#a78bfa;font-weight:700;">Pairs: 0/5</span>
+            <span id="mg-memory-timer" class="mg-hazard-timer" style="margin-left:auto;"></span>
+          </div>
+          <p class="mg-hazard-hint">Tap two orbiting cards to flip and match pairs</p>
+        </div>
+
+        <!-- Lunar Lander section -->
+        <div id="mg-lander" class="mg-section hidden">
+          <canvas id="mg-lander-canvas" width="370" height="300" aria-label="Lunar Lander: thrust to land safely on the marked zone"></canvas>
+          <div class="mg-lives-row">
+            <span id="mg-lander-fuel" style="font-size:11px;color:#4ade80;font-weight:700;">⛽ 100%</span>
+            <span id="mg-lander-vspeed" style="font-size:11px;color:#38bdf8;font-weight:700;margin-left:8px;">↕ 0.0</span>
+            <span id="mg-lander-attempts" style="margin-left:auto;font-size:11px;color:#94a3b8;font-weight:700;"></span>
+          </div>
+          <p class="mg-hazard-hint">Hold bottom of screen / spacebar to thrust. Tap sides / arrow keys to steer.</p>
         </div>
     </div>
 

@@ -20,13 +20,16 @@ registerLocale('si', siData);
 // --- DATA ---
 const DEG = Math.PI / 180;
 const planetData = [
-    { name: 'Mercury', distance: 60,  size: 2.2,  speed: 0.02,  inclination: 7.00 * DEG,
+    { name: 'Mercury', distance: 60,  size: 1.5,  speed: 0.0498, inclination: 7.00 * DEG,
+      axialTilt: 0.03 * DEG, spinRate: 0.017,
       texture: '/textures/mercury/diffuse_4k.jpg', bumpMap: '/textures/mercury/bump_4k.jpg',
       roughness: 0.9 },
-    { name: 'Venus',   distance: 95,  size: 3.6,  speed: 0.015, inclination: 3.39 * DEG,
+    { name: 'Venus',   distance: 95,  size: 3.8,  speed: 0.0195, inclination: 3.39 * DEG,
+      axialTilt: 177.4 * DEG, spinRate: 0.004,
       texture: '/textures/venus/diffuse_4k.jpg',
       roughness: 0.4, hasAtmosphere: true, atmosphereColor: 0xffa500 },
     { name: 'Earth',   distance: 135, size: 4.0,  speed: 0.012, inclination: 0.00 * DEG,
+      axialTilt: 23.44 * DEG, spinRate: 1.0,
       texture: '/textures/earth/diffuse_4k.jpg', normalMap: '/textures/earth/normal_4k.jpg',
       specularMap: '/textures/earth/specular_4k.jpg', cloudMap: '/textures/earth/clouds_4k.jpg', nightMap: '/textures/earth/nightmap_4k.jpg',
       roughness: 0.5, hasAtmosphere: true, atmosphereColor: 0x4488ff,
@@ -35,39 +38,44 @@ const planetData = [
           texture: '/textures/moon/diffuse_4k.jpg', bumpMap: '/textures/moon/bump_4k.jpg',
           isSyncFocus: true }
     ]},
-    { name: 'Mars',    distance: 175, size: 3.2,  speed: 0.010, inclination: 1.85 * DEG,
+    { name: 'Mars',    distance: 175, size: 2.1,  speed: 0.00638, inclination: 1.85 * DEG,
+      axialTilt: 25.19 * DEG, spinRate: 0.975,
       texture: '/textures/mars/diffuse_4k.jpg', bumpMap: '/textures/mars/bump_4k.jpg',
       roughness: 0.7,
       moons: [
         { name: 'Phobos', distance: 5,   size: 0.5, speed: 0.08, texture: '/textures/moon/diffuse_4k.jpg' },
-        { name: 'Deimos', distance: 7.5, size: 0.4, speed: 0.06, texture: '/textures/moon/diffuse_4k.jpg' }
+        { name: 'Deimos', distance: 7.5, size: 0.4, speed: 0.02, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Jupiter', distance: 280, size: 14.5, speed: 0.006, inclination: 1.30 * DEG,
+    { name: 'Jupiter', distance: 280, size: 14.5, speed: 0.00101, inclination: 1.30 * DEG,
+      axialTilt: 3.13 * DEG, spinRate: 2.4,
       texture: '/textures/jupiter/diffuse_4k.jpg',
       roughness: 0.5,
       moons: [
         { name: 'Io',       distance: 20, size: 1.2, speed: 0.05, texture: '/textures/moon/diffuse_4k.jpg' },
-        { name: 'Europa',   distance: 25, size: 1.1, speed: 0.04, texture: '/textures/moon/diffuse_4k.jpg' },
-        { name: 'Ganymede', distance: 30, size: 1.5, speed: 0.03, texture: '/textures/moon/diffuse_4k.jpg' },
-        { name: 'Callisto', distance: 36, size: 1.4, speed: 0.02, texture: '/textures/moon/diffuse_4k.jpg' }
+        { name: 'Europa',   distance: 25, size: 1.1, speed: 0.025, texture: '/textures/moon/diffuse_4k.jpg' },
+        { name: 'Ganymede', distance: 30, size: 1.5, speed: 0.012, texture: '/textures/moon/diffuse_4k.jpg' },
+        { name: 'Callisto', distance: 36, size: 1.4, speed: 0.005, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Saturn',  distance: 380, size: 12.0, speed: 0.004, inclination: 2.49 * DEG,
+    { name: 'Saturn',  distance: 380, size: 12.0, speed: 0.000407, inclination: 2.49 * DEG,
+      axialTilt: 26.73 * DEG, spinRate: 2.25,
       texture: '/textures/saturn/diffuse_4k.jpg',
       roughness: 0.5, hasRings: true, ringTexture: '/textures/saturn/ring_4k.png',
       moons: [
         { name: 'Titan', distance: 25, size: 2.0, speed: 0.03, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Uranus',  distance: 480, size: 7.5,  speed: 0.003, inclination: 0.77 * DEG,
+    { name: 'Uranus',  distance: 480, size: 7.5,  speed: 0.000143, inclination: 0.77 * DEG,
+      axialTilt: 97.77 * DEG, spinRate: 1.39,
       texture: '/textures/uranus/diffuse_4k.jpg',
       roughness: 0.5,
       moons: [
         { name: 'Titania', distance: 15, size: 0.8, speed: 0.05, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Neptune', distance: 560, size: 7.2,  speed: 0.002, inclination: 1.77 * DEG,
+    { name: 'Neptune', distance: 560, size: 7.2,  speed: 0.0000728, inclination: 1.77 * DEG,
+      axialTilt: 28.32 * DEG, spinRate: 1.49,
       texture: '/textures/neptune/diffuse_4k.jpg',
       roughness: 0.5,
       moons: [
-        { name: 'Triton', distance: 15, size: 1.0, speed: 0.04, texture: '/textures/moon/diffuse_4k.jpg' }
+        { name: 'Triton', distance: 15, size: 1.0, speed: -0.04, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
 ];
 
@@ -124,7 +132,7 @@ const celestialFacts = {
         emoji: '🪨',
         ministats: ['0 moons', '88-day orbit', '1st from Sun'],
         statPills: ['🌡️ −180°C nights', '🔥 430°C days', '⏱️ 59-Earth-day day', '🌑 No atmosphere', '🏃 Fastest orbit'],
-        wowStrip: 'Mercury\'s "year" (88 days) is shorter than its "day" (59 Earth days). A planet where the year ends before the day does!',
+        wowStrip: 'A Mercury solar day (sunrise to sunrise) takes 176 Earth days — but a Mercury year is only 88 days! The year ends before a single day-night cycle does!',
         learn: [
             { cls: 'q-physics', q: '⚛️ Why are Mercury\'s days and nights so extreme?', a: 'Without an atmosphere, there\'s nothing to hold heat at night or block it during the day. Earth\'s atmosphere acts like a <strong>blanket</strong>. Mercury has no blanket — so the sunny side hits <strong>430°C</strong> and the dark side drops to <strong>−180°C</strong>. That\'s a 610°C swing in one rotation!' },
             { cls: 'q-chem', q: '🧪 Why does Mercury have no atmosphere?', a: 'Two reasons: Mercury\'s <strong>gravity is weak</strong> (37% of Earth\'s) — it can\'t hold gas molecules that move fast enough to escape. Second, the <em>solar wind</em> (charged particles from the Sun) blasts away any gas that builds up. No atmosphere means no weather, no erosion by wind — just bare rock and ancient craters.' },
@@ -166,7 +174,7 @@ const celestialFacts = {
         wowStrip: 'Because Venus spins backwards, the <strong>Sun rises in the west and sets in the east</strong> there — everything is flipped compared to Earth!',
         learn: [
             { cls: 'q-physics', q: '⚛️ Why is Venus hotter than Mercury even though it\'s farther from the Sun?', a: 'The <strong>greenhouse effect</strong>! Venus has a super-thick atmosphere of CO₂ (carbon dioxide). Sunlight gets in and heats the surface, but the heat can\'t escape — trapped like inside a car on a summer day. This <em>runaway greenhouse effect</em> heats Venus to <strong>464°C</strong> — hot enough to melt lead!' },
-            { cls: 'q-chem', q: '🧪 What is Venus\'s atmosphere made of?', a: 'About <strong>96% carbon dioxide (CO₂)</strong> and 3.5% nitrogen — with clouds of <em>sulfuric acid (H₂SO₄)</em>. Yes, it rains acid! The acid evaporates before hitting the ground (too hot). The surface pressure is <strong>90× Earth\'s</strong> — like being 900 metres underwater.' },
+            { cls: 'q-chem', q: '🧪 What is Venus\'s atmosphere made of?', a: 'About <strong>96% carbon dioxide (CO₂)</strong> and 3.5% nitrogen — with clouds of <em>sulfuric acid (H₂SO₄)</em>. Yes, it rains acid! The acid evaporates before hitting the ground (too hot). The surface pressure is <strong>92× Earth\'s</strong> — like being 920 metres underwater.' },
             { cls: 'q-astro', q: '🔭 Why does Venus spin backwards and so slowly?', a: 'Scientists think a <strong>giant asteroid collision</strong> billions of years ago knocked Venus\'s spin into reverse. It now rotates "retrograde" — opposite to most planets. It also spins incredibly slowly: one Venus day = <strong>243 Earth days</strong>. Its year (orbit) is only 225 days — so a day is literally longer than a year!' },
             { cls: 'q-life', q: '🌱 Could anything survive on Venus?', a: 'The surface is brutal: 464°C, crushing pressure, acid clouds. But in Venus\'s upper atmosphere (~50 km up), temperatures reach a manageable 60°C. Scientists found hints of <em>phosphine gas (PH₃)</em> there in 2020 — on Earth, phosphine is made by living things. Could microscopic life float in Venus\'s clouds? We don\'t know — it\'s one of science\'s biggest open questions!' },
         ],
@@ -374,21 +382,21 @@ const celestialFacts = {
     },
     'Jupiter': {
         type: '🪐 Gas Giant',
-        fact: 'The King of Planets! Jupiter is SO BIG that 1,300 Earths could fit inside it! Its famous Great Red Spot is a STORM bigger than Earth that has been raging for over 350 years! It has 95 moons — a mini solar system!',
+        fact: 'The King of Planets! Jupiter is SO BIG that 1,300 Earths could fit inside it! Its famous Great Red Spot is a STORM bigger than Earth that has been raging for nearly 200 years! It has over 100 moons — a mini solar system!',
         gravity: '24.79 m/s² (you\'d weigh 2.5x more!)',
         day: '9.9 Hours',
         year: '11.8 Earth Years',
         temp: '-108°C cloud tops',
-        details: '95 Known Moons • Radius: 69,911 km',
-        wow: '⚡ Jupiter\'s storm (Great Red Spot) has been raging for 350+ years and is wider than planet Earth!',
+        details: '100+ Known Moons • Radius: 69,911 km',
+        wow: '⚡ Jupiter\'s Great Red Spot storm is wider than planet Earth and has been raging for nearly 200 years!',
         emoji: '🪐',
-        ministats: ['95 known moons', '11.8-year orbit', '5th from Sun'],
-        statPills: ['🌍 1,300 Earths fit inside', '⚡ 9.9-hour day', '🌡️ −108°C cloud tops', '🔴 Storm: 350+ years', '💪 2.5× Earth gravity'],
+        ministats: ['100+ known moons', '11.8-year orbit', '5th from Sun'],
+        statPills: ['🌍 1,300 Earths fit inside', '⚡ 9.9-hour day', '🌡️ −108°C cloud tops', '🔴 Storm: ~200 years', '💪 2.5× Earth gravity'],
         wowStrip: 'Jupiter spins so fast that its equator <strong>bulges outward</strong> — it\'s noticeably fatter in the middle than at the poles. You can actually see this through a basic telescope!',
         learn: [
-            { cls: 'q-physics', q: '⚛️ Why has Jupiter\'s Great Red Spot been going for 350 years?', a: 'On Earth, storms die when they hit land. Jupiter has <strong>no solid surface</strong> — it\'s gas all the way down! Without land to stop it, the storm just keeps spinning. Jupiter\'s internal heat keeps pumping energy in like a never-ending engine. Scientists call it a <em>persistent anticyclone</em> — a self-sustaining high-pressure vortex.' },
+            { cls: 'q-physics', q: '⚛️ Why has Jupiter\'s Great Red Spot lasted so long?', a: 'On Earth, storms die when they hit land. Jupiter has <strong>no solid surface</strong> — it\'s gas all the way down! Without land to stop it, the storm just keeps spinning. Jupiter\'s internal heat keeps pumping energy in like a never-ending engine. The current Great Red Spot has been observed since the 1830s — <strong>nearly 200 years</strong>. Scientists call it a <em>persistent anticyclone</em> — a self-sustaining high-pressure vortex.' },
             { cls: 'q-chem', q: '🧪 What is Jupiter actually made of?', a: 'About <strong>90% hydrogen (H₂)</strong> and <strong>10% helium (He)</strong> — the same ingredients as the Sun. But deep inside, the pressure is so extreme that hydrogen transforms into a <em>metal</em> — it conducts electricity like copper wire. This "metallic hydrogen" generates Jupiter\'s magnetic field, <strong>20,000× stronger than Earth\'s</strong>.' },
-            { cls: 'q-astro', q: '🔭 Why does Jupiter have so many moons?', a: 'Jupiter\'s enormous <strong>gravity acts like a giant vacuum cleaner</strong> in space — capturing passing asteroids and comets into orbit. It has <strong>95 confirmed moons</strong>, including Ganymede (bigger than Mercury!), Europa (hidden ocean!), and Io (400+ active volcanoes!). Jupiter is basically a mini solar system all by itself.' },
+            { cls: 'q-astro', q: '🔭 Why does Jupiter have so many moons?', a: 'Jupiter\'s enormous <strong>gravity acts like a giant vacuum cleaner</strong> in space — capturing passing asteroids and comets into orbit. It has <strong>over 100 confirmed moons</strong>, including Ganymede (bigger than Mercury!), Europa (hidden ocean!), and Io (400+ active volcanoes!). Jupiter is basically a mini solar system all by itself.' },
             { cls: 'q-life', q: '🌱 What would happen if you fell into Jupiter?', a: 'There\'s no ground — you\'d just sink deeper. First, <strong>600 km/h winds</strong> would shred your spacecraft. Then increasing pressure would crush it. Then heat would melt everything. You\'d dissolve into the planet itself. Jupiter is the ultimate gas trap — no solid bottom, just increasingly extreme conditions going deeper.' },
         ],
         explore: {
@@ -574,16 +582,16 @@ const celestialFacts = {
         day: '10.7 Hours',
         year: '29.4 Earth Years',
         temp: '-138°C cloud tops',
-        details: '146 Known Moons • Radius: 58,232 km',
+        details: '280+ Known Moons • Radius: 58,232 km',
         wow: '🛁 Saturn is the only planet that could float in water — it\'s less dense than water! Its rings are 282,000 km wide but only 100m thick!',
         emoji: '💍',
-        ministats: ['146 known moons', '29.4-year orbit', '6th from Sun'],
-        statPills: ['🛁 Less dense than water!', '💍 Rings 282,000 km wide', '⏱️ 10.7-hour day', '🌡️ −138°C cloud tops', '🌕 146 moons (and counting)'],
+        ministats: ['280+ known moons', '29.4-year orbit', '6th from Sun'],
+        statPills: ['🛁 Less dense than water!', '💍 Rings 282,000 km wide', '⏱️ 10.7-hour day', '🌡️ −138°C cloud tops', '🌕 280+ moons (and counting)'],
         wowStrip: 'Saturn\'s rings are <strong>282,000 km wide</strong> — nearly the distance from Earth to the Moon — yet they\'re thinner than a 10-story building. Thin as a razor blade stretched across a football field!',
         learn: [
             { cls: 'q-physics', q: '⚛️ How can Saturn float in water?', a: 'An object floats if it\'s <strong>less dense than water</strong>. Saturn is made of gas (hydrogen and helium) and is so huge yet so light that its average density is only <em>0.687 g/cm³</em> — water is 1.0. So yes, if you had a bathtub big enough, Saturn would bob on top! It\'s the only planet in our solar system less dense than water.' },
             { cls: 'q-chem', q: '🧪 What are Saturn\'s rings actually made of?', a: 'About <strong>90–95% water ice</strong>, plus chunks of rock and dust. Particles range from tiny ice grains (snowflakes) to boulders the size of houses. The rings likely formed when a moon or comet got too close and was <em>ripped apart by tidal forces</em>. They\'re only 10–100 metres thick at most — paper-thin on a cosmic scale!' },
-            { cls: 'q-astro', q: '🔭 How did Saturn end up with 146 moons?', a: 'Saturn\'s <strong>massive gravity</strong> captures passing space objects into orbit. Its ring system also clumps together to form tiny "moonlets." Some moons, like <em>Titan</em>, are ancient — formed with Saturn. Others are recently captured asteroids. Scientists discover new tiny moons almost every year — Saturn keeps adding to its collection!' },
+            { cls: 'q-astro', q: '🔭 How did Saturn end up with so many moons?', a: 'Saturn has <strong>over 280 known moons</strong> — more than any other planet! Its <strong>massive gravity</strong> captures passing space objects into orbit. Its ring system also clumps together to form tiny "moonlets." Some moons, like <em>Titan</em>, are ancient — formed with Saturn. Others are recently captured asteroids. Scientists discover new moons almost every year — Saturn keeps adding to its collection!' },
             { cls: 'q-life', q: '🌱 Could Titan — Saturn\'s biggest moon — have alien life?', a: 'Titan is one of the most exciting places in the solar system! It has <strong>lakes, rivers, and rain</strong> — but made of liquid methane (CH₄) instead of water. Its thick orange atmosphere resembles early Earth\'s. NASA\'s <em>Dragonfly</em> mission (launching 2028) will fly a helicopter on Titan, searching for chemical signs of life in the 2030s!' },
         ],
         explore: {
@@ -652,10 +660,10 @@ const celestialFacts = {
         day: '17.2 Hours',
         year: '84 Earth Years',
         temp: '-195°C (coldest atmosphere!)',
-        details: '28 Known Moons • Radius: 25,362 km',
+        details: '29 Known Moons • Radius: 25,362 km',
         wow: '↔️ Uranus spins on its side! Half the planet gets 42 years of straight sunlight, then 42 years of total darkness — no seasons like ours!',
         emoji: '🔵',
-        ministats: ['28 known moons', '84-year orbit', '7th from Sun'],
+        ministats: ['29 known moons', '84-year orbit', '7th from Sun'],
         statPills: ['↔️ 98° axial tilt (spins sideways!)', '🔵 Methane blue-green colour', '❄️ −195°C atmosphere', '💎 Diamond rain possible', '⏱️ 17.2-hour day'],
         wowStrip: 'Deep inside Uranus, the pressure is so extreme that scientists think carbon atoms are crushed into <strong>actual diamonds</strong> — which then "rain" downward through the ice layers. Uranus might literally rain diamonds!',
         learn: [
@@ -2000,6 +2008,11 @@ planetData.forEach((data) => {
     );
     planetMesh.position.x = data.distance;
     planetMesh.userData = { name: data.name, size: data.size };
+    // Apply axial tilt — ZYX order so tilt (Z) is applied before spin (Y)
+    if (data.axialTilt) {
+        planetMesh.rotation.order = 'ZYX';
+        planetMesh.rotation.z = data.axialTilt;
+    }
     orbitPivot.add(planetMesh);
     allClickable.push({ mesh: planetMesh, name: data.name, size: data.size });
 
@@ -2099,7 +2112,7 @@ planetData.forEach((data) => {
 
         const ringGroup = new THREE.Group();
         ringGroup.add(ringMesh);
-        ringGroup.rotation.z = 0.47; // ~27 degrees axial tilt
+        ringGroup.rotation.z = 0; // axial tilt now applied to planet mesh
         planetMesh.add(ringGroup);
     }
 
@@ -2528,11 +2541,130 @@ let activeGameCleanup = null;
 
 function hideMissionGame() {
     document.getElementById('mission-game-overlay').classList.add('hidden');
-    ['mg-gauntlet', 'mg-hazard', 'mg-control'].forEach(id =>
+    ['mg-gauntlet', 'mg-hazard', 'mg-control', 'mg-slingshot', 'mg-docking', 'mg-asteroid-nav', 'mg-memory', 'mg-lander', 'mg-howtoplay', 'mg-gameover'].forEach(id =>
         document.getElementById(id).classList.add('hidden'));
     if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
     if (activeGameFrame) { cancelAnimationFrame(activeGameFrame); activeGameFrame = null; }
     if (activeGameCleanup) { activeGameCleanup(); activeGameCleanup = null; }
+}
+
+// --- HOW TO PLAY DEFINITIONS ---
+const HOW_TO_PLAY = {
+    slingshot: {
+        icon: '🌌',
+        title: 'Gravity Slingshot',
+        steps: [
+            { icon: '👆', text: '<strong>Drag from the yellow probe</strong> — pull back like a slingshot to set direction and power.' },
+            { icon: '🪐', text: '<strong>Use planet gravity</strong> — fly near the glowing planets to curve your trajectory.' },
+            { icon: '🎯', text: '<strong>Hit the green target</strong> on the right edge. You have 3 attempts.' },
+            { icon: '💡', text: 'The dotted line shows your predicted path — adjust your aim before releasing!' },
+        ],
+    },
+    docking: {
+        icon: '🛸',
+        title: 'Space Docking',
+        steps: [
+            { icon: '🚀', text: '<strong>Your ship is drifting in zero-g</strong> — gravity pulls it down toward the planet.' },
+            { icon: '🔼', text: '<strong>Thrust UP</strong>: hold the bottom half of the screen, or press <strong>Space / ↑</strong>.' },
+            { icon: '◀▶', text: '<strong>Steer left/right</strong>: tap the left or right edge of the screen, or press <strong>← →</strong>.' },
+            { icon: '🟢', text: '<strong>Dock gently</strong> — align with the blinking port on the station and arrive slowly. Too fast = crash!' },
+        ],
+    },
+    asteroidNav: {
+        icon: '☄️',
+        title: 'Asteroid Field',
+        steps: [
+            { icon: '🛸', text: 'Your ship flies <strong>automatically</strong> through 5 lanes. Asteroids come from the right.' },
+            { icon: '👆', text: '<strong>Tap the top half</strong> to move up, <strong>tap the bottom half</strong> to move down. Or swipe up/down.' },
+            { icon: '⌨️', text: 'On desktop use <strong>↑ ↓ arrow keys</strong> or <strong>W / S</strong>.' },
+            { icon: '⭐', text: 'Collect <strong>stars</strong> for bonus points. You have 3 shields — survive 25 seconds to win!' },
+        ],
+    },
+    memory: {
+        icon: '🧠',
+        title: 'Orbital Memory',
+        steps: [
+            { icon: '🔄', text: '10 cards orbit around the center — they keep <strong>moving while you play!</strong>' },
+            { icon: '👆', text: '<strong>Tap a card</strong> to flip it and reveal its symbol.' },
+            { icon: '🎯', text: 'Tap a <strong>second card</strong> — if symbols match, they stay revealed. If not, both flip back.' },
+            { icon: '⏱️', text: 'Match all <strong>5 pairs</strong> before the timer runs out. Track the cards as they orbit!' },
+        ],
+    },
+    lander: {
+        icon: '🚀',
+        title: 'Lunar Lander',
+        steps: [
+            { icon: '🌍', text: 'Your lander falls under <strong>planet gravity</strong> — each world pulls differently!' },
+            { icon: '🔥', text: '<strong>Thrust UP</strong>: hold the bottom half of the screen, or hold <strong>Space / ↑</strong>.' },
+            { icon: '◀▶', text: '<strong>Steer</strong>: tap left/right edges of screen, or press <strong>← →</strong> keys.' },
+            { icon: '🟢', text: 'Land <strong>gently on the green zone</strong>. Watch your speed — if you hit too fast, you crash!' },
+        ],
+    },
+};
+
+function showHowToPlay(type, onStart) {
+    const htp = HOW_TO_PLAY[type];
+    if (!htp) { onStart(); return; }
+
+    const el = document.getElementById('mg-howtoplay');
+    document.getElementById('mg-htp-icon').textContent = htp.icon;
+    document.getElementById('mg-htp-title').textContent = htp.title;
+    document.getElementById('mg-htp-steps').innerHTML = htp.steps.map(s =>
+        `<div class="mg-htp-step">
+            <div class="mg-htp-step-icon">${s.icon}</div>
+            <div class="mg-htp-step-text">${s.text}</div>
+        </div>`
+    ).join('');
+
+    el.classList.remove('hidden');
+
+    const btn = document.getElementById('mg-htp-btn');
+    const handler = () => {
+        btn.removeEventListener('click', handler);
+        el.classList.add('hidden');
+        onStart();
+    };
+    btn.addEventListener('click', handler);
+}
+
+function showInlineGameOver(mission, target, gameData, onRetry) {
+    // Stop any running game
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    if (activeGameFrame) { cancelAnimationFrame(activeGameFrame); activeGameFrame = null; }
+    if (activeGameCleanup) { activeGameCleanup(); activeGameCleanup = null; }
+
+    // Hide all game sections
+    ['mg-gauntlet', 'mg-hazard', 'mg-control', 'mg-slingshot', 'mg-docking', 'mg-asteroid-nav', 'mg-memory', 'mg-lander'].forEach(id =>
+        document.getElementById(id).classList.add('hidden'));
+
+    const el = document.getElementById('mg-gameover');
+    document.getElementById('mg-go-reason').textContent = gameData.failReason || 'The mission could not be completed.';
+    document.getElementById('mg-go-fact').innerHTML = `<strong>Real fact:</strong> ${gameData.realFact || ''}`;
+    el.classList.remove('hidden');
+
+    const retryBtn = document.getElementById('mg-go-retry');
+    const quitBtn  = document.getElementById('mg-go-quit');
+
+    const cleanup = () => {
+        retryBtn.removeEventListener('click', retryHandler);
+        quitBtn.removeEventListener('click', quitHandler);
+    };
+
+    const retryHandler = () => {
+        cleanup();
+        el.classList.add('hidden');
+        onRetry();
+    };
+    const quitHandler = () => {
+        cleanup();
+        hideMissionGame();
+        if (lockedTarget && lockedTarget.name !== 'Earth' && lockedTarget.name !== 'Sun') {
+            launchBtn.classList.remove('hidden');
+        }
+    };
+
+    retryBtn.addEventListener('click', retryHandler);
+    quitBtn.addEventListener('click', quitHandler);
 }
 
 function launchMissionGame(mission, target) {
@@ -2543,17 +2675,29 @@ function launchMissionGame(mission, target) {
 
     document.getElementById('mg-mission-label').textContent = `${mission.emoji} ${mission.name} → ${target.name}`;
 
-    const types = ['gauntlet', 'hazard', 'control'];
+    const types = ['slingshot', 'docking', 'asteroidNav', 'memory', 'lander'];
     const type = types[Math.floor(Math.random() * types.length)];
 
-    const badges = { gauntlet: t('ui.gauntlet'), hazard: t('ui.hazardRun'), control: t('ui.missionControl') };
-    document.getElementById('mg-type-badge').textContent = badges[type];
+    const badges = {
+        slingshot: '🌌 Gravity Slingshot',
+        docking: '🛸 Space Docking',
+        asteroidNav: '☄️ Asteroid Field',
+        memory: '🧠 Orbital Memory',
+        lander: '🚀 Lunar Lander',
+    };
+    document.getElementById('mg-type-badge').textContent = badges[type] || type;
 
     document.getElementById('mission-game-overlay').classList.remove('hidden');
 
-    if (type === 'gauntlet')      runGauntlet(mission, target, gameData);
-    else if (type === 'hazard')   runHazardRun(mission, target, gameData);
-    else                          runMissionControl(mission, target, gameData);
+    function startGame() {
+        if (type === 'slingshot')        runSlingshot(mission, target, gameData);
+        else if (type === 'docking')     runDocking(mission, target, gameData);
+        else if (type === 'asteroidNav') runAsteroidNav(mission, target, gameData);
+        else if (type === 'memory')      runOrbitalMemory(mission, target, gameData);
+        else                             runLander(mission, target, gameData);
+    }
+
+    showHowToPlay(type, startGame);
 }
 
 function onGameSuccess(mission, target) {
@@ -2566,11 +2710,21 @@ function onGameSuccess(mission, target) {
 }
 
 function onGameFail(mission, target, gameData) {
-    hideMissionGame();
-    document.getElementById('ml-mission-sub').textContent = t('ui.missionSubtitle', { name: mission.name, name2: target.name, year: mission.year });
-    document.getElementById('ml-reason').textContent = gameData.failReason;
-    document.getElementById('ml-real-fact').innerHTML = `${t('ui.realFactLabel')} ${gameData.realFact}`;
-    document.getElementById('mission-lost-panel').classList.remove('hidden');
+    // Determine which game type is currently running so retry re-uses same type
+    const runnerMap = {
+        'mg-slingshot':     () => runSlingshot(mission, target, gameData),
+        'mg-docking':       () => runDocking(mission, target, gameData),
+        'mg-asteroid-nav':  () => runAsteroidNav(mission, target, gameData),
+        'mg-memory':        () => runOrbitalMemory(mission, target, gameData),
+        'mg-lander':        () => runLander(mission, target, gameData),
+    };
+    const activeKey = Object.keys(runnerMap).find(id => !document.getElementById(id).classList.contains('hidden'));
+    const runner = runnerMap[activeKey];
+
+    showInlineGameOver(mission, target, gameData, () => {
+        if (runner) runner();
+        else launchMissionGame(mission, target);
+    });
 }
 
 // --- GAUNTLET ---
@@ -3038,6 +3192,1560 @@ function runMissionControl(mission, target, gameData) {
     }, TICK_MS);
 }
 
+// --- GRAVITY SLINGSHOT ---
+
+function runSlingshot(mission, target, gameData) {
+    document.getElementById('mg-slingshot').classList.remove('hidden');
+
+    const canvas = document.getElementById('mg-slingshot-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = 370, CH = 280;
+    const MAX_ATTEMPTS = 3;
+
+    let attempts = 0;
+    let done = false;
+    let dragging = false;
+    let dragStart = null;  // {x,y} on canvas
+    let probePos = null;
+    let probeVel = null;
+    let launched = false;
+    let won = false;
+
+    // Starfield
+    const stars = Array.from({length: 60}, () => ({
+        x: Math.random() * CW, y: Math.random() * CH,
+        r: Math.random() * 1.2 + 0.3, a: Math.random() * 0.7 + 0.3
+    }));
+
+    // Gravity wells (2 planets in the middle area)
+    const wells = [
+        { x: CW * 0.38, y: CH * 0.32, mass: 3200, radius: 18, emoji: '🪐', color: '#c084fc' },
+        { x: CW * 0.62, y: CH * 0.68, mass: 2600, radius: 14, emoji: '🌍', color: '#38bdf8' },
+    ];
+
+    // Target zone (right side)
+    const target_zone = { x: CW - 28, y: CH / 2, radius: 22, emoji: mission.emoji || '⭐' };
+
+    // Launch pad (left side)
+    const launch = { x: 32, y: CH / 2 };
+
+    function resetProbe() {
+        probePos = { x: launch.x, y: launch.y };
+        probeVel = { x: 0, y: 0 };
+        launched = false;
+        dragging = false;
+        dragStart = null;
+    }
+
+    function updateAttempts() {
+        const el = document.getElementById('mg-slingshot-attempts');
+        if (el) el.textContent = '🟡'.repeat(MAX_ATTEMPTS - attempts) + '⚫'.repeat(attempts);
+    }
+
+    resetProbe();
+    updateAttempts();
+
+    function drawScene(aimEnd) {
+        // Background
+        ctx.fillStyle = '#040a14';
+        ctx.fillRect(0, 0, CW, CH);
+
+        // Stars
+        stars.forEach(s => {
+            ctx.globalAlpha = s.a;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+
+        // Gravity wells
+        wells.forEach(w => {
+            // Gravity field glow rings
+            for (let i = 3; i > 0; i--) {
+                ctx.beginPath();
+                ctx.arc(w.x, w.y, w.radius + i * 10, 0, Math.PI * 2);
+                ctx.strokeStyle = w.color;
+                ctx.globalAlpha = 0.04 * i;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+            // Planet body
+            ctx.beginPath();
+            ctx.arc(w.x, w.y, w.radius, 0, Math.PI * 2);
+            ctx.fillStyle = w.color + '33';
+            ctx.fill();
+            ctx.strokeStyle = w.color;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            // Emoji
+            ctx.font = `${w.radius * 1.3}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(w.emoji, w.x, w.y);
+        });
+
+        // Target zone
+        ctx.beginPath();
+        ctx.arc(target_zone.x, target_zone.y, target_zone.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(74,222,128,0.12)';
+        ctx.fill();
+        ctx.strokeStyle = '#4ade80';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.font = '20px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(target_zone.emoji, target_zone.x, target_zone.y);
+
+        // Launch pad marker
+        ctx.beginPath();
+        ctx.arc(launch.x, launch.y, 8, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(251,191,36,0.2)';
+        ctx.fill();
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Trajectory preview (dotted path during drag)
+        if (dragging && dragStart && aimEnd && !launched) {
+            const dx = launch.x - aimEnd.x;
+            const dy = launch.y - aimEnd.y;
+            const power = Math.min(Math.sqrt(dx*dx + dy*dy) / 80, 1);
+            const vx = dx * power * 0.09;
+            const vy = dy * power * 0.09;
+
+            // Simulate dots
+            let px = launch.x, py = launch.y;
+            let pvx = vx, pvy = vy;
+            ctx.fillStyle = 'rgba(251,191,36,0.5)';
+            for (let i = 0; i < 40; i++) {
+                wells.forEach(w => {
+                    const ddx = w.x - px, ddy = w.y - py;
+                    const dist2 = ddx*ddx + ddy*ddy;
+                    const force = w.mass / (dist2 * Math.sqrt(dist2) + 0.001);
+                    pvx += ddx * force * 0.003;
+                    pvy += ddy * force * 0.003;
+                });
+                px += pvx; py += pvy;
+                if (i % 3 === 0) {
+                    ctx.beginPath();
+                    ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Aim line
+            ctx.beginPath();
+            ctx.moveTo(launch.x, launch.y);
+            ctx.lineTo(aimEnd.x, aimEnd.y);
+            ctx.strokeStyle = 'rgba(251,191,36,0.3)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Power indicator
+            const powerPct = Math.round(power * 100);
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '10px Inter, system-ui, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(`Power: ${powerPct}%`, 8, 8);
+        }
+
+        // Probe
+        if (probePos) {
+            ctx.beginPath();
+            ctx.arc(probePos.x, probePos.y, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        // Instructions overlay (before first launch)
+        if (!launched && attempts === 0 && !dragging) {
+            ctx.fillStyle = 'rgba(251,191,36,0.7)';
+            ctx.font = '11px Inter, system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Drag from the probe ● to aim', CW/2, CH - 20);
+        }
+    }
+
+    function physicsLoop() {
+        if (done) return;
+
+        if (launched && probePos && probeVel) {
+            // Apply gravity from each well
+            wells.forEach(w => {
+                const dx = w.x - probePos.x;
+                const dy = w.y - probePos.y;
+                const dist2 = dx*dx + dy*dy;
+                const force = w.mass / (dist2 * Math.sqrt(dist2) + 0.001);
+                probeVel.x += dx * force * 0.003;
+                probeVel.y += dy * force * 0.003;
+            });
+
+            probePos.x += probeVel.x;
+            probePos.y += probeVel.y;
+
+            // Check win: entered target zone
+            const dtx = probePos.x - target_zone.x;
+            const dty = probePos.y - target_zone.y;
+            if (Math.sqrt(dtx*dtx + dty*dty) < target_zone.radius + 4) {
+                won = true;
+                done = true;
+                drawScene(null);
+                cancelAnimationFrame(activeGameFrame);
+                activeGameFrame = null;
+                setTimeout(() => onGameSuccess(mission, target), 400);
+                return;
+            }
+
+            // Check collision with wells
+            for (const w of wells) {
+                const dx = probePos.x - w.x, dy = probePos.y - w.y;
+                if (Math.sqrt(dx*dx + dy*dy) < w.radius) {
+                    launched = false;
+                    attempts++;
+                    updateAttempts();
+                    if (attempts >= MAX_ATTEMPTS) {
+                        done = true;
+                        cancelAnimationFrame(activeGameFrame);
+                        activeGameFrame = null;
+                        onGameFail(mission, target, gameData);
+                        return;
+                    }
+                    resetProbe();
+                    break;
+                }
+            }
+
+            // Out of bounds
+            if (probePos.x > CW + 30 || probePos.x < -30 || probePos.y > CH + 30 || probePos.y < -30) {
+                launched = false;
+                attempts++;
+                updateAttempts();
+                if (attempts >= MAX_ATTEMPTS) {
+                    done = true;
+                    cancelAnimationFrame(activeGameFrame);
+                    activeGameFrame = null;
+                    onGameFail(mission, target, gameData);
+                    return;
+                }
+                resetProbe();
+            }
+        }
+
+        drawScene(null);
+        activeGameFrame = requestAnimationFrame(physicsLoop);
+    }
+
+    activeGameFrame = requestAnimationFrame(physicsLoop);
+
+    // --- Input Handling ---
+    function getCanvasPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = CW / rect.width;
+        const scaleY = CH / rect.height;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+    }
+
+    function isNearProbe(pos) {
+        if (!probePos) return false;
+        const dx = pos.x - probePos.x, dy = pos.y - probePos.y;
+        return Math.sqrt(dx*dx + dy*dy) < 24;
+    }
+
+    function onPointerDown(e) {
+        if (done || launched) return;
+        e.preventDefault();
+        const pos = getCanvasPos(e);
+        if (isNearProbe(pos)) {
+            dragging = true;
+            dragStart = pos;
+        }
+    }
+
+    function onPointerMove(e) {
+        if (!dragging || done || launched) return;
+        e.preventDefault();
+        const pos = getCanvasPos(e);
+        drawScene(pos);
+    }
+
+    function onPointerUp(e) {
+        if (!dragging || done || launched) return;
+        e.preventDefault();
+        dragging = false;
+        const pos = getCanvasPos(e);
+        const dx = launch.x - pos.x;
+        const dy = launch.y - pos.y;
+        const power = Math.min(Math.sqrt(dx*dx + dy*dy) / 80, 1);
+        if (power < 0.05) return; // too weak, ignore
+        probeVel.x = dx * power * 0.09;
+        probeVel.y = dy * power * 0.09;
+        launched = true;
+    }
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    canvas.addEventListener('mousemove', onPointerMove);
+    canvas.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    canvas.addEventListener('touchmove', onPointerMove, { passive: false });
+    canvas.addEventListener('touchend', onPointerUp, { passive: false });
+
+    activeGameCleanup = () => {
+        canvas.removeEventListener('mousedown', onPointerDown);
+        canvas.removeEventListener('mousemove', onPointerMove);
+        canvas.removeEventListener('mouseup', onPointerUp);
+        canvas.removeEventListener('touchstart', onPointerDown);
+        canvas.removeEventListener('touchmove', onPointerMove);
+        canvas.removeEventListener('touchend', onPointerUp);
+    };
+}
+
+// --- SPACE DOCKING ---
+
+function runDocking(mission, target, gameData) {
+    document.getElementById('mg-docking').classList.remove('hidden');
+
+    const canvas = document.getElementById('mg-docking-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = 370, CH = 260;
+    const DURATION_MS = 35000;
+    const FUEL_MAX = 100;
+
+    // Gravity based on planet
+    const gravityMap = {
+        Moon: 0.008, Mars: 0.012, Mercury: 0.010, Venus: 0.018,
+        Jupiter: 0.028, Saturn: 0.022, Uranus: 0.015, Neptune: 0.016,
+        Earth: 0.016, Sun: 0.040,
+    };
+    const gravity = gravityMap[target.name] || 0.012;
+
+    // Station at top center
+    const station = {
+        x: CW / 2,
+        y: 40,
+        width: 90,
+        height: 18,
+        portWidth: 28,
+        portX: CW / 2 - 14, // center of port
+    };
+
+    // Ship state
+    let ship = { x: CW / 2 + (Math.random() - 0.5) * 60, y: CH - 40, vx: (Math.random() - 0.5) * 0.4, vy: -0.2 };
+    let fuel = FUEL_MAX;
+    let done = false;
+    let startTime = Date.now();
+    let thrusting = { up: false, left: false, right: false };
+    let particles = [];
+    let docked = false;
+
+    // Starfield
+    const stars = Array.from({length: 50}, () => ({
+        x: Math.random() * CW, y: Math.random() * CH, r: Math.random() * 1 + 0.3
+    }));
+
+    function updateHUD() {
+        const fuelEl = document.getElementById('mg-dock-fuel');
+        const speedEl = document.getElementById('mg-dock-speed');
+        const statusEl = document.getElementById('mg-dock-status');
+        if (fuelEl) fuelEl.textContent = `⛽ ${Math.max(0, Math.round(fuel))}%`;
+        const spd = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
+        const fuelColor = fuel > 50 ? '#4ade80' : fuel > 20 ? '#fbbf24' : '#ef4444';
+        if (fuelEl) fuelEl.style.color = fuelColor;
+        if (speedEl) {
+            speedEl.textContent = `↕ ${spd.toFixed(1)}`;
+            speedEl.style.color = spd < 1.5 ? '#4ade80' : spd < 3 ? '#fbbf24' : '#ef4444';
+        }
+        // Distance to dock
+        const distToDock = Math.abs(ship.y - (station.y + station.height));
+        if (statusEl) statusEl.textContent = distToDock < 80 ? (spd < 1.5 ? '✅ Speed OK' : '⚠️ Too Fast') : '';
+    }
+
+    function drawScene() {
+        // Background
+        ctx.fillStyle = '#040a14';
+        ctx.fillRect(0, 0, CW, CH);
+
+        // Subtle grid
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < CW; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke(); }
+        for (let y = 0; y < CH; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke(); }
+
+        // Stars
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill(); });
+
+        // Station body
+        ctx.fillStyle = '#1e3a5f';
+        ctx.strokeStyle = '#38bdf8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(station.x - station.width / 2, station.y, station.width, station.height, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // Station port (gap in the bottom center)
+        ctx.fillStyle = '#040a14';
+        ctx.fillRect(station.portX, station.y + station.height - 4, station.portWidth, 8);
+
+        // Port green lights
+        ctx.fillStyle = docked ? '#4ade80' : (Math.floor(Date.now() / 500) % 2 === 0 ? '#4ade80' : '#166534');
+        ctx.beginPath(); ctx.arc(station.portX + 2, station.y + station.height + 2, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(station.portX + station.portWidth - 2, station.y + station.height + 2, 3, 0, Math.PI * 2); ctx.fill();
+
+        // Station emoji
+        ctx.font = '14px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🛸', station.x, station.y + station.height / 2);
+
+        // Port approach guide lines
+        ctx.strokeStyle = 'rgba(74,222,128,0.2)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 6]);
+        ctx.beginPath(); ctx.moveTo(station.portX, station.y + station.height); ctx.lineTo(station.portX, CH); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(station.portX + station.portWidth, station.y + station.height); ctx.lineTo(station.portX + station.portWidth, CH); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Thrust particles
+        ctx.globalAlpha = 0.7;
+        particles = particles.filter(p => {
+            p.x += p.vx; p.y += p.vy; p.life -= 1;
+            if (p.life <= 0) return false;
+            ctx.globalAlpha = p.life / p.maxLife * 0.7;
+            ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+            return true;
+        });
+        ctx.globalAlpha = 1;
+
+        // Ship (triangle pointing up)
+        ctx.save();
+        ctx.translate(ship.x, ship.y);
+        ctx.fillStyle = '#fbbf24';
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, -9);
+        ctx.lineTo(7, 9);
+        ctx.lineTo(-7, 9);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+
+        // Timer bar (top of canvas)
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, DURATION_MS - elapsed);
+        const frac = remaining / DURATION_MS;
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fillRect(0, 0, CW, 3);
+        ctx.fillStyle = frac > 0.4 ? '#38bdf8' : frac > 0.2 ? '#fbbf24' : '#ef4444';
+        ctx.fillRect(0, 0, CW * frac, 3);
+
+        // Remaining time text
+        const timerEl = document.getElementById('mg-docking-timer');
+        if (timerEl) timerEl.textContent = `${Math.ceil(remaining / 1000)}s`;
+    }
+
+    function spawnThrustParticle(dir) {
+        const count = 3;
+        for (let i = 0; i < count; i++) {
+            const spread = (Math.random() - 0.5) * 1.5;
+            particles.push({
+                x: ship.x + (dir === 'left' ? 6 : dir === 'right' ? -6 : spread * 4),
+                y: ship.y + (dir === 'up' ? 9 : -6),
+                vx: dir === 'left' ? 1.5 + Math.random() : dir === 'right' ? -1.5 - Math.random() : spread,
+                vy: dir === 'up' ? 1.5 + Math.random() : -1.2 - Math.random(),
+                life: 12 + Math.random() * 8,
+                maxLife: 20,
+                r: 1.5 + Math.random(),
+                color: dir === 'up' ? '#f97316' : '#38bdf8',
+            });
+        }
+    }
+
+    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+
+    activeGameTimer = setInterval(() => {
+        if (done) return;
+
+        const elapsed = Date.now() - startTime;
+
+        // Apply gravity
+        ship.vy += gravity;
+
+        // Apply thrust
+        const thrustPower = 0.045;
+        const fuelCost = 0.6;
+        if (thrusting.up && fuel > 0) {
+            ship.vy -= thrustPower * 2.5;
+            fuel = Math.max(0, fuel - fuelCost * 2);
+            spawnThrustParticle('up');
+        }
+        if (thrusting.left && fuel > 0) {
+            ship.vx -= thrustPower;
+            fuel = Math.max(0, fuel - fuelCost);
+            spawnThrustParticle('left');
+        }
+        if (thrusting.right && fuel > 0) {
+            ship.vx += thrustPower;
+            fuel = Math.max(0, fuel - fuelCost);
+            spawnThrustParticle('right');
+        }
+
+        // Speed cap
+        ship.vx = Math.max(-6, Math.min(6, ship.vx));
+        ship.vy = Math.max(-6, Math.min(6, ship.vy));
+
+        ship.x += ship.vx;
+        ship.y += ship.vy;
+
+        // Clamp horizontal
+        if (ship.x < 8) { ship.x = 8; ship.vx = Math.abs(ship.vx) * 0.3; }
+        if (ship.x > CW - 8) { ship.x = CW - 8; ship.vx = -Math.abs(ship.vx) * 0.3; }
+
+        // Check docking
+        const portCenterX = station.portX + station.portWidth / 2;
+        const portBottomY = station.y + station.height + 4;
+        const spd = Math.sqrt(ship.vx * ship.vx + ship.vy * ship.vy);
+        const inPortX = Math.abs(ship.x - portCenterX) < station.portWidth / 2 + 2;
+        const atPortY = Math.abs(ship.y - portBottomY) < 12;
+
+        if (inPortX && atPortY && spd < 1.8 && !done) {
+            docked = true;
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            drawScene();
+            setTimeout(() => onGameSuccess(mission, target), 500);
+            return;
+        }
+
+        // Crash into station wall (too fast or wrong position)
+        const hitStation = ship.y < station.y + station.height + 2 && ship.y > station.y - 5 &&
+            ship.x > station.x - station.width / 2 - 5 && ship.x < station.x + station.width / 2 + 5;
+        if (hitStation && !done) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            onGameFail(mission, target, gameData);
+            return;
+        }
+
+        // Fell off bottom
+        if (ship.y > CH + 20 && !done) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            onGameFail(mission, target, gameData);
+            return;
+        }
+
+        // Time out
+        if (elapsed >= DURATION_MS && !done) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            onGameFail(mission, target, gameData);
+            return;
+        }
+
+        // Out of fuel and drifting up with no chance
+        if (fuel <= 0 && ship.vy > 0 && ship.y > CH - 20 && !done) {
+            done = true;
+            clearInterval(activeGameTimer);
+            activeGameTimer = null;
+            onGameFail(mission, target, gameData);
+            return;
+        }
+
+        updateHUD();
+        drawScene();
+    }, 30);
+
+    // Draw initial frame
+    drawScene();
+
+    // --- Keyboard controls ---
+    const keyHandler = e => {
+        if (done) return;
+        const down = e.type === 'keydown';
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
+            thrusting.up = down; e.preventDefault();
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            thrusting.left = down; e.preventDefault();
+        }
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            thrusting.right = down; e.preventDefault();
+        }
+    };
+    document.addEventListener('keydown', keyHandler);
+    document.addEventListener('keyup', keyHandler);
+
+    // --- Touch controls ---
+    // Bottom 40% = main thrust up
+    // Left third = thrust left, Right third = thrust right
+    function getTouchThrust(e) {
+        const rect = canvas.getBoundingClientRect();
+        const touches = e.touches.length ? e.touches : e.changedTouches;
+        thrusting.up = false; thrusting.left = false; thrusting.right = false;
+        for (let i = 0; i < touches.length; i++) {
+            const tx = (touches[i].clientX - rect.left) / rect.width;
+            const ty = (touches[i].clientY - rect.top) / rect.height;
+            if (ty > 0.55) thrusting.up = true;
+            if (tx < 0.33) thrusting.left = true;
+            if (tx > 0.67) thrusting.right = true;
+        }
+    }
+    function clearThrust() { thrusting.up = false; thrusting.left = false; thrusting.right = false; }
+
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); getTouchThrust(e); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); getTouchThrust(e); }, { passive: false });
+    canvas.addEventListener('touchend', e => { e.preventDefault(); clearThrust(); }, { passive: false });
+
+    activeGameCleanup = () => {
+        document.removeEventListener('keydown', keyHandler);
+        document.removeEventListener('keyup', keyHandler);
+        canvas.removeEventListener('touchstart', getTouchThrust);
+        canvas.removeEventListener('touchmove', getTouchThrust);
+        canvas.removeEventListener('touchend', clearThrust);
+    };
+}
+
+// --- ASTEROID FIELD NAVIGATOR ---
+
+function runAsteroidNav(mission, target, gameData) {
+    document.getElementById('mg-asteroid-nav').classList.remove('hidden');
+
+    const canvas = document.getElementById('mg-asteroid-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = 370, CH = 260;
+    const DURATION_MS = 25000;
+    const NUM_LANES = 5;
+    const LANE_HEIGHT = CH / NUM_LANES;
+    const LANE_CENTERS = Array.from({length: NUM_LANES}, (_, i) => LANE_HEIGHT * i + LANE_HEIGHT / 2);
+
+    const hazardTypes = (gameData.hazards && gameData.hazards.length)
+        ? gameData.hazards
+        : ['asteroid', 'debris', 'radiation_band'];
+
+    let currentLane = 2; // middle
+    let targetLane = 2;
+    let shipY = LANE_CENTERS[currentLane];
+    let shields = 3;
+    let score = 0;
+    let done = false;
+    let startTime = Date.now();
+    let lastSpawn = 0;
+    let invincible = false;
+    let obstacles = [];
+    let stars_bg = [];
+    let collectibles = [];
+    let lastCollectible = 0;
+
+    // Scrolling starfield
+    stars_bg = Array.from({length: 80}, () => ({
+        x: Math.random() * CW, y: Math.random() * CH,
+        r: Math.random() * 1.2 + 0.2,
+        speed: Math.random() * 1.5 + 0.5,
+        a: Math.random() * 0.6 + 0.2,
+    }));
+
+    // Touch swipe state
+    let touchStartY = null;
+    let touchStartX = null;
+
+    function updateHUD() {
+        const shEl = document.getElementById('mg-asteroid-shields');
+        const scEl = document.getElementById('mg-asteroid-score');
+        if (shEl) shEl.textContent = '🟢'.repeat(shields) + '⚫'.repeat(3 - shields);
+        if (scEl) scEl.textContent = `★ ${score}`;
+    }
+
+    function spawnObstacle() {
+        const type = hazardTypes[Math.floor(Math.random() * hazardTypes.length)];
+        const emoji = HAZARD_EMOJIS[type] || '☄️';
+        // avoid bunching — pick random lane, sometimes pick multiple lanes
+        const lane = Math.floor(Math.random() * NUM_LANES);
+        obstacles.push({ x: CW + 28, lane, emoji, size: 18 + Math.random() * 6 });
+    }
+
+    function spawnCollectible() {
+        const lane = Math.floor(Math.random() * NUM_LANES);
+        collectibles.push({ x: CW + 28, lane, size: 14 });
+    }
+
+    function gameLoop() {
+        if (done) return;
+
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, Math.ceil((DURATION_MS - elapsed) / 1000));
+
+        // Update timer
+        const timerEl = document.getElementById('mg-asteroid-timer');
+        if (timerEl) timerEl.textContent = `${remaining}s`;
+
+        const speed = 2.2 + (elapsed / DURATION_MS) * 3.5;
+        const spawnInterval = Math.max(500, 1100 - elapsed * 0.025);
+
+        // Spawn obstacles
+        if (Date.now() - lastSpawn > spawnInterval) {
+            spawnObstacle();
+            // 30% chance of extra obstacle in different lane
+            if (Math.random() < 0.3) {
+                setTimeout(spawnObstacle, 180);
+            }
+            lastSpawn = Date.now();
+        }
+
+        // Spawn collectibles
+        if (Date.now() - lastCollectible > 2800) {
+            spawnCollectible();
+            lastCollectible = Date.now();
+        }
+
+        // Smooth ship lane interpolation
+        const targetY = LANE_CENTERS[targetLane];
+        shipY += (targetY - shipY) * 0.18;
+
+        // Clear canvas
+        ctx.fillStyle = '#040a14';
+        ctx.fillRect(0, 0, CW, CH);
+
+        // Scrolling stars
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        stars_bg.forEach(s => {
+            s.x -= s.speed;
+            if (s.x < -4) s.x = CW + 4;
+            ctx.globalAlpha = s.a;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+
+        // Lane dividers (very subtle)
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([6, 12]);
+        LANE_CENTERS.forEach((ly, i) => {
+            if (i === 0) return;
+            ctx.beginPath();
+            ctx.moveTo(0, ly - LANE_HEIGHT / 2);
+            ctx.lineTo(CW, ly - LANE_HEIGHT / 2);
+            ctx.stroke();
+        });
+        ctx.setLineDash([]);
+
+        // Target destination on right
+        ctx.font = '24px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(mission.emoji || '🪐', CW - 20, CH / 2);
+
+        // Move and draw collectibles
+        ctx.font = '14px serif';
+        collectibles = collectibles.filter(c => {
+            c.x -= speed * 0.8;
+            if (c.x < -20) return false;
+            ctx.fillText('⭐', c.x, LANE_CENTERS[c.lane]);
+
+            // Collect
+            const shipX = 45;
+            if (!invincible && c.lane === Math.round((shipY - LANE_HEIGHT/2) / LANE_HEIGHT) &&
+                Math.abs(c.x - shipX) < 20 && Math.abs(LANE_CENTERS[c.lane] - shipY) < LANE_HEIGHT * 0.6) {
+                score++;
+                updateHUD();
+                return false;
+            }
+            return true;
+        });
+
+        // Move and draw obstacles
+        ctx.font = '20px serif';
+        const shipX = 45;
+        obstacles = obstacles.filter(o => {
+            o.x -= speed;
+            if (o.x < -28) return false;
+            ctx.fillText(o.emoji, o.x, LANE_CENTERS[o.lane]);
+
+            // Collision: ship lane matches obstacle lane and x overlaps
+            if (!invincible && Math.abs(LANE_CENTERS[o.lane] - shipY) < LANE_HEIGHT * 0.55 && Math.abs(o.x - shipX) < 20) {
+                shields--;
+                updateHUD();
+                if (shields <= 0) {
+                    done = true;
+                    cancelAnimationFrame(activeGameFrame);
+                    activeGameFrame = null;
+                    onGameFail(mission, target, gameData);
+                    return false;
+                }
+                invincible = true;
+                setTimeout(() => { invincible = false; }, 1200);
+                return false;
+            }
+            return true;
+        });
+
+        // Draw ship (blinking when invincible)
+        if (!invincible || Math.floor(Date.now() / 100) % 2 === 0) {
+            ctx.font = '22px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🛸', shipX, shipY);
+        }
+
+        // Timer progress bar at top
+        const frac = 1 - elapsed / DURATION_MS;
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fillRect(0, 0, CW, 3);
+        ctx.fillStyle = frac > 0.4 ? '#38bdf8' : frac > 0.15 ? '#fbbf24' : '#ef4444';
+        ctx.fillRect(0, 0, CW * Math.max(0, frac), 3);
+
+        // Win condition
+        if (elapsed >= DURATION_MS && !done) {
+            done = true;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
+            onGameSuccess(mission, target);
+            return;
+        }
+
+        activeGameFrame = requestAnimationFrame(gameLoop);
+    }
+
+    updateHUD();
+    activeGameFrame = requestAnimationFrame(gameLoop);
+
+    // --- Keyboard controls ---
+    const keyHandler = e => {
+        if (done) return;
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+            targetLane = Math.max(0, targetLane - 1);
+            e.preventDefault();
+        }
+        if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+            targetLane = Math.min(NUM_LANES - 1, targetLane + 1);
+            e.preventDefault();
+        }
+    };
+    document.addEventListener('keydown', keyHandler);
+
+    // --- Touch controls: swipe or tap ---
+    const touchStart = e => {
+        if (done) return;
+        e.preventDefault();
+        const t = e.touches[0];
+        touchStartY = t.clientY;
+        touchStartX = t.clientX;
+    };
+
+    const touchEnd = e => {
+        if (done || touchStartY === null) return;
+        e.preventDefault();
+        const t = e.changedTouches[0];
+        const dy = t.clientY - touchStartY;
+        const dx = t.clientX - touchStartX;
+
+        if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) {
+            // Swipe
+            if (dy < 0) targetLane = Math.max(0, targetLane - 1);
+            else targetLane = Math.min(NUM_LANES - 1, targetLane + 1);
+        } else if (Math.abs(dy) <= 12 && Math.abs(dx) <= 12) {
+            // Tap: top half = up, bottom half = down
+            const rect = canvas.getBoundingClientRect();
+            const ty = t.clientY - rect.top;
+            if (ty < rect.height / 2) targetLane = Math.max(0, targetLane - 1);
+            else targetLane = Math.min(NUM_LANES - 1, targetLane + 1);
+        }
+        touchStartY = null;
+        touchStartX = null;
+    };
+
+    canvas.addEventListener('touchstart', touchStart, { passive: false });
+    canvas.addEventListener('touchend', touchEnd, { passive: false });
+
+    activeGameCleanup = () => {
+        document.removeEventListener('keydown', keyHandler);
+        canvas.removeEventListener('touchstart', touchStart);
+        canvas.removeEventListener('touchend', touchEnd);
+    };
+}
+
+// --- ORBITAL MEMORY MATCH ---
+
+function runOrbitalMemory(mission, target, gameData) {
+    document.getElementById('mg-memory').classList.remove('hidden');
+
+    const canvas = document.getElementById('mg-memory-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = 370, CH = 300;
+    const DURATION_MS = 35000;
+    const ORBIT_RADIUS = 108;
+    const CENTER = { x: CW / 2, y: CH / 2 };
+    const CARD_W = 32, CARD_H = 32;
+    const NUM_PAIRS = 5;
+    const SYMBOLS = ['🌟', '🪐', '☄️', '🌙', '🚀', '🔭', '🛸', '⭐', '🌍', '💫'];
+    const ORBIT_SPEED = 0.004; // radians per frame
+
+    let done = false;
+    let startTime = Date.now();
+    let orbitAngle = 0;
+    let pairsFound = 0;
+    let flipping = false; // lock during reveal
+
+    // Build 10 cards (5 pairs), shuffled
+    const symbolSet = SYMBOLS.slice(0, NUM_PAIRS);
+    const cardSymbols = [...symbolSet, ...symbolSet].sort(() => Math.random() - 0.5);
+
+    // Each card has: angle offset on orbit, face symbol, state
+    const cards = cardSymbols.map((sym, i) => ({
+        angleOffset: (i / cardSymbols.length) * Math.PI * 2,
+        symbol: sym,
+        state: 'down',    // 'down' | 'up' | 'matched'
+        flipProgress: 0,  // 0..1
+        flipDir: 0,       // 1=flipping up, -1=flipping down
+        glow: 0,          // glow intensity for match feedback
+    }));
+
+    let flippedCards = []; // indices of currently-face-up unmatched cards
+
+    function getCardPos(card) {
+        const a = orbitAngle + card.angleOffset;
+        return {
+            x: CENTER.x + Math.cos(a) * ORBIT_RADIUS,
+            y: CENTER.y + Math.sin(a) * ORBIT_RADIUS,
+        };
+    }
+
+    function updatePairCounter() {
+        const el = document.getElementById('mg-memory-pairs');
+        if (el) el.textContent = `Pairs: ${pairsFound}/${NUM_PAIRS}`;
+        const timerEl = document.getElementById('mg-memory-timer');
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, Math.ceil((DURATION_MS - elapsed) / 1000));
+        if (timerEl) timerEl.textContent = `${remaining}s`;
+    }
+
+    function drawScene() {
+        // Background
+        ctx.fillStyle = '#040a14';
+        ctx.fillRect(0, 0, CW, CH);
+
+        // Radial glow at center
+        const grd = ctx.createRadialGradient(CENTER.x, CENTER.y, 10, CENTER.x, CENTER.y, 130);
+        grd.addColorStop(0, 'rgba(139,92,246,0.12)');
+        grd.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, CW, CH);
+
+        // Orbit circle (faint)
+        ctx.beginPath();
+        ctx.arc(CENTER.x, CENTER.y, ORBIT_RADIUS, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(139,92,246,0.18)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 8]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Center emoji (mission target)
+        ctx.font = '28px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(mission.emoji || '🌌', CENTER.x, CENTER.y);
+
+        // Draw cards
+        cards.forEach((card, i) => {
+            const pos = getCardPos(card);
+            const cx = pos.x, cy = pos.y;
+
+            // Scale effect for flip animation
+            const scaleX = card.state === 'down' ? 1 : (card.flipProgress < 0.5 ? 1 - card.flipProgress * 2 : (card.flipProgress - 0.5) * 2);
+            const absScale = Math.max(0.01, Math.abs(scaleX));
+
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.scale(absScale, 1);
+
+            const half_w = CARD_W / 2, half_h = CARD_H / 2;
+
+            if (card.state === 'matched') {
+                // Matched: faded green
+                ctx.globalAlpha = 0.4 + Math.sin(card.glow) * 0.15;
+                ctx.fillStyle = 'rgba(74,222,128,0.25)';
+                ctx.strokeStyle = '#4ade80';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.roundRect(-half_w, -half_h, CARD_W, CARD_H, 6);
+                ctx.fill(); ctx.stroke();
+                ctx.font = '16px serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#4ade80';
+                ctx.fillText(card.symbol, 0, 0);
+                ctx.globalAlpha = 1;
+            } else if (card.state === 'up' || (card.state === 'down' && card.flipProgress > 0.5)) {
+                // Face up side
+                ctx.fillStyle = 'rgba(139,92,246,0.3)';
+                ctx.strokeStyle = '#a78bfa';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.roundRect(-half_w, -half_h, CARD_W, CARD_H, 6);
+                ctx.fill(); ctx.stroke();
+                if (card.flipProgress > 0.5 || card.state === 'up') {
+                    ctx.font = '16px serif';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(card.symbol, 0, 0);
+                }
+            } else {
+                // Face down
+                ctx.fillStyle = 'rgba(30,27,75,0.9)';
+                ctx.strokeStyle = 'rgba(139,92,246,0.4)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.roundRect(-half_w, -half_h, CARD_W, CARD_H, 6);
+                ctx.fill(); ctx.stroke();
+                ctx.font = '14px serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'rgba(167,139,250,0.6)';
+                ctx.fillText('?', 0, 0);
+            }
+
+            ctx.restore();
+
+            // Glow update
+            if (card.state === 'matched') card.glow += 0.08;
+        });
+
+        // Timer bar
+        const elapsed = Date.now() - startTime;
+        const frac = Math.max(0, 1 - elapsed / DURATION_MS);
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fillRect(0, 0, CW, 3);
+        ctx.fillStyle = frac > 0.4 ? '#a78bfa' : frac > 0.15 ? '#fbbf24' : '#ef4444';
+        ctx.fillRect(0, 0, CW * frac, 3);
+    }
+
+    function animateFlips() {
+        let anyAnimating = true;
+        const flipSpeed = 0.08;
+
+        cards.forEach(card => {
+            if (card.state === 'up' && card.flipProgress < 1) {
+                card.flipProgress = Math.min(1, card.flipProgress + flipSpeed);
+            } else if (card.state === 'down' && card.flipProgress > 0) {
+                card.flipProgress = Math.max(0, card.flipProgress - flipSpeed);
+            }
+        });
+    }
+
+    function mainLoop() {
+        if (done) return;
+
+        const elapsed = Date.now() - startTime;
+
+        // Orbit rotation
+        orbitAngle += ORBIT_SPEED;
+
+        // Animate flips
+        animateFlips();
+
+        drawScene();
+        updatePairCounter();
+
+        // Timer check
+        if (elapsed >= DURATION_MS && !done) {
+            done = true;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
+            onGameFail(mission, target, gameData);
+            return;
+        }
+
+        activeGameFrame = requestAnimationFrame(mainLoop);
+    }
+
+    activeGameFrame = requestAnimationFrame(mainLoop);
+
+    // --- Hit detection ---
+    function handleTap(clientX, clientY) {
+        if (done || flipping) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = CW / rect.width;
+        const scaleY = CH / rect.height;
+        const tapX = (clientX - rect.left) * scaleX;
+        const tapY = (clientY - rect.top) * scaleY;
+
+        // Find tapped card
+        let tappedIdx = -1;
+        let minDist = Infinity;
+        cards.forEach((card, i) => {
+            if (card.state !== 'down') return;
+            const pos = getCardPos(card);
+            const dx = tapX - pos.x, dy = tapY - pos.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < 22 && dist < minDist) {
+                minDist = dist;
+                tappedIdx = i;
+            }
+        });
+
+        if (tappedIdx === -1) return;
+
+        // Flip it up
+        cards[tappedIdx].state = 'up';
+        cards[tappedIdx].flipProgress = 0;
+        flippedCards.push(tappedIdx);
+
+        if (flippedCards.length === 2) {
+            flipping = true;
+            const [a, b] = flippedCards;
+            flippedCards = [];
+
+            setTimeout(() => {
+                if (cards[a].symbol === cards[b].symbol) {
+                    // Match!
+                    cards[a].state = 'matched';
+                    cards[b].state = 'matched';
+                    pairsFound++;
+
+                    if (pairsFound >= NUM_PAIRS) {
+                        done = true;
+                        cancelAnimationFrame(activeGameFrame);
+                        activeGameFrame = null;
+                        setTimeout(() => onGameSuccess(mission, target), 400);
+                        return;
+                    }
+                } else {
+                    // No match — flip back
+                    cards[a].state = 'down';
+                    cards[b].state = 'down';
+                }
+                flipping = false;
+            }, 900);
+        }
+    }
+
+    const clickHandler = e => {
+        e.preventDefault();
+        handleTap(e.clientX, e.clientY);
+    };
+    const touchHandler = e => {
+        e.preventDefault();
+        if (e.changedTouches.length > 0) {
+            handleTap(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        }
+    };
+
+    canvas.addEventListener('click', clickHandler);
+    canvas.addEventListener('touchend', touchHandler, { passive: false });
+
+    activeGameCleanup = () => {
+        canvas.removeEventListener('click', clickHandler);
+        canvas.removeEventListener('touchend', touchHandler);
+    };
+}
+
+// --- LUNAR LANDER ---
+
+function runLander(mission, target, gameData) {
+    document.getElementById('mg-lander').classList.remove('hidden');
+
+    const canvas = document.getElementById('mg-lander-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = 370, CH = 300;
+    const MAX_ATTEMPTS = 2;
+    const FUEL_MAX = 100;
+
+    // Gravity varies per destination
+    const gravityMap = {
+        Moon: 0.020, Mars: 0.032, Mercury: 0.027, Venus: 0.055,
+        Jupiter: 0.075, Saturn: 0.065, Uranus: 0.040, Neptune: 0.045,
+        Earth: 0.048, Sun: 0.120, Io: 0.025, Europa: 0.018,
+        Ganymede: 0.022, Callisto: 0.020, Titan: 0.030,
+        Phobos: 0.004, Deimos: 0.003,
+    };
+    const gravity = gravityMap[target.name] || 0.035;
+    const THRUST_POWER = gravity * 2.8;
+    const LATERAL_POWER = 0.030;
+    const MAX_LAND_VSPEED = 1.6;
+    const MAX_LAND_HSPEED = 1.0;
+
+    // Terrain generation
+    function generateTerrain() {
+        const points = [];
+        const segW = 30;
+        const numSeg = Math.ceil(CW / segW) + 1;
+        const baseY = CH - 45;
+        const landZoneStart = 100 + Math.floor(Math.random() * 150);
+        const landZoneEnd = landZoneStart + 44;
+
+        let y = baseY + (Math.random() - 0.5) * 20;
+        for (let i = 0; i <= numSeg; i++) {
+            const x = i * segW;
+            if (x >= landZoneStart && x <= landZoneEnd) {
+                y = baseY; // flat landing zone
+            } else {
+                y += (Math.random() - 0.5) * 28;
+                y = Math.max(CH - 90, Math.min(CH - 20, y));
+            }
+            points.push({ x, y });
+        }
+        return { points, landZoneStart, landZoneEnd, landY: baseY };
+    }
+
+    let terrain = generateTerrain();
+    let attempts = 0;
+    let done = false;
+
+    // Ship state
+    let ship = {
+        x: terrain.landZoneStart + 22 + (Math.random() - 0.5) * 60,
+        y: 40,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: 0.2,
+        angle: 0, // visual tilt
+    };
+    let fuel = FUEL_MAX;
+    let thrusting = { up: false, left: false, right: false };
+    let particles = [];
+    let stars = Array.from({length: 55}, () => ({
+        x: Math.random() * CW, y: Math.random() * (CH - 90), r: Math.random() + 0.3
+    }));
+
+    function updateHUD() {
+        const fuelEl = document.getElementById('mg-lander-fuel');
+        const vspEl = document.getElementById('mg-lander-vspeed');
+        const attEl = document.getElementById('mg-lander-attempts');
+        const fuelColor = fuel > 50 ? '#4ade80' : fuel > 20 ? '#fbbf24' : '#ef4444';
+        if (fuelEl) { fuelEl.textContent = `⛽ ${Math.max(0, Math.round(fuel))}%`; fuelEl.style.color = fuelColor; }
+        if (vspEl) {
+            const spd = Math.abs(ship.vy);
+            vspEl.textContent = `↕ ${spd.toFixed(1)}`;
+            vspEl.style.color = spd < MAX_LAND_VSPEED ? '#4ade80' : spd < 3 ? '#fbbf24' : '#ef4444';
+        }
+        if (attEl) attEl.textContent = `Attempt ${attempts + 1}/${MAX_ATTEMPTS + 1}`;
+    }
+
+    // Get terrain y at a given x
+    function getTerrainY(x) {
+        const pts = terrain.points;
+        for (let i = 0; i < pts.length - 1; i++) {
+            if (x >= pts[i].x && x <= pts[i + 1].x) {
+                const t = (x - pts[i].x) / (pts[i + 1].x - pts[i].x);
+                return pts[i].y * (1 - t) + pts[i + 1].y * t;
+            }
+        }
+        return CH - 45;
+    }
+
+    function resetShip() {
+        terrain = generateTerrain();
+        ship.x = terrain.landZoneStart + 22 + (Math.random() - 0.5) * 40;
+        ship.y = 40;
+        ship.vx = (Math.random() - 0.5) * 0.4;
+        ship.vy = 0.2;
+        ship.angle = 0;
+        fuel = FUEL_MAX;
+        particles = [];
+        thrusting.up = false; thrusting.left = false; thrusting.right = false;
+    }
+
+    function spawnThrustParticle(dir) {
+        for (let i = 0; i < 4; i++) {
+            particles.push({
+                x: ship.x + (Math.random() - 0.5) * 6,
+                y: ship.y + 8,
+                vx: (Math.random() - 0.5) * 1.5 + (dir === 'left' ? 1.5 : dir === 'right' ? -1.5 : 0),
+                vy: 1.5 + Math.random() * 2,
+                life: 10 + Math.random() * 8,
+                maxLife: 18,
+                r: 1.5 + Math.random(),
+                color: Math.random() < 0.5 ? '#f97316' : '#fbbf24',
+            });
+        }
+    }
+
+    function drawScene() {
+        // Space background
+        ctx.fillStyle = '#040a14';
+        ctx.fillRect(0, 0, CW, CH);
+
+        // Stars
+        ctx.fillStyle = 'rgba(255,255,255,0.75)';
+        stars.forEach(s => { ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.fill(); });
+
+        // Terrain
+        ctx.beginPath();
+        ctx.moveTo(0, CH);
+        terrain.points.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(CW, CH);
+        ctx.closePath();
+        const terrGrad = ctx.createLinearGradient(0, CH - 80, 0, CH);
+        terrGrad.addColorStop(0, '#374151');
+        terrGrad.addColorStop(1, '#1f2937');
+        ctx.fillStyle = terrGrad;
+        ctx.fill();
+        ctx.strokeStyle = '#6b7280';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Landing zone markers (pulsing)
+        const pulse = 0.5 + 0.5 * Math.sin(Date.now() / 300);
+        const lz = terrain.landZoneStart;
+        const lzE = terrain.landZoneEnd;
+        const landY = getTerrainY(lz + 22);
+
+        ctx.strokeStyle = `rgba(74,222,128,${0.4 + pulse * 0.5})`;
+        ctx.lineWidth = 2;
+        // Left post
+        ctx.beginPath(); ctx.moveTo(lz, landY); ctx.lineTo(lz, landY - 16); ctx.stroke();
+        // Right post
+        ctx.beginPath(); ctx.moveTo(lzE, landY); ctx.lineTo(lzE, landY - 16); ctx.stroke();
+        // Horizontal bar
+        ctx.beginPath(); ctx.moveTo(lz, landY - 16); ctx.lineTo(lzE, landY - 16); ctx.stroke();
+        // Zone fill
+        ctx.fillStyle = `rgba(74,222,128,${0.06 + pulse * 0.04})`;
+        ctx.fillRect(lz, landY - 16, lzE - lz, 16);
+        // Zone label
+        ctx.fillStyle = `rgba(74,222,128,${0.6 + pulse * 0.3})`;
+        ctx.font = '9px Inter, system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('LAND HERE', (lz + lzE) / 2, landY - 20);
+
+        // Thrust particles
+        ctx.globalAlpha = 0.8;
+        particles = particles.filter(p => {
+            p.x += p.vx; p.y += p.vy; p.life--;
+            if (p.life <= 0) return false;
+            ctx.globalAlpha = p.life / p.maxLife * 0.8;
+            ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+            return true;
+        });
+        ctx.globalAlpha = 1;
+
+        // Ship (lander shape)
+        ctx.save();
+        ctx.translate(ship.x, ship.y);
+        ctx.rotate(ship.angle);
+
+        // Body
+        ctx.fillStyle = '#c4b5fd';
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, -11);
+        ctx.lineTo(10, 8);
+        ctx.lineTo(0, 5);
+        ctx.lineTo(-10, 8);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+
+        // Landing legs
+        ctx.strokeStyle = '#94a3b8';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(-8, 7); ctx.lineTo(-13, 12); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(8, 7); ctx.lineTo(13, 12); ctx.stroke();
+
+        // Thruster glow when thrusting
+        if (thrusting.up && fuel > 0) {
+            ctx.fillStyle = 'rgba(249,115,22,0.6)';
+            ctx.beginPath();
+            ctx.moveTo(-5, 7);
+            ctx.lineTo(5, 7);
+            ctx.lineTo(0, 18 + Math.random() * 6);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        ctx.restore();
+
+        // Fuel bar overlay at top
+        const fuelFrac = fuel / FUEL_MAX;
+        ctx.fillStyle = 'rgba(255,255,255,0.06)';
+        ctx.fillRect(0, 0, CW, 4);
+        ctx.fillStyle = fuelFrac > 0.4 ? '#4ade80' : fuelFrac > 0.15 ? '#fbbf24' : '#ef4444';
+        ctx.fillRect(0, 0, CW * fuelFrac, 4);
+    }
+
+    function physicsLoop() {
+        if (done) return;
+
+        // Apply gravity
+        ship.vy += gravity;
+
+        // Apply thrust
+        if (thrusting.up && fuel > 0) {
+            ship.vy -= THRUST_POWER;
+            fuel = Math.max(0, fuel - 0.8);
+            spawnThrustParticle('up');
+        }
+        if (thrusting.left && fuel > 0) {
+            ship.vx -= LATERAL_POWER;
+            fuel = Math.max(0, fuel - 0.3);
+            ship.angle = Math.max(-0.3, ship.angle - 0.015);
+            spawnThrustParticle('left');
+        }
+        if (thrusting.right && fuel > 0) {
+            ship.vx += LATERAL_POWER;
+            fuel = Math.max(0, fuel - 0.3);
+            ship.angle = Math.min(0.3, ship.angle + 0.015);
+            spawnThrustParticle('right');
+        }
+
+        // Drift angle back to center
+        if (!thrusting.left && !thrusting.right) {
+            ship.angle *= 0.92;
+        }
+
+        // Speed limits
+        ship.vx = Math.max(-5, Math.min(5, ship.vx));
+        ship.vy = Math.max(-6, Math.min(8, ship.vy));
+
+        ship.x += ship.vx;
+        ship.y += ship.vy;
+
+        // Wrap horizontal
+        if (ship.x < -10) ship.x = CW + 10;
+        if (ship.x > CW + 10) ship.x = -10;
+
+        // Check terrain collision
+        const terrY = getTerrainY(ship.x);
+        if (ship.y + 12 >= terrY) {
+            // Check if in landing zone
+            const inZone = ship.x >= terrain.landZoneStart && ship.x <= terrain.landZoneEnd;
+            const gentleV = Math.abs(ship.vy) < MAX_LAND_VSPEED;
+            const gentleH = Math.abs(ship.vx) < MAX_LAND_HSPEED;
+
+            if (inZone && gentleV && gentleH) {
+                // SUCCESS LANDING
+                ship.y = terrY - 12;
+                done = true;
+                cancelAnimationFrame(activeGameFrame);
+                activeGameFrame = null;
+                drawScene();
+                setTimeout(() => onGameSuccess(mission, target), 500);
+                return;
+            } else {
+                // CRASH
+                attempts++;
+                updateHUD();
+                if (attempts > MAX_ATTEMPTS) {
+                    done = true;
+                    cancelAnimationFrame(activeGameFrame);
+                    activeGameFrame = null;
+                    // Crash particles
+                    for (let i = 0; i < 20; i++) {
+                        particles.push({
+                            x: ship.x, y: ship.y,
+                            vx: (Math.random() - 0.5) * 5,
+                            vy: -Math.random() * 4,
+                            life: 20, maxLife: 20,
+                            r: 2 + Math.random() * 2,
+                            color: Math.random() < 0.5 ? '#ef4444' : '#f97316',
+                        });
+                    }
+                    drawScene();
+                    setTimeout(() => onGameFail(mission, target, gameData), 300);
+                    return;
+                } else {
+                    resetShip();
+                }
+            }
+        }
+
+        // Flew off top
+        if (ship.y < -30) {
+            attempts++;
+            if (attempts > MAX_ATTEMPTS) {
+                done = true;
+                cancelAnimationFrame(activeGameFrame);
+                activeGameFrame = null;
+                onGameFail(mission, target, gameData);
+                return;
+            }
+            resetShip();
+        }
+
+        updateHUD();
+        drawScene();
+        activeGameFrame = requestAnimationFrame(physicsLoop);
+    }
+
+    updateHUD();
+    drawScene();
+    activeGameFrame = requestAnimationFrame(physicsLoop);
+
+    // --- Keyboard controls ---
+    const keyHandler = e => {
+        if (done) return;
+        const down = e.type === 'keydown';
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
+            thrusting.up = down; e.preventDefault();
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            thrusting.left = down; e.preventDefault();
+        }
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            thrusting.right = down; e.preventDefault();
+        }
+    };
+    document.addEventListener('keydown', keyHandler);
+    document.addEventListener('keyup', keyHandler);
+
+    // --- Touch controls ---
+    // Bottom 40% center = thrust up, left 1/3 = thrust left, right 1/3 = thrust right
+    function applyTouches(e) {
+        const rect = canvas.getBoundingClientRect();
+        thrusting.up = false; thrusting.left = false; thrusting.right = false;
+        const touches = e.touches;
+        for (let i = 0; i < touches.length; i++) {
+            const tx = (touches[i].clientX - rect.left) / rect.width;
+            const ty = (touches[i].clientY - rect.top) / rect.height;
+            if (ty > 0.55) thrusting.up = true;
+            if (tx < 0.3) thrusting.left = true;
+            if (tx > 0.7) thrusting.right = true;
+        }
+    }
+
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); applyTouches(e); }, { passive: false });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); applyTouches(e); }, { passive: false });
+    canvas.addEventListener('touchend', e => {
+        e.preventDefault();
+        thrusting.up = false; thrusting.left = false; thrusting.right = false;
+    }, { passive: false });
+
+    activeGameCleanup = () => {
+        document.removeEventListener('keydown', keyHandler);
+        document.removeEventListener('keyup', keyHandler);
+    };
+}
+
+document.getElementById('mg-cancel-btn').addEventListener('click', () => {
+    hideMissionGame();
+    if (lockedTarget && lockedTarget.name !== 'Earth' && lockedTarget.name !== 'Sun') {
+        launchBtn.classList.remove('hidden');
+    }
+});
+
 document.getElementById('ml-relaunch-btn').addEventListener('click', () => {
     document.getElementById('mission-lost-panel').classList.add('hidden');
     if (lockedTarget) showMissionPicker(lockedTarget);
@@ -3074,6 +4782,16 @@ renderer.domElement.addEventListener('pointerup', (event) => {
     const dist = Math.hypot(event.clientX - pointerDown.x, event.clientY - pointerDown.y);
     if (dist > 10) return;
 
+    // Orbit camera left/right when tapping screen edges (left 1/3 or right 1/3)
+    const screenX = event.clientX / window.innerWidth;
+    if (screenX < 0.33) {
+        controls.rotateLeft(0.15);
+        return;
+    } else if (screenX > 0.67) {
+        controls.rotateLeft(-0.15);
+        return;
+    }
+
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -3097,6 +4815,21 @@ renderer.domElement.addEventListener('pointerup', (event) => {
         }
     }
 });
+
+// --- KEYBOARD ORBIT CONTROLS ---
+const ORBIT_ANGLE = 0.15; // radians per key press
+const keyOrbitHandler = (e) => {
+    // Ignore if user is typing in an input
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'ArrowLeft') {
+        controls.rotateLeft(ORBIT_ANGLE);
+        e.preventDefault();
+    } else if (e.key === 'ArrowRight') {
+        controls.rotateLeft(-ORBIT_ANGLE);
+        e.preventDefault();
+    }
+};
+document.addEventListener('keydown', keyOrbitHandler);
 
 // --- STATE & UI ---
 let isSynchronous = true;
@@ -3265,9 +4998,9 @@ function animate() {
 
         planets.forEach(p => {
             p.orbitPivot.rotation.y = clock * p.data.speed;
-            p.mesh.rotation.y += 0.01 * simSpeed;
+            p.mesh.rotation.y += (p.data.spinRate ?? 1.0) * 0.01 * simSpeed;
             if (p.cloudMesh) {
-                p.cloudMesh.rotation.y += 0.012 * simSpeed;
+                p.cloudMesh.rotation.y += (p.data.spinRate ?? 1.0) * 0.012 * simSpeed;
             }
 
             p.moons.forEach(m => {
