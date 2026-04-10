@@ -19,16 +19,103 @@ registerLocale('si', siData);
 
 // --- DATA ---
 const DEG = Math.PI / 180;
+
+// Real-world data for scale calculations (NASA Planetary Fact Sheet)
+const REAL_DATA = {
+    Sun:     { radius_km: 696340,  distance_km: 0 },
+    Mercury: { radius_km: 2440,    distance_km: 57900000 },
+    Venus:   { radius_km: 6052,    distance_km: 108200000 },
+    Earth:   { radius_km: 6371,    distance_km: 149600000 },
+    Mars:    { radius_km: 3390,    distance_km: 227900000 },
+    Jupiter: { radius_km: 69911,   distance_km: 778600000 },
+    Saturn:  { radius_km: 58232,   distance_km: 1433500000 },
+    Uranus:  { radius_km: 25362,   distance_km: 2872500000 },
+    Neptune: { radius_km: 24622,   distance_km: 4495100000 },
+};
+
+const SIZE_K = 8.0;
+const DIST_K = 8.0;
+
+function buildLogScale() {
+    const result = {};
+    for (const [name, data] of Object.entries(REAL_DATA)) {
+        result[name] = {
+            size: SIZE_K * Math.log10(data.radius_km),
+            distance: data.distance_km > 0 ? DIST_K * Math.log10(data.distance_km) : 0,
+        };
+    }
+    return result;
+}
+
+function buildRealisticScale() {
+    const earthRadius = REAL_DATA.Earth.radius_km;
+    const earthDist = REAL_DATA.Earth.distance_km;
+    const sizeRef = 4.0;   // Earth size = 4.0
+    const distRef = 135;   // Earth distance = 135
+    const result = {};
+    for (const [name, data] of Object.entries(REAL_DATA)) {
+        result[name] = {
+            size: sizeRef * (data.radius_km / earthRadius),
+            distance: data.distance_km > 0 ? distRef * (data.distance_km / earthDist) : 0,
+        };
+    }
+    return result;
+}
+
+const SCALE_MODES = {
+    compressed: {
+        Sun:     { size: 35,   distance: 0 },
+        Mercury: { size: 1.5,  distance: 55 },
+        Venus:   { size: 3.8,  distance: 98 },
+        Earth:   { size: 4.0,  distance: 135 },
+        Mars:    { size: 2.1,  distance: 195 },
+        Jupiter: { size: 14.5, distance: 350 },
+        Saturn:  { size: 12.0, distance: 500 },
+        Uranus:  { size: 7.5,  distance: 700 },
+        Neptune: { size: 7.2,  distance: 900 },
+    },
+    logarithmic: buildLogScale(),
+    realistic: buildRealisticScale(),
+};
+
+let currentScaleMode = 'compressed';
+let scaleTransition = null; // { active: boolean }
+
+// Kepler equation solver: M = E - e*sin(E) → solve for E given M and e
+function solveKepler(M, e, iterations = 10) {
+    let E = M;
+    for (let i = 0; i < iterations; i++) {
+        E = E - (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+    }
+    return E;
+}
+
+// Compute true anomaly and orbital radius from mean anomaly
+function getOrbitalPosition(meanAnomaly, eccentricity, semiMajorAxis) {
+    const E = solveKepler(meanAnomaly, eccentricity);
+    const cosE = Math.cos(E);
+    const sinE = Math.sin(E);
+    const trueAnomaly = Math.atan2(
+        Math.sqrt(1 - eccentricity * eccentricity) * sinE,
+        cosE - eccentricity
+    );
+    const radius = semiMajorAxis * (1 - eccentricity * cosE);
+    return { angle: trueAnomaly, radius };
+}
+
 const planetData = [
-    { name: 'Mercury', distance: 60,  size: 1.5,  speed: 0.0498, inclination: 7.00 * DEG,
+    { name: 'Mercury', distance: 55,  size: 1.5,  speed: 0.0498, inclination: 7.00 * DEG,
+      eccentricity: 0.2056,
       axialTilt: 0.03 * DEG, spinRate: 0.017,
       texture: '/textures/mercury/diffuse_4k.jpg', bumpMap: '/textures/mercury/bump_4k.jpg',
       roughness: 0.9 },
-    { name: 'Venus',   distance: 95,  size: 3.8,  speed: 0.0195, inclination: 3.39 * DEG,
+    { name: 'Venus',   distance: 98,  size: 3.8,  speed: 0.0195, inclination: 3.39 * DEG,
+      eccentricity: 0.0068,
       axialTilt: 177.4 * DEG, spinRate: 0.004,
       texture: '/textures/venus/diffuse_4k.jpg',
       roughness: 0.4, hasAtmosphere: true, atmosphereColor: 0xffa500 },
     { name: 'Earth',   distance: 135, size: 4.0,  speed: 0.012, inclination: 0.00 * DEG,
+      eccentricity: 0.0167,
       axialTilt: 23.44 * DEG, spinRate: 1.0,
       texture: '/textures/earth/diffuse_4k.jpg', normalMap: '/textures/earth/normal_4k.jpg',
       specularMap: '/textures/earth/specular_4k.jpg', cloudMap: '/textures/earth/clouds_4k.jpg', nightMap: '/textures/earth/nightmap_4k.jpg',
@@ -38,15 +125,17 @@ const planetData = [
           texture: '/textures/moon/diffuse_4k.jpg', bumpMap: '/textures/moon/bump_4k.jpg',
           isSyncFocus: true }
     ]},
-    { name: 'Mars',    distance: 175, size: 2.1,  speed: 0.00638, inclination: 1.85 * DEG,
+    { name: 'Mars',    distance: 195, size: 2.1,  speed: 0.00638, inclination: 1.85 * DEG,
+      eccentricity: 0.0934,
       axialTilt: 25.19 * DEG, spinRate: 0.975,
       texture: '/textures/mars/diffuse_4k.jpg', bumpMap: '/textures/mars/bump_4k.jpg',
       roughness: 0.7,
       moons: [
-        { name: 'Phobos', distance: 5,   size: 0.5, speed: 0.08, texture: '/textures/moon/diffuse_4k.jpg' },
-        { name: 'Deimos', distance: 7.5, size: 0.4, speed: 0.02, texture: '/textures/moon/diffuse_4k.jpg' }
+        { name: 'Phobos', distance: 3,   size: 0.15, speed: 0.08, texture: '/textures/moon/diffuse_4k.jpg' },
+        { name: 'Deimos', distance: 5.5, size: 0.12, speed: 0.02, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Jupiter', distance: 280, size: 14.5, speed: 0.00101, inclination: 1.30 * DEG,
+    { name: 'Jupiter', distance: 350, size: 14.5, speed: 0.00101, inclination: 1.30 * DEG,
+      eccentricity: 0.0484,
       axialTilt: 3.13 * DEG, spinRate: 2.4,
       texture: '/textures/jupiter/diffuse_4k.jpg',
       roughness: 0.5,
@@ -56,21 +145,24 @@ const planetData = [
         { name: 'Ganymede', distance: 30, size: 1.5, speed: 0.012, texture: '/textures/moon/diffuse_4k.jpg' },
         { name: 'Callisto', distance: 36, size: 1.4, speed: 0.005, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Saturn',  distance: 380, size: 12.0, speed: 0.000407, inclination: 2.49 * DEG,
+    { name: 'Saturn',  distance: 500, size: 12.0, speed: 0.000407, inclination: 2.49 * DEG,
+      eccentricity: 0.0539,
       axialTilt: 26.73 * DEG, spinRate: 2.25,
       texture: '/textures/saturn/diffuse_4k.jpg',
       roughness: 0.5, hasRings: true, ringTexture: '/textures/saturn/ring_4k.png',
       moons: [
         { name: 'Titan', distance: 25, size: 2.0, speed: 0.03, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Uranus',  distance: 480, size: 7.5,  speed: 0.000143, inclination: 0.77 * DEG,
+    { name: 'Uranus',  distance: 700, size: 7.5,  speed: 0.000143, inclination: 0.77 * DEG,
+      eccentricity: 0.0473,
       axialTilt: 97.77 * DEG, spinRate: 1.39,
       texture: '/textures/uranus/diffuse_4k.jpg',
       roughness: 0.5,
       moons: [
         { name: 'Titania', distance: 15, size: 0.8, speed: 0.05, texture: '/textures/moon/diffuse_4k.jpg' }
     ]},
-    { name: 'Neptune', distance: 560, size: 7.2,  speed: 0.0000728, inclination: 1.77 * DEG,
+    { name: 'Neptune', distance: 900, size: 7.2,  speed: 0.0000728, inclination: 1.77 * DEG,
+      eccentricity: 0.0086,
       axialTilt: 28.32 * DEG, spinRate: 1.49,
       texture: '/textures/neptune/diffuse_4k.jpg',
       roughness: 0.5,
@@ -1880,6 +1972,12 @@ sunTex.wrapS = THREE.RepeatWrapping;
 sunTex.wrapT = THREE.RepeatWrapping;
 const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 128, 128), sunMaterial);
 scene.add(sun);
+let sunCurrentSize = 35;
+let sunTargetSize = 35;
+let sunCurrentGlow = 100;
+let sunTargetGlow = 100;
+let sunCurrentHalo = 160;
+let sunTargetHalo = 160;
 
 // Sun glow — sprites always face the camera so they look perfect from any angle
 function makeGlowTexture(stops, size = 256) {
@@ -2076,13 +2174,44 @@ planetData.forEach((data) => {
     label.position.set(0, data.size + 3, 0);
     planetMesh.add(label);
 
-    // Orbit Line
-    const orbitLine = new THREE.Mesh(
-        new THREE.TorusGeometry(data.distance, 0.15, 4, 200),
-        new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15 })
-    );
-    orbitLine.rotation.x = Math.PI / 2;
-    inclinationGroup.add(orbitLine);
+    // Orbit Line — elliptical when eccentricity > 0
+    const e = data.eccentricity || 0;
+    let orbitLine;
+    if (e > 0.001) {
+        const a = data.distance;
+        const b = a * Math.sqrt(1 - e * e);
+        const c = a * e; // focus offset from center
+        const orbitPoints = [];
+        for (let i = 0; i <= 200; i++) {
+            const theta = (i / 200) * Math.PI * 2;
+            // Ellipse centered at (-c, 0) so Sun is at focus (0, 0)
+            orbitPoints.push(new THREE.Vector3(
+                -c + a * Math.cos(theta),
+                0,
+                b * Math.sin(theta)
+            ));
+        }
+        const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPoints);
+        orbitLine = new THREE.Line(orbitGeo,
+            new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15 })
+        );
+        inclinationGroup.add(orbitLine);
+    } else {
+        const orbitPoints = [];
+        for (let i = 0; i <= 200; i++) {
+            const theta = (i / 200) * Math.PI * 2;
+            orbitPoints.push(new THREE.Vector3(
+                data.distance * Math.cos(theta),
+                0,
+                data.distance * Math.sin(theta)
+            ));
+        }
+        const orbitGeo = new THREE.BufferGeometry().setFromPoints(orbitPoints);
+        orbitLine = new THREE.Line(orbitGeo,
+            new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15 })
+        );
+        inclinationGroup.add(orbitLine);
+    }
 
     if (data.hasRings) {
         const ringGeo = new THREE.RingGeometry(data.size * 1.2, data.size * 2.2, 128);
@@ -2163,13 +2292,23 @@ planetData.forEach((data) => {
     }
 
     planets.push({ mesh: planetMesh, orbitPivot, data, moons, cloudMesh });
+
+    // Runtime scale state for mode transitions
+    const planetEntry = planets[planets.length - 1];
+    planetEntry.currentSize = data.size;
+    planetEntry.currentDistance = data.distance;
+    planetEntry.targetSize = data.size;
+    planetEntry.targetDistance = data.distance;
+    planetEntry._activeDistance = data.distance;
+    planetEntry.orbitLine = orbitLine;
+    planetEntry.inclinationGroup = inclinationGroup;
 });
 
 // --- CONTROLS ---
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
-camera.position.set(0, 800, 400);
+camera.position.set(0, 1000, 500);
 controls.update();
 
 // --- CLICK-TO-FOCUS ---
@@ -4840,7 +4979,7 @@ let clock = 0;
 let isGalaxyView = false;
 let galaxyTransition = null;
 const GALAXY_CAM  = new THREE.Vector3(24000, 64000, 32000);
-const SOLAR_CAM   = new THREE.Vector3(0, 800, 400);
+const SOLAR_CAM   = new THREE.Vector3(0, 1000, 500);
 const SOLAR_LOOK  = new THREE.Vector3(0, 0, 0);
 
 const toggleBtn = document.getElementById('toggle-sync');
@@ -4960,7 +5099,7 @@ document.getElementById('reset-pos').addEventListener('click', () => {
     if (focusInfoEl) focusInfoEl.textContent = t('ui.focusedSolarSystem');
     if (infoCard) infoCard.classList.add('hidden');
     controls.target.set(0, 0, 0);
-    camera.position.set(0, 800, 400);
+    camera.position.set(0, 1000, 500);
 });
 
 let galaxyVisible = true;
@@ -4997,7 +5136,15 @@ function animate() {
         sunMaterial.uniforms.time.value += 0.016 * simSpeed;
 
         planets.forEach(p => {
-            p.orbitPivot.rotation.y = clock * p.data.speed;
+            const M = clock * p.data.speed; // mean anomaly
+            const ecc = p.data.eccentricity || 0;
+            if (ecc > 0.001) {
+                const { angle, radius } = getOrbitalPosition(M, ecc, p.data.distance);
+                p.orbitPivot.rotation.y = angle;
+                p.mesh.position.x = radius;
+            } else {
+                p.orbitPivot.rotation.y = M;
+            }
             p.mesh.rotation.y += (p.data.spinRate ?? 1.0) * 0.01 * simSpeed;
             if (p.cloudMesh) {
                 p.cloudMesh.rotation.y += (p.data.spinRate ?? 1.0) * 0.012 * simSpeed;
