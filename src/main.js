@@ -1563,47 +1563,35 @@ planetData.forEach((data) => {
     orbitLine.rotation.x = Math.PI / 2;
     inclinationGroup.add(orbitLine);
 
-    // Saturn Rings - create multiple ring bands for realistic appearance
     if (data.hasRings) {
-        const ringGroup = new THREE.Group();
-        
-        // Main ring bands with gaps (A Ring, B Ring, C Ring)
-        const ringBands = [
-            { inner: 1.2, outer: 1.35, opacity: 0.25 },   // C Ring (inner, faint)
-            { inner: 1.4, outer: 1.95, opacity: 0.7 },   // A Ring (main)
-            { inner: 1.95, outer: 2.15, opacity: 0.5 },  // A Ring outer edge
-        ];
-        
-        ringBands.forEach(band => {
-            const ringGeo = new THREE.RingGeometry(data.size * band.inner, data.size * band.outer, 128);
-            const ringMat = new THREE.MeshStandardMaterial({
-                color: 0xf5f5dc,  // Cream/ivory color
-                side: THREE.DoubleSide,
-                transparent: true,
-                opacity: band.opacity,
-                roughness: 0.9,
-                metalness: 0.0,
-            });
-            const ring = new THREE.Mesh(ringGeo, ringMat);
-            ring.rotation.x = Math.PI / 2;
-            ringGroup.add(ring);
-        });
-        
-        // Add subtle Cassini division gap highlight
-        const cassiniGeo = new THREE.RingGeometry(data.size * 1.95, data.size * 1.96, 128);
-        const cassiniMat = new THREE.MeshBasicMaterial({
-            color: 0x1a1a1a,
+        const ringGeo = new THREE.RingGeometry(data.size * 1.2, data.size * 2.2, 128);
+        // Fix UV mapping for ring — map U from inner to outer radius
+        const pos = ringGeo.attributes.position;
+        const uv = ringGeo.attributes.uv;
+        const center = new THREE.Vector3();
+        for (let i = 0; i < pos.count; i++) {
+            const v = new THREE.Vector3().fromBufferAttribute(pos, i);
+            const len = v.sub(center).length();
+            const t = (len - data.size * 1.2) / (data.size * 1.0);
+            uv.setXY(i, t, uv.getY(i));
+        }
+
+        const ringTex = textureLoader.load(data.ringTexture);
+        const ringMat = new THREE.MeshStandardMaterial({
+            map: ringTex,
             side: THREE.DoubleSide,
             transparent: true,
-            opacity: 0.3
+            roughness: 0.8,
+            metalness: 0.0,
+            depthWrite: false,
         });
-        const cassini = new THREE.Mesh(cassiniGeo, cassiniMat);
-        cassini.rotation.x = Math.PI / 2;
-        ringGroup.add(cassini);
-        
-        // Tilt rings to match Saturn's ~27° axial tilt
-        ringGroup.rotation.z = 0.47; // ~27 degrees in radians
-        
+
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 2;
+
+        const ringGroup = new THREE.Group();
+        ringGroup.add(ringMesh);
+        ringGroup.rotation.z = 0.47; // ~27 degrees axial tilt
         planetMesh.add(ringGroup);
     }
 
