@@ -1017,9 +1017,9 @@ const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 const bloomPass = new UnrealBloomPass(
     new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.4,   // strength
-    0.6,   // radius
-    0.85   // threshold
+    0.15,  // strength — subtle, avoids blowing out the sun
+    0.4,   // radius
+    0.9    // threshold — only the brightest pixels bloom
 );
 composer.addPass(bloomPass);
 
@@ -1159,7 +1159,7 @@ const sunGlow = new THREE.Sprite(new THREE.SpriteMaterial({
     transparent: true,
     depthWrite: false,
 }));
-sunGlow.scale.set(140, 140, 1);
+sunGlow.scale.set(100, 100, 1);
 scene.add(sunGlow);
 
 // Outer diffuse halo
@@ -1174,7 +1174,7 @@ const sunHalo = new THREE.Sprite(new THREE.SpriteMaterial({
     transparent: true,
     depthWrite: false,
 }));
-sunHalo.scale.set(240, 240, 1);
+sunHalo.scale.set(160, 160, 1);
 scene.add(sunHalo);
 
 // Galaxy view camera target (kept for galaxy view toggle)
