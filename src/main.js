@@ -2343,6 +2343,16 @@ renderer.domElement.addEventListener('pointerup', (event) => {
         const hit = hits[0];
         const entry = allClickable.find(c => c.mesh === hit.object);
         if (entry) focusOn(entry);
+    } else if (lockedTarget) {
+        // Click on empty space — unfocus
+        lockedTarget = null;
+        focusTarget = null;
+        isFocusing = false;
+        infoCard.classList.add('hidden');
+        if (focusInfoEl) {
+            focusInfoEl.textContent = t('ui.focusedSolarSystem');
+            focusInfoEl.style.opacity = '0.6';
+        }
     }
 });
 
@@ -2538,20 +2548,25 @@ function animate() {
         const worldPos = new THREE.Vector3();
         lockedTarget.mesh.getWorldPosition(worldPos);
 
-        // Always keep the orbit controls centered on the locked planet
-        controls.target.copy(worldPos);
-
         if (isFocusing) {
+            // Fly-in phase: lerp camera toward the planet
             if (!lockedTarget._camOffset) {
                 lockedTarget._camOffset = camera.position.clone().sub(worldPos).normalize();
             }
             const desiredCamPos = worldPos.clone().add(lockedTarget._camOffset.clone().multiplyScalar(focusOrbitDist));
             camera.position.lerp(desiredCamPos, 0.08);
+            controls.target.copy(worldPos);
 
             if (camera.position.distanceTo(worldPos) < focusOrbitDist * 1.1) {
                 isFocusing = false;
                 delete lockedTarget._camOffset;
             }
+        } else {
+            // Tracking phase: move camera to follow the orbiting planet
+            const prevTarget = controls.target.clone();
+            const offset = camera.position.clone().sub(prevTarget);
+            controls.target.copy(worldPos);
+            camera.position.copy(worldPos).add(offset);
         }
     }
 
