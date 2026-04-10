@@ -74,6 +74,7 @@ ui: {
     'crisisAlert': '🚨 {text}',
     'celestialBody': 'අභ්‍යවකාශ වස්තුව',
     'fallbackFact': 'අපගේ සෞරග්‍රහ මණ්ඩලයේ ආකර්ෂණීය අභ්‍යවකාශ වස්තුවකි.',
+    'settings': 'සැකසීම්',
 },
 
 celestialFacts: {

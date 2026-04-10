@@ -75,6 +75,7 @@ ui: {
     'celestialBody': '天体',
     'fallbackFact': '我们太阳系中一颗迷人的天体。',
     'language': '🌐 语言',
+    'settings': '设置',
 },
 
 bodies: {

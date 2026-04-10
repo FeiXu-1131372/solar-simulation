@@ -75,6 +75,7 @@ ui: {
     'celestialBody': 'Celestial Body',
     'fallbackFact': 'A fascinating body in our solar system.',
     'language': '🌐 Language',
+    'settings': 'Settings',
 },
 
 bodies: {

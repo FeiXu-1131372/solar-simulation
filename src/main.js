@@ -5160,9 +5160,25 @@ const toggleUiBtn = document.getElementById('toggle-ui-btn');
 const uiContainer = document.getElementById('ui-container');
 const cpModeTitle = document.getElementById('cp-mode-title');
 
+function updateNavNames() {
+    document.querySelectorAll('#planet-nav .nav-dot[data-planet]').forEach(dot => {
+        const nameSpan = dot.querySelector('.nav-name');
+        if (nameSpan) {
+            const planetKey = dot.dataset.planet;
+            const translated = t(`bodies.${planetKey}`);
+            // Strip emoji prefix if present (e.g. "☀ 太阳" → "太阳")
+            nameSpan.textContent = translated ? translated.replace(/^[^\p{L}]+/u, '').trim() : planetKey;
+        }
+    });
+    // Update settings label
+    const settingsName = document.querySelector('.nav-settings .nav-name');
+    if (settingsName) settingsName.textContent = t('ui.settings') || 'Settings';
+}
+
 document.getElementById('lang-select').addEventListener('change', e => {
     setLang(e.target.value);
     applyLocaleToDOM();
+    updateNavNames();
     bodyLabels.forEach(({ el, key }) => { el.textContent = t(`bodies.${key}`) || key; });
     cpModeTitle.textContent = isGalaxyView ? t('ui.galaxyView') : t('ui.solarSystem');
     if (lockedTarget) {
@@ -5183,6 +5199,7 @@ document.getElementById('lang-select').addEventListener('change', e => {
 });
 
 onLangChange(() => {
+    updateNavNames();
     if (lockedTarget && !infoCard.classList.contains('hidden')) {
         renderCard(lockedTarget.name);
     }
@@ -5191,6 +5208,7 @@ onLangChange(() => {
 // Apply translations to DOM on initial load (needed when default lang is not English)
 if (getLang() !== 'en') {
     applyLocaleToDOM();
+    updateNavNames();
     bodyLabels.forEach(({ el, key }) => { el.textContent = t(`bodies.${key}`) || key; });
 }
 

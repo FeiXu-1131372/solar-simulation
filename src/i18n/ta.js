@@ -74,6 +74,7 @@ ui: {
     'crisisAlert': '🚨 {text}',
     'celestialBody': 'விண்வெளி பொருள்',
     'fallbackFact': 'நமது சூரிய குடும்பத்தில் ஒரு சுவாரஸ்யமான பொருள்.',
+    'settings': 'அமைப்புகள்',
 },
 
 celestialFacts: {
