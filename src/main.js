@@ -2378,6 +2378,7 @@ const navDots = planetNav.querySelectorAll('.nav-dot');
 navDots.forEach(dot => {
     dot.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (autoPilotState) return;
         const planetName = dot.dataset.planet;
 
         // If clicking already-focused planet, unfocus
@@ -2555,7 +2556,7 @@ function focusOn(meshEntry) {
     lockedTarget = meshEntry;
     focusTarget = meshEntry;
     isFocusing = true;
-    focusOrbitDist = meshEntry.size * 6 + 20;
+    focusOrbitDist = Math.min(meshEntry.size * 6 + 20, 300);
 
     navDots.forEach(d => d.classList.remove('active'));
     const activeDot = planetNav.querySelector(`.nav-dot[data-planet="${meshEntry.name}"]`);
@@ -5320,6 +5321,8 @@ function animate() {
             sun.scale.setScalar(sunScaleFactor);
             sunGlow.scale.set(sunCurrentGlow, sunCurrentGlow, 1);
             sunHalo.scale.set(sunCurrentHalo, sunCurrentHalo, 1);
+            // Update Sun label position
+            if (typeof sunLabel !== 'undefined') sunLabel.position.set(0, sunCurrentSize + 7, 0);
 
             // Lerp planets
             planets.forEach(p => {
