@@ -5322,6 +5322,26 @@ if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
     }
 }
 
+// Fullscreen toggle
+const fsBtn = document.getElementById('fullscreen-btn');
+const fsIconEnter = document.getElementById('fs-icon-enter');
+const fsIconExit = document.getElementById('fs-icon-exit');
+
+function updateFsIcon() {
+    const isFs = !!document.fullscreenElement;
+    fsIconEnter.style.display = isFs ? 'none' : '';
+    fsIconExit.style.display = isFs ? '' : 'none';
+}
+
+fsBtn.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+        document.exitFullscreen().catch(() => {});
+    }
+});
+document.addEventListener('fullscreenchange', updateFsIcon);
+
 document.getElementById('toggle-ui-expand').addEventListener('click', () => {
     const isCollapsed = uiContainer.classList.toggle('collapsed');
     document.getElementById('toggle-ui-expand').textContent = isCollapsed ? '▴' : '▾';

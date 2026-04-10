@@ -237,6 +237,37 @@ button:active {
     pointer-events: none;
 }
 
+/* Fullscreen Toggle */
+.fullscreen-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    z-index: 101;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+.fullscreen-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--primary);
+    transform: scale(1.05);
+}
+.fullscreen-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
 /* ---- Planet Labels (CSS2DObject) ---- */
 .planet-label {
     background: rgba(15, 23, 42, 0.75);
@@ -383,6 +414,13 @@ button:active {
 
     .planet-label {
         font-size: 10px;
+    }
+
+    .fullscreen-btn {
+        bottom: 15px;
+        left: 15px;
+        width: 36px;
+        height: 36px;
     }
 
 }
