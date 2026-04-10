@@ -1294,6 +1294,61 @@ function updateParticleTunnel(rocketPos, forwardDir, intensity, dt) {
     tunnelGeo.attributes.alpha.needsUpdate = true;
 }
 
+// --- CINEMATIC ENERGY WAVES ---
+const MAX_WAVES = 5;
+const energyWaves = [];
+const waveGeometry = new THREE.TorusGeometry(1, 0.08, 8, 64);
+const waveMaterial = new THREE.MeshBasicMaterial({
+    color: 0x44aaff,
+    transparent: true,
+    opacity: 0.6,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+});
+
+function spawnEnergyWave(position, forwardDir) {
+    if (energyWaves.length >= MAX_WAVES) {
+        const oldest = energyWaves.shift();
+        scene.remove(oldest.mesh);
+        oldest.mesh.geometry.dispose();
+    }
+    const mesh = new THREE.Mesh(waveGeometry.clone(), waveMaterial.clone());
+    mesh.position.copy(position);
+    // Orient ring perpendicular to travel direction
+    const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), forwardDir);
+    mesh.quaternion.copy(quat);
+    scene.add(mesh);
+    energyWaves.push({ mesh, age: 0, maxAge: 0.8 });
+}
+
+function updateEnergyWaves(dt) {
+    for (let i = energyWaves.length - 1; i >= 0; i--) {
+        const w = energyWaves[i];
+        w.age += dt;
+        if (w.age >= w.maxAge) {
+            scene.remove(w.mesh);
+            w.mesh.geometry.dispose();
+            w.mesh.material.dispose();
+            energyWaves.splice(i, 1);
+            continue;
+        }
+        const progress = w.age / w.maxAge;
+        const scale = 1 + progress * 8;
+        w.mesh.scale.set(scale, scale, scale);
+        w.mesh.material.opacity = 0.6 * (1 - progress);
+    }
+}
+
+function clearEnergyWaves() {
+    energyWaves.forEach(w => {
+        scene.remove(w.mesh);
+        w.mesh.geometry.dispose();
+        w.mesh.material.dispose();
+    });
+    energyWaves.length = 0;
+}
+
 // CSS2D Renderer for labels
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
