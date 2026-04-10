@@ -5145,6 +5145,41 @@ function setScaleMode(mode) {
         sunTargetHalo = 160 * sunScale;
     }
 
+    // Regenerate orbit line geometries for new distances
+    planets.forEach(p => {
+        const target = preset[p.data.name];
+        if (!target) return;
+
+        // Remove old orbit line
+        if (p.orbitLine) {
+            p.inclinationGroup.remove(p.orbitLine);
+            if (p.orbitLine.geometry) p.orbitLine.geometry.dispose();
+        }
+
+        const e = p.data.eccentricity || 0;
+        const d = target.distance;
+        if (e > 0.001) {
+            const a = d;
+            const b = a * Math.sqrt(1 - e * e);
+            const c = a * e;
+            const pts = [];
+            for (let i = 0; i <= 200; i++) {
+                const theta = (i / 200) * Math.PI * 2;
+                pts.push(new THREE.Vector3(-c + a * Math.cos(theta), 0, b * Math.sin(theta)));
+            }
+            const geo = new THREE.BufferGeometry().setFromPoints(pts);
+            p.orbitLine = new THREE.Line(geo,
+                new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15 }));
+        } else {
+            p.orbitLine = new THREE.Mesh(
+                new THREE.TorusGeometry(d, 0.15, 4, 200),
+                new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.15 })
+            );
+            p.orbitLine.rotation.x = Math.PI / 2;
+        }
+        p.inclinationGroup.add(p.orbitLine);
+    });
+
     // Start transition
     scaleTransition = { active: true };
 }
@@ -5195,6 +5230,52 @@ function animate() {
     requestAnimationFrame(animate);
 
     if (!isPaused) {
+        // --- SCALE MODE LERPING ---
+        if (scaleTransition && scaleTransition.active) {
+            const lerpSpeed = 0.04;
+            let allDone = true;
+
+            // Lerp Sun
+            sunCurrentSize = THREE.MathUtils.lerp(sunCurrentSize, sunTargetSize, lerpSpeed);
+            sunCurrentGlow = THREE.MathUtils.lerp(sunCurrentGlow, sunTargetGlow, lerpSpeed);
+            sunCurrentHalo = THREE.MathUtils.lerp(sunCurrentHalo, sunTargetHalo, lerpSpeed);
+
+            if (Math.abs(sunCurrentSize - sunTargetSize) > 0.01) {
+                allDone = false;
+            } else {
+                sunCurrentSize = sunTargetSize;
+                sunCurrentGlow = sunTargetGlow;
+                sunCurrentHalo = sunTargetHalo;
+            }
+
+            const sunScaleFactor = sunCurrentSize / 35;
+            sun.scale.setScalar(sunScaleFactor);
+            sunGlow.scale.set(sunCurrentGlow, sunCurrentGlow, 1);
+            sunHalo.scale.set(sunCurrentHalo, sunCurrentHalo, 1);
+
+            // Lerp planets
+            planets.forEach(p => {
+                p.currentSize = THREE.MathUtils.lerp(p.currentSize, p.targetSize, lerpSpeed);
+                p.currentDistance = THREE.MathUtils.lerp(p.currentDistance, p.targetDistance, lerpSpeed);
+
+                if (Math.abs(p.currentSize - p.targetSize) > 0.01 ||
+                    Math.abs(p.currentDistance - p.targetDistance) > 0.1) {
+                    allDone = false;
+                } else {
+                    p.currentSize = p.targetSize;
+                    p.currentDistance = p.targetDistance;
+                }
+
+                const sizeScale = p.currentSize / p.data.size;
+                p.mesh.scale.setScalar(sizeScale);
+                p._activeDistance = p.currentDistance;
+            });
+
+            if (allDone) {
+                scaleTransition.active = false;
+            }
+        }
+
         clock += simSpeed;
         sun.rotation.y += 0.005 * simSpeed;
         sunMaterial.uniforms.time.value += 0.016 * simSpeed;
@@ -5202,12 +5283,14 @@ function animate() {
         planets.forEach(p => {
             const M = clock * p.data.speed; // mean anomaly
             const ecc = p.data.eccentricity || 0;
+            const dist = p._activeDistance ?? p.data.distance;
             if (ecc > 0.001) {
-                const { angle, radius } = getOrbitalPosition(M, ecc, p.data.distance);
+                const { angle, radius } = getOrbitalPosition(M, ecc, dist);
                 p.orbitPivot.rotation.y = angle;
                 p.mesh.position.x = radius;
             } else {
                 p.orbitPivot.rotation.y = M;
+                p.mesh.position.x = dist;
             }
             p.mesh.rotation.y += (p.data.spinRate ?? 1.0) * 0.01 * simSpeed;
             if (p.cloudMesh) {
