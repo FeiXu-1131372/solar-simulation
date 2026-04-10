@@ -5182,6 +5182,17 @@ function setScaleMode(mode) {
 
     // Start transition
     scaleTransition = { active: true };
+
+    // Adjust camera for new scale
+    if (!lockedTarget) {
+        const camPositions = {
+            compressed:  new THREE.Vector3(0, 1000, 500),
+            logarithmic: new THREE.Vector3(0, 1000, 500),
+            realistic:   new THREE.Vector3(0, 1200, 600),
+        };
+        const targetCam = camPositions[mode];
+        galaxyTransition = { cam: targetCam.clone(), tgt: new THREE.Vector3(0, 0, 0) };
+    }
 }
 
 document.getElementById('reset-pos').addEventListener('click', () => {
