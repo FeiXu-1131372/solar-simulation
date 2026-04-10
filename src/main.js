@@ -1392,6 +1392,16 @@ function startCinematic(rocketObj) {
 
     cinematicSkipBtn.classList.remove('hidden');
 
+    // Scale rocket up for cinematic visibility
+    rocketObj.mesh.scale.set(2, 2, 2);
+
+    // Store original opacities for flyby fade-out
+    rocketObj.mesh.traverse(child => {
+        if (child.material) {
+            child.material._originalOpacity = child.material.opacity;
+        }
+    });
+
     const camOffset = direction.clone().multiplyScalar(-3)
         .add(new THREE.Vector3(0, -1.5, 0))
         .add(new THREE.Vector3().crossVectors(direction, new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(2));
@@ -1411,6 +1421,22 @@ function endCinematic(skipToGame) {
     motionBlurPass.enabled = false;
     motionBlurPass.uniforms.intensity.value = 0;
     cinematicFlash.style.opacity = '0';
+
+    // Reset rocket scale
+    rocketObj.mesh.scale.set(1, 1, 1);
+
+    // Reset flame colors (may have been changed to blue during warp)
+    rocketObj.fireMesh.material.color.set(0xffaa00);
+    if (rocketObj.mesh.boosterFlames) {
+        rocketObj.mesh.boosterFlames.forEach(bf => bf.material.color.set(0xff6600));
+    }
+
+    // Reset rocket opacity (may have been faded during flyby)
+    rocketObj.mesh.traverse(child => {
+        if (child.material) {
+            child.material.opacity = child.material._originalOpacity ?? child.material.opacity;
+        }
+    });
 
     scene.remove(rocketObj.mesh);
     scene.remove(rocketObj.trailLine);
