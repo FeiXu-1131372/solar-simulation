@@ -1094,6 +1094,90 @@ const motionBlurPass = new ShaderPass(motionBlurShader);
 motionBlurPass.enabled = false;
 composer.addPass(motionBlurPass);
 
+// --- CINEMATIC STAR STREAKS ---
+const STREAK_COUNT = 120;
+const streakPositions = new Float32Array(STREAK_COUNT * 6); // 2 vertices per line (start + end)
+const streakColors = new Float32Array(STREAK_COUNT * 6);    // RGB per vertex
+const streakGeo = new THREE.BufferGeometry();
+streakGeo.setAttribute('position', new THREE.BufferAttribute(streakPositions, 3));
+streakGeo.setAttribute('color', new THREE.BufferAttribute(streakColors, 3));
+const streakMat = new THREE.LineBasicMaterial({
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.0,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+});
+const streakLines = new THREE.LineSegments(streakGeo, streakMat);
+streakLines.frustumCulled = false;
+streakLines.visible = false;
+scene.add(streakLines);
+
+// Each streak has a random direction in a cone around the forward axis
+const streakData = [];
+for (let i = 0; i < STREAK_COUNT; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.random() * 0.8 + 0.1; // cone spread 0.1-0.9 radians
+    streakData.push({
+        theta,
+        phi,
+        baseLength: 5 + Math.random() * 15,
+        brightness: 0.5 + Math.random() * 0.5,
+        speed: 0.8 + Math.random() * 0.4,
+    });
+}
+
+function updateStarStreaks(rocketPos, forwardDir, intensity, lengthMult) {
+    if (intensity <= 0) {
+        streakLines.visible = false;
+        return;
+    }
+    streakLines.visible = true;
+    streakMat.opacity = intensity;
+
+    // Build a local frame from forwardDir
+    const right = new THREE.Vector3();
+    const up = new THREE.Vector3(0, 1, 0);
+    if (Math.abs(forwardDir.dot(up)) > 0.99) up.set(1, 0, 0);
+    right.crossVectors(forwardDir, up).normalize();
+    up.crossVectors(right, forwardDir).normalize();
+
+    for (let i = 0; i < STREAK_COUNT; i++) {
+        const s = streakData[i];
+        // Direction in cone around forward
+        const sinP = Math.sin(s.phi);
+        const cosP = Math.cos(s.phi);
+        const dir = new THREE.Vector3()
+            .addScaledVector(forwardDir, cosP)
+            .addScaledVector(right, sinP * Math.cos(s.theta))
+            .addScaledVector(up, sinP * Math.sin(s.theta))
+            .normalize();
+
+        const dist = 30 + s.phi * 40; // farther streaks at wider angles
+        const start = rocketPos.clone().add(dir.clone().multiplyScalar(dist));
+        const end = start.clone().add(dir.clone().multiplyScalar(s.baseLength * lengthMult));
+
+        const idx = i * 6;
+        streakPositions[idx]     = start.x;
+        streakPositions[idx + 1] = start.y;
+        streakPositions[idx + 2] = start.z;
+        streakPositions[idx + 3] = end.x;
+        streakPositions[idx + 4] = end.y;
+        streakPositions[idx + 5] = end.z;
+
+        const b = s.brightness * intensity;
+        // Blue-white tint
+        streakColors[idx]     = 0.7 * b;
+        streakColors[idx + 1] = 0.8 * b;
+        streakColors[idx + 2] = 1.0 * b;
+        streakColors[idx + 3] = 0.5 * b;
+        streakColors[idx + 4] = 0.6 * b;
+        streakColors[idx + 5] = 0.9 * b;
+    }
+    streakGeo.attributes.position.needsUpdate = true;
+    streakGeo.attributes.color.needsUpdate = true;
+}
+
 // CSS2D Renderer for labels
 const labelRenderer = new CSS2DRenderer();
 labelRenderer.setSize(window.innerWidth, window.innerHeight);
