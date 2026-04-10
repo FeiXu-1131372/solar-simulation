@@ -20,22 +20,22 @@ registerLocale('si', siData);
 const DEG = Math.PI / 180;
 const planetData = [
     { name: 'Mercury', distance: 60,  size: 2.2,  speed: 0.02,  inclination: 7.00 * DEG,
-      texture: '/textures/mercury/diffuse_4k.jpg',
+      texture: '/textures/mercury/diffuse_4k.jpg', bumpMap: '/textures/mercury/bump_4k.jpg',
       roughness: 0.9 },
     { name: 'Venus',   distance: 95,  size: 3.6,  speed: 0.015, inclination: 3.39 * DEG,
       texture: '/textures/venus/diffuse_4k.jpg',
       roughness: 0.4, hasAtmosphere: true, atmosphereColor: 0xffa500 },
     { name: 'Earth',   distance: 135, size: 4.0,  speed: 0.012, inclination: 0.00 * DEG,
       texture: '/textures/earth/diffuse_4k.jpg', normalMap: '/textures/earth/normal_4k.jpg',
-      specularMap: '/textures/earth/specular_4k.jpg', cloudMap: '/textures/earth/clouds_4k.jpg',
+      specularMap: '/textures/earth/specular_4k.jpg', cloudMap: '/textures/earth/clouds_4k.jpg', nightMap: '/textures/earth/nightmap_4k.jpg',
       roughness: 0.5, hasAtmosphere: true, atmosphereColor: 0x4488ff,
       moons: [
         { name: 'Moon', distance: 8, size: 1.0, speed: 0.04,
-          texture: '/textures/moon/diffuse_4k.jpg',
+          texture: '/textures/moon/diffuse_4k.jpg', bumpMap: '/textures/moon/bump_4k.jpg',
           isSyncFocus: true }
     ]},
     { name: 'Mars',    distance: 175, size: 3.2,  speed: 0.010, inclination: 1.85 * DEG,
-      texture: '/textures/mars/diffuse_4k.jpg',
+      texture: '/textures/mars/diffuse_4k.jpg', bumpMap: '/textures/mars/bump_4k.jpg',
       roughness: 0.7,
       moons: [
         { name: 'Phobos', distance: 5,   size: 0.5, speed: 0.08, texture: '/textures/moon/diffuse_4k.jpg' },
@@ -1102,7 +1102,36 @@ textureLoader.load('/textures/background/stars_milky_way_8k.jpg', (texture) => {
 });
 
 // --- SUN ---
-const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 128, 128), new THREE.MeshBasicMaterial({ map: sunTex }));
+const sunMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+        sunMap: { value: sunTex },
+        time: { value: 0.0 },
+    },
+    vertexShader: `
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    `,
+    fragmentShader: `
+        uniform sampler2D sunMap;
+        uniform float time;
+        varying vec2 vUv;
+        void main() {
+            vec2 uv1 = vUv + vec2(time * 0.02, time * 0.005);
+            vec2 uv2 = vUv + vec2(-time * 0.012, time * 0.008);
+            vec4 color1 = texture2D(sunMap, uv1);
+            vec4 color2 = texture2D(sunMap, uv2);
+            vec4 color = mix(color1, color2, 0.3);
+            float pulse = 1.0 + 0.05 * sin(time * 2.0);
+            gl_FragColor = color * pulse;
+        }
+    `,
+});
+sunTex.wrapS = THREE.RepeatWrapping;
+sunTex.wrapT = THREE.RepeatWrapping;
+const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 128, 128), sunMaterial);
 scene.add(sun);
 
 // Sun glow — sprites always face the camera so they look perfect from any angle
@@ -1196,6 +1225,10 @@ planetData.forEach((data) => {
         materialOptions.normalMap = textureLoader.load(data.normalMap);
         materialOptions.normalScale = new THREE.Vector2(1.0, 1.0);
     }
+    if (data.bumpMap) {
+        materialOptions.bumpMap = textureLoader.load(data.bumpMap);
+        materialOptions.bumpScale = 0.5;
+    }
     if (data.specularMap) {
         // Specular map: bright = reflective. Roughness map: bright = rough.
         // We need to invert the specular map via onBeforeCompile.
@@ -1214,6 +1247,11 @@ planetData.forEach((data) => {
                  #endif`
             );
         };
+    }
+    if (data.nightMap) {
+        materialOptions.emissiveMap = textureLoader.load(data.nightMap);
+        materialOptions.emissive = new THREE.Color(0xffcc88);
+        materialOptions.emissiveIntensity = 0.3;
     }
 
     const segments = data.size >= 7 ? 128 : 64;
@@ -1341,6 +1379,10 @@ planetData.forEach((data) => {
             if (m.normalMap) {
                 moonMatOptions.normalMap = textureLoader.load(m.normalMap);
                 moonMatOptions.normalScale = new THREE.Vector2(1.0, 1.0);
+            }
+            if (m.bumpMap) {
+                moonMatOptions.bumpMap = textureLoader.load(m.bumpMap);
+                moonMatOptions.bumpScale = 0.5;
             }
             const mMesh = new THREE.Mesh(
                 new THREE.SphereGeometry(m.size, 64, 64),
@@ -2371,6 +2413,34 @@ document.getElementById('toggle-ui-expand').addEventListener('click', () => {
     document.getElementById('toggle-ui-expand').textContent = isCollapsed ? '▴' : '▾';
 });
 
+// Allow clicking anywhere on collapsed header to expand (except pills & expand btn)
+document.querySelector('.cp-header').addEventListener('click', (e) => {
+    if (!uiContainer.classList.contains('collapsed')) return;
+    if (e.target.closest('.cp-expand-btn') || e.target.closest('.cp-pill')) return;
+    uiContainer.classList.remove('collapsed');
+    document.getElementById('toggle-ui-expand').textContent = '▾';
+});
+
+// Make pills clickable to toggle their corresponding settings
+document.getElementById('pill-sync').addEventListener('click', () => {
+    isSynchronous = !isSynchronous;
+    updateChip('toggle-sync', 'pill-sync', isSynchronous, 'chip-on', '#38bdf8', t('ui.syncOn'), t('ui.syncOff'));
+});
+document.getElementById('pill-pause').addEventListener('click', () => {
+    isPaused = !isPaused;
+    updateChip('pause-anim', 'pill-pause', isPaused, 'chip-pause-on', '#fbbf24', t('ui.paused'), t('ui.running'), 'pill-pause-on');
+});
+document.getElementById('pill-labels').addEventListener('click', () => {
+    showLabels = !showLabels;
+    labelRenderer.domElement.style.display = showLabels ? 'block' : 'none';
+    updateChip('toggle-labels', 'pill-labels', showLabels, 'chip-on', '#38bdf8', t('ui.labels'), t('ui.labels'));
+});
+document.getElementById('pill-galaxy').addEventListener('click', () => {
+    galaxyVisible = !galaxyVisible;
+    galaxyObjects.forEach(o => { o.visible = galaxyVisible; });
+    updateChip('toggle-galaxy-btn', 'pill-galaxy', galaxyVisible, 'chip-galaxy', '#a78bfa', t('ui.galaxy'), t('ui.galaxy'), 'pill-galaxy-on');
+});
+
 speedSlider.addEventListener('input', (e) => {
     simSpeed = parseFloat(e.target.value);
     speedVal.innerText = simSpeed.toFixed(2);
@@ -2439,6 +2509,7 @@ function animate() {
     if (!isPaused) {
         clock += simSpeed;
         sun.rotation.y += 0.005 * simSpeed;
+        sunMaterial.uniforms.time.value += 0.016 * simSpeed;
 
         planets.forEach(p => {
             p.orbitPivot.rotation.y = clock * p.data.speed;
