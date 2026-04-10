@@ -2318,7 +2318,35 @@ let focusTarget = null;    // active during fly-in animation
 let lockedTarget = null;   // persists to keep tracking the planet
 let isFocusing = false;
 let focusOrbitDist = 50;
-const focusInfoEl = document.getElementById('focus-info');
+const planetNav = document.getElementById('planet-nav');
+const navLabel = document.getElementById('nav-label');
+const navDots = planetNav.querySelectorAll('.nav-dot');
+
+navDots.forEach(dot => {
+    dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const planetName = dot.dataset.planet;
+
+        // If clicking already-focused planet, unfocus
+        if (lockedTarget && lockedTarget.name === planetName) {
+            lockedTarget = null;
+            isFocusing = false;
+            navDots.forEach(d => d.classList.remove('active'));
+            navLabel.textContent = '';
+            if (infoCard) infoCard.classList.add('hidden');
+            controls.target.set(0, 0, 0);
+            return;
+        }
+
+        // Find the matching clickable entry
+        const entry = allClickable.find(c => c.name === planetName);
+        if (entry) {
+            focusOn(entry);
+            renderCard(planetName);
+            if (infoCard) infoCard.classList.remove('hidden');
+        }
+    });
+});
 
 // Info Card DOM elements
 const infoCard = document.getElementById('planet-info-card');
@@ -2426,10 +2454,8 @@ document.getElementById('info-card-close').addEventListener('click', () => {
     focusTarget = null;
     isFocusing = false;
     // Reset camera to default view
-    if (focusInfoEl) {
-        focusInfoEl.textContent = t('ui.focusedSolarSystem');
-        focusInfoEl.style.opacity = '0.6';
-    }
+    navDots.forEach(d => d.classList.remove('active'));
+    navLabel.textContent = '';
 });
 
 // Drag to move
@@ -2474,10 +2500,9 @@ function focusOn(meshEntry) {
     isFocusing = true;
     focusOrbitDist = meshEntry.size * 6 + 20;
 
-    if (focusInfoEl) {
-        focusInfoEl.textContent = t('ui.focused', { name: meshEntry.name });
-        focusInfoEl.style.opacity = '1';
-    }
+    navDots.forEach(d => d.classList.remove('active'));
+    const activeDot = planetNav.querySelector(`.nav-dot[data-planet="${meshEntry.name}"]`);
+    if (activeDot) { activeDot.classList.add('active'); navLabel.textContent = meshEntry.name; }
 
     renderCard(meshEntry.name);
 }
@@ -4948,10 +4973,8 @@ renderer.domElement.addEventListener('pointerup', (event) => {
         focusTarget = null;
         isFocusing = false;
         infoCard.classList.add('hidden');
-        if (focusInfoEl) {
-            focusInfoEl.textContent = t('ui.focusedSolarSystem');
-            focusInfoEl.style.opacity = '0.6';
-        }
+        navDots.forEach(d => d.classList.remove('active'));
+        navLabel.textContent = '';
     }
 });
 
@@ -4996,11 +5019,12 @@ document.getElementById('lang-select').addEventListener('change', e => {
     bodyLabels.forEach(({ el, key }) => { el.textContent = t(`bodies.${key}`) || key; });
     cpModeTitle.textContent = isGalaxyView ? t('ui.galaxyView') : t('ui.solarSystem');
     if (lockedTarget) {
-        focusInfoEl.textContent = t('ui.focused', { name: lockedTarget.name });
-    } else if (!isGalaxyView) {
-        focusInfoEl.textContent = t('ui.focusedSolarSystem');
+        navDots.forEach(d => d.classList.remove('active'));
+        const activeDot = planetNav.querySelector(`.nav-dot[data-planet="${lockedTarget.name}"]`);
+        if (activeDot) { activeDot.classList.add('active'); navLabel.textContent = lockedTarget.name; }
     } else {
-        focusInfoEl.textContent = t('ui.milkyWay');
+        navDots.forEach(d => d.classList.remove('active'));
+        navLabel.textContent = '';
     }
     updateChip('toggle-sync', 'pill-sync', isSynchronous, 'chip-on', '#38bdf8', t('ui.syncOn'), t('ui.syncOff'));
     updateChip('pause-anim', 'pill-pause', isPaused, 'chip-pause-on', '#fbbf24', t('ui.paused'), t('ui.running'), 'pill-pause-on');
@@ -5095,8 +5119,8 @@ document.getElementById('reset-pos').addEventListener('click', () => {
     isGalaxyView = false;
     galaxyTransition = null;
     cpModeTitle.textContent = t('ui.solarSystem');
-    if (focusInfoEl) focusInfoEl.style.opacity = '0.6';
-    if (focusInfoEl) focusInfoEl.textContent = t('ui.focusedSolarSystem');
+    navDots.forEach(d => d.classList.remove('active'));
+    navLabel.textContent = '';
     if (infoCard) infoCard.classList.add('hidden');
     controls.target.set(0, 0, 0);
     camera.position.set(0, 1000, 500);
@@ -5119,10 +5143,12 @@ galaxyBtn.addEventListener('click', () => {
         lockedTarget = null;
         isFocusing = false;
         if (infoCard) infoCard.classList.add('hidden');
-        if (focusInfoEl) { focusInfoEl.textContent = t('ui.milkyWay'); focusInfoEl.style.opacity = '1'; }
+        navDots.forEach(d => d.classList.remove('active'));
+        navLabel.textContent = '';
     } else {
         galaxyTransition = { cam: SOLAR_CAM.clone(), tgt: SOLAR_LOOK.clone() };
-        if (focusInfoEl) { focusInfoEl.textContent = t('ui.focusedSolarSystem'); focusInfoEl.style.opacity = '0.6'; }
+        navDots.forEach(d => d.classList.remove('active'));
+        navLabel.textContent = '';
     }
 });
 
