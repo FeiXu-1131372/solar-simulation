@@ -2662,16 +2662,9 @@ document.getElementById('tab-learn').addEventListener('click', e => {
     if (card) card.classList.toggle('open');
 });
 
-// Close button - also unfocus the planet
+// Close button - hide card but keep camera tracking the planet
 document.getElementById('info-card-close').addEventListener('click', () => {
     infoCard.classList.add('hidden');
-    // Clear focus state
-    lockedTarget = null;
-    focusTarget = null;
-    isFocusing = false;
-    // Reset camera to default view
-    navDots.forEach(d => d.classList.remove('active'));
-    navLabel.textContent = '';
 });
 
 // Drag to move (desktop only)
@@ -5683,12 +5676,18 @@ function animate() {
     if (lockedTarget && !cinematicState) {
         lockedTarget.mesh.getWorldPosition(_worldPos);
 
+        // On mobile, offset the orbit target upward so the planet sits
+        // in the top portion of the screen, leaving room for the info card.
+        const mobileYOffset = isMobile && !infoCard.classList.contains('hidden')
+            ? -focusOrbitDist * 0.35 : 0;
+
         if (isFocusing) {
             // Fly-in phase: lerp camera toward the planet
             if (!lockedTarget._camOffset) {
                 lockedTarget._camOffset = camera.position.clone().sub(_worldPos).normalize();
             }
             _tmpVec.copy(lockedTarget._camOffset).multiplyScalar(focusOrbitDist).add(_worldPos);
+            _tmpVec.y += mobileYOffset;
             camera.position.lerp(_tmpVec, 0.08);
             controls.target.copy(_worldPos);
 
