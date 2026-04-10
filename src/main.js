@@ -2,6 +2,9 @@ import './style.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { registerLocale, setLang, getLang, t, tf, tm, applyLocaleToDOM, onLangChange } from './i18n/index.js';
 import enData from './i18n/en.js';
 import zhData from './i18n/zh.js';
@@ -1008,6 +1011,17 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.NoToneMapping;
 renderer.toneMappingExposure = 1.0;
 document.getElementById('app').appendChild(renderer.domElement);
+
+// --- POST-PROCESSING ---
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    0.4,   // strength
+    0.6,   // radius
+    0.85   // threshold
+);
+composer.addPass(bloomPass);
 
 // CSS2D Renderer for labels
 const labelRenderer = new CSS2DRenderer();
@@ -2823,7 +2837,7 @@ function animate() {
     }
 
     controls.update();
-    renderer.render(scene, camera);
+    composer.render();
     labelRenderer.render(scene, camera);
 }
 animate();
@@ -2832,5 +2846,6 @@ window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
     labelRenderer.setSize(window.innerWidth, window.innerHeight);
 });
