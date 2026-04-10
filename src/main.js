@@ -1105,8 +1105,8 @@ function getMissionsForTarget(targetName) {
 
 // --- SCENE SETUP ---
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200000);
-const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 200000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.NoToneMapping;
@@ -1227,6 +1227,22 @@ for (let i = 0; i < STREAK_COUNT; i++) {
     });
 }
 
+// --- PRE-ALLOCATED REUSABLE OBJECTS (avoid per-frame GC pressure) ---
+const _streakRight = new THREE.Vector3();
+const _streakUp = new THREE.Vector3();
+const _streakDir = new THREE.Vector3();
+const _streakStart = new THREE.Vector3();
+const _streakEnd = new THREE.Vector3();
+const _tunnelRight = new THREE.Vector3();
+const _tunnelUp = new THREE.Vector3();
+const _tunnelPos = new THREE.Vector3();
+const _worldPos = new THREE.Vector3();
+const _tmpVec = new THREE.Vector3();
+const _tmpVec2 = new THREE.Vector3();
+const _tmpQuat = new THREE.Quaternion();
+const _zeroVec = new THREE.Vector3(0, 0, 0);
+const _upY = new THREE.Vector3(0, 1, 0);
+
 function updateStarStreaks(rocketPos, forwardDir, intensity, lengthMult) {
     if (intensity <= 0) {
         streakLines.visible = false;
@@ -1235,38 +1251,34 @@ function updateStarStreaks(rocketPos, forwardDir, intensity, lengthMult) {
     streakLines.visible = true;
     streakMat.opacity = intensity;
 
-    // Build a local frame from forwardDir
-    const right = new THREE.Vector3();
-    const up = new THREE.Vector3(0, 1, 0);
-    if (Math.abs(forwardDir.dot(up)) > 0.99) up.set(1, 0, 0);
-    right.crossVectors(forwardDir, up).normalize();
-    up.crossVectors(right, forwardDir).normalize();
+    _streakUp.set(0, 1, 0);
+    if (Math.abs(forwardDir.dot(_streakUp)) > 0.99) _streakUp.set(1, 0, 0);
+    _streakRight.crossVectors(forwardDir, _streakUp).normalize();
+    _streakUp.crossVectors(_streakRight, forwardDir).normalize();
 
     for (let i = 0; i < STREAK_COUNT; i++) {
         const s = streakData[i];
-        // Direction in cone around forward
         const sinP = Math.sin(s.phi);
         const cosP = Math.cos(s.phi);
-        const dir = new THREE.Vector3()
+        _streakDir.set(0, 0, 0)
             .addScaledVector(forwardDir, cosP)
-            .addScaledVector(right, sinP * Math.cos(s.theta))
-            .addScaledVector(up, sinP * Math.sin(s.theta))
+            .addScaledVector(_streakRight, sinP * Math.cos(s.theta))
+            .addScaledVector(_streakUp, sinP * Math.sin(s.theta))
             .normalize();
 
-        const dist = 30 + s.phi * 40; // farther streaks at wider angles
-        const start = rocketPos.clone().add(dir.clone().multiplyScalar(dist));
-        const end = start.clone().add(dir.clone().multiplyScalar(s.baseLength * lengthMult));
+        const dist = 30 + s.phi * 40;
+        _streakStart.copy(rocketPos).addScaledVector(_streakDir, dist);
+        _streakEnd.copy(_streakStart).addScaledVector(_streakDir, s.baseLength * lengthMult);
 
         const idx = i * 6;
-        streakPositions[idx]     = start.x;
-        streakPositions[idx + 1] = start.y;
-        streakPositions[idx + 2] = start.z;
-        streakPositions[idx + 3] = end.x;
-        streakPositions[idx + 4] = end.y;
-        streakPositions[idx + 5] = end.z;
+        streakPositions[idx]     = _streakStart.x;
+        streakPositions[idx + 1] = _streakStart.y;
+        streakPositions[idx + 2] = _streakStart.z;
+        streakPositions[idx + 3] = _streakEnd.x;
+        streakPositions[idx + 4] = _streakEnd.y;
+        streakPositions[idx + 5] = _streakEnd.z;
 
         const b = s.brightness * intensity;
-        // Blue-white tint
         streakColors[idx]     = 0.7 * b;
         streakColors[idx + 1] = 0.8 * b;
         streakColors[idx + 2] = 1.0 * b;
@@ -1358,33 +1370,30 @@ function updateParticleTunnel(rocketPos, forwardDir, intensity, dt) {
     }
     tunnelParticles.visible = true;
 
-    const right = new THREE.Vector3();
-    const up = new THREE.Vector3(0, 1, 0);
-    if (Math.abs(forwardDir.dot(up)) > 0.99) up.set(1, 0, 0);
-    right.crossVectors(forwardDir, up).normalize();
-    up.crossVectors(right, forwardDir).normalize();
+    _tunnelUp.set(0, 1, 0);
+    if (Math.abs(forwardDir.dot(_tunnelUp)) > 0.99) _tunnelUp.set(1, 0, 0);
+    _tunnelRight.crossVectors(forwardDir, _tunnelUp).normalize();
+    _tunnelUp.crossVectors(_tunnelRight, forwardDir).normalize();
 
     for (let i = 0; i < TUNNEL_PARTICLE_COUNT; i++) {
         const p = tunnelParticleData[i];
 
-        // Scroll particles backward
         p.zOffset -= p.speed * dt;
         if (p.zOffset < -30) p.zOffset += 60;
 
         const ringX = Math.cos(p.angle) * p.radius;
         const ringY = Math.sin(p.angle) * p.radius;
 
-        const pos = rocketPos.clone()
+        _tunnelPos.copy(rocketPos)
             .addScaledVector(forwardDir, p.zOffset)
-            .addScaledVector(right, ringX)
-            .addScaledVector(up, ringY);
+            .addScaledVector(_tunnelRight, ringX)
+            .addScaledVector(_tunnelUp, ringY);
 
         const idx = i * 3;
-        tunnelPositions[idx]     = pos.x;
-        tunnelPositions[idx + 1] = pos.y;
-        tunnelPositions[idx + 2] = pos.z;
+        tunnelPositions[idx]     = _tunnelPos.x;
+        tunnelPositions[idx + 1] = _tunnelPos.y;
+        tunnelPositions[idx + 2] = _tunnelPos.z;
 
-        // Fade at edges of tunnel
         const zFade = 1.0 - Math.abs(p.zOffset) / 30;
         tunnelSizes[i] = p.baseSize * intensity;
         tunnelAlphas[i] = Math.max(0, zFade * intensity * 0.7);
@@ -2023,7 +2032,7 @@ const sunMaterial = new THREE.ShaderMaterial({
 });
 sunTex.wrapS = THREE.RepeatWrapping;
 sunTex.wrapT = THREE.RepeatWrapping;
-const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 128, 128), sunMaterial);
+const sun = new THREE.Mesh(new THREE.SphereGeometry(35, 64, 64), sunMaterial);
 scene.add(sun);
 let sunCurrentSize = 35;
 let sunTargetSize = 35;
@@ -2172,7 +2181,7 @@ planetData.forEach((data) => {
     if (data.cloudMap) {
         const cloudTex = textureLoader.load(data.cloudMap);
         cloudMesh = new THREE.Mesh(
-            new THREE.SphereGeometry(data.size * 1.01, 128, 128),
+            new THREE.SphereGeometry(data.size * 1.01, 32, 32),
             new THREE.MeshStandardMaterial({
                 map: cloudTex,
                 transparent: true,
@@ -2187,7 +2196,7 @@ planetData.forEach((data) => {
 
     // Atmosphere glow (Fresnel-based)
     if (data.hasAtmosphere) {
-        const atmosphereGeo = new THREE.SphereGeometry(data.size * 1.025, 128, 128);
+        const atmosphereGeo = new THREE.SphereGeometry(data.size * 1.025, 32, 32);
         const atmosphereMat = new THREE.ShaderMaterial({
             vertexShader: `
                 varying vec3 vNormal;
@@ -2267,7 +2276,7 @@ planetData.forEach((data) => {
     }
 
     if (data.hasRings) {
-        const ringGeo = new THREE.RingGeometry(data.size * 1.2, data.size * 2.2, 128);
+        const ringGeo = new THREE.RingGeometry(data.size * 1.2, data.size * 2.2, 64);
         // Fix UV mapping for ring — map U from inner to outer radius
         const pos = ringGeo.attributes.position;
         const uv = ringGeo.attributes.uv;
@@ -2356,6 +2365,68 @@ planetData.forEach((data) => {
     planetEntry.orbitLine = orbitLine;
     planetEntry.inclinationGroup = inclinationGroup;
 });
+
+// --- REAL ORBITAL POSITIONS (J2000.0 epoch) ---
+// Mean longitude L0, longitude of perihelion Lp (degrees), mean daily motion n (deg/day)
+const ORBITAL_ELEMENTS = {
+    Mercury: { L0: 252.25084, Lp: 77.45645,  n: 4.0923344 },
+    Venus:   { L0: 181.97973, Lp: 131.53298, n: 1.6021302 },
+    Earth:   { L0: 100.46435, Lp: 102.93768, n: 0.9856003 },
+    Mars:    { L0: 355.45332, Lp: 336.04084, n: 0.5240208 },
+    Jupiter: { L0: 34.40438,  Lp: 14.72847,  n: 0.0830853 },
+    Saturn:  { L0: 49.94432,  Lp: 92.59887,  n: 0.0334441 },
+    Uranus:  { L0: 313.23218, Lp: 170.95427, n: 0.0117283 },
+    Neptune: { L0: 304.88003, Lp: 44.96476,  n: 0.0059810 },
+};
+
+// Moon orbital periods (days) and approximate mean longitude at J2000.0 (degrees)
+const MOON_ORBITAL_DATA = {
+    Moon:     { period: 27.3217,  L0: 218.32 },
+    Phobos:   { period: 0.31891,  L0: 35.0 },
+    Deimos:   { period: 1.26244,  L0: 162.0 },
+    Io:       { period: 1.76914,  L0: 106.1 },
+    Europa:   { period: 3.55118,  L0: 175.7 },
+    Ganymede: { period: 7.15455,  L0: 120.6 },
+    Callisto: { period: 16.6890,  L0: 84.4 },
+    Titan:    { period: 15.9454,  L0: 185.0 },
+    Titania:  { period: 8.7058,   L0: 135.0 },
+    Triton:   { period: 5.877,    L0: 264.8 },
+};
+
+function daysSinceJ2000() {
+    const now = new Date();
+    const j2000 = Date.UTC(2000, 0, 1, 12, 0, 0);
+    return (now.getTime() - j2000) / 86400000;
+}
+
+function computeRealPhaseOffsets() {
+    const d = daysSinceJ2000();
+
+    planets.forEach(p => {
+        const elem = ORBITAL_ELEMENTS[p.data.name];
+        if (elem) {
+            const meanLong = (elem.L0 + elem.n * d) % 360;
+            const M = ((meanLong - elem.Lp) % 360 + 360) % 360;
+            p.phaseOffset = M * DEG;
+        } else {
+            p.phaseOffset = 0;
+        }
+
+        p.moons.forEach(m => {
+            const moonData = MOON_ORBITAL_DATA[m.data.name];
+            if (moonData) {
+                const meanMotion = 360 / moonData.period;
+                const moonLong = ((moonData.L0 + meanMotion * d) % 360 + 360) % 360;
+                m.phaseOffset = moonLong * DEG;
+            } else {
+                m.phaseOffset = 0;
+            }
+        });
+    });
+}
+
+// Set real positions on load
+computeRealPhaseOffsets();
 
 // --- CONTROLS ---
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -2715,7 +2786,14 @@ function doLaunch(mission, target) {
     rocket.position.copy(earthPos);
     scene.add(rocket);
 
+    const MAX_TRAIL = 200;
+    const trailPositions = new Float32Array(MAX_TRAIL * 3);
+    trailPositions[0] = earthPos.x;
+    trailPositions[1] = earthPos.y;
+    trailPositions[2] = earthPos.z;
     const trailGeo = new THREE.BufferGeometry();
+    trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+    trailGeo.setDrawRange(0, 1);
     const trailMat = new THREE.LineBasicMaterial({ color: mission.color, transparent: true, opacity: 0.5 });
     const trailLine = new THREE.Line(trailGeo, trailMat);
     scene.add(trailLine);
@@ -2732,7 +2810,8 @@ function doLaunch(mission, target) {
         fireMesh: rocket.fireMesh,
         trailGeo,
         trailLine,
-        points: [earthPos.clone()],
+        trailPositions,
+        trailCount: 1,
         totalDist,
         distTraveled: 0,
         lastStepShown: -1,
@@ -3328,19 +3407,39 @@ function runMissionControl(mission, target, gameData) {
     controlTimerFill.style.transition = `width ${DURATION_MS / 1000}s linear`;
     controlTimerFill.style.width = '0%';
 
+    // Create grid DOM once, cache references for incremental updates
+    grid.innerHTML = SYSTEMS.map(sys =>
+        `<div class="mg-sys-card" data-sys="${sys}">
+            <div class="mg-sys-name">${sys}</div>
+            <div class="mg-sys-bar-wrap">
+                <div class="mg-sys-bar-fill"></div>
+            </div>
+            <div class="mg-sys-pct"></div>
+        </div>`
+    ).join('');
+
+    const sysElements = {};
+    SYSTEMS.forEach(sys => {
+        const card = grid.querySelector(`[data-sys="${sys}"]`);
+        sysElements[sys] = {
+            card,
+            fill: card.querySelector('.mg-sys-bar-fill'),
+            pct: card.querySelector('.mg-sys-pct'),
+        };
+    });
+
     function renderGrid() {
-        grid.innerHTML = SYSTEMS.map(sys => {
+        SYSTEMS.forEach(sys => {
+            const els = sysElements[sys];
             const v = Math.max(0, Math.round(values[sys]));
             const color = v > 40 ? '#4ade80' : v > 20 ? '#fbbf24' : '#ef4444';
             const isCrisis = activeCrisisSys === sys;
-            return `<div class="mg-sys-card${isCrisis ? ' mg-sys-crisis' : ''}" data-sys="${sys}">
-                <div class="mg-sys-name">${sys}</div>
-                <div class="mg-sys-bar-wrap">
-                    <div class="mg-sys-bar-fill" style="width:${v}%;background:${color}"></div>
-                </div>
-                <div class="mg-sys-pct" style="color:${color}">${v}%</div>
-            </div>`;
-        }).join('');
+            els.card.className = `mg-sys-card${isCrisis ? ' mg-sys-crisis' : ''}`;
+            els.fill.style.width = v + '%';
+            els.fill.style.background = color;
+            els.pct.textContent = v + '%';
+            els.pct.style.color = color;
+        });
     }
 
     function fireCrisis() {
@@ -3901,9 +4000,47 @@ function runDocking(mission, target, gameData) {
         }
     }
 
-    if (activeGameTimer) { clearInterval(activeGameTimer); activeGameTimer = null; }
+    // --- Keyboard controls ---
+    const keyHandler = e => {
+        if (done) return;
+        const down = e.type === 'keydown';
+        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
+            thrusting.up = down; e.preventDefault();
+        }
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            thrusting.left = down; e.preventDefault();
+        }
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            thrusting.right = down; e.preventDefault();
+        }
+    };
+    document.addEventListener('keydown', keyHandler);
+    document.addEventListener('keyup', keyHandler);
 
-    activeGameTimer = setInterval(() => {
+    // --- Touch controls ---
+    function getTouchThrust(e) {
+        const rect = canvas.getBoundingClientRect();
+        const touches = e.touches.length ? e.touches : e.changedTouches;
+        thrusting.up = false; thrusting.left = false; thrusting.right = false;
+        for (let i = 0; i < touches.length; i++) {
+            const tx = (touches[i].clientX - rect.left) / rect.width;
+            const ty = (touches[i].clientY - rect.top) / rect.height;
+            if (ty > 0.55) thrusting.up = true;
+            if (tx < 0.33) thrusting.left = true;
+            if (tx > 0.67) thrusting.right = true;
+        }
+    }
+    function clearThrust() { thrusting.up = false; thrusting.left = false; thrusting.right = false; }
+
+    const touchStartHandler = e => { e.preventDefault(); getTouchThrust(e); };
+    const touchMoveHandler = e => { e.preventDefault(); getTouchThrust(e); };
+    const touchEndHandler = e => { e.preventDefault(); clearThrust(); };
+
+    canvas.addEventListener('touchstart', touchStartHandler, { passive: false });
+    canvas.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    canvas.addEventListener('touchend', touchEndHandler, { passive: false });
+
+    function gameLoop() {
         if (done) return;
 
         const elapsed = Date.now() - startTime;
@@ -3951,20 +4088,20 @@ function runDocking(mission, target, gameData) {
         if (inPortX && atPortY && spd < 1.8 && !done) {
             docked = true;
             done = true;
-            clearInterval(activeGameTimer);
-            activeGameTimer = null;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
             drawScene();
             setTimeout(() => onGameSuccess(mission, target), 500);
             return;
         }
 
-        // Crash into station wall (too fast or wrong position)
+        // Crash into station wall
         const hitStation = ship.y < station.y + station.height + 2 && ship.y > station.y - 5 &&
             ship.x > station.x - station.width / 2 - 5 && ship.x < station.x + station.width / 2 + 5;
         if (hitStation && !done) {
             done = true;
-            clearInterval(activeGameTimer);
-            activeGameTimer = null;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
             onGameFail(mission, target, gameData);
             return;
         }
@@ -3972,8 +4109,8 @@ function runDocking(mission, target, gameData) {
         // Fell off bottom
         if (ship.y > CH + 20 && !done) {
             done = true;
-            clearInterval(activeGameTimer);
-            activeGameTimer = null;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
             onGameFail(mission, target, gameData);
             return;
         }
@@ -3981,72 +4118,35 @@ function runDocking(mission, target, gameData) {
         // Time out
         if (elapsed >= DURATION_MS && !done) {
             done = true;
-            clearInterval(activeGameTimer);
-            activeGameTimer = null;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
             onGameFail(mission, target, gameData);
             return;
         }
 
-        // Out of fuel and drifting up with no chance
+        // Out of fuel and drifting down with no chance
         if (fuel <= 0 && ship.vy > 0 && ship.y > CH - 20 && !done) {
             done = true;
-            clearInterval(activeGameTimer);
-            activeGameTimer = null;
+            cancelAnimationFrame(activeGameFrame);
+            activeGameFrame = null;
             onGameFail(mission, target, gameData);
             return;
         }
 
         updateHUD();
         drawScene();
-    }, 30);
-
-    // Draw initial frame
-    drawScene();
-
-    // --- Keyboard controls ---
-    const keyHandler = e => {
-        if (done) return;
-        const down = e.type === 'keydown';
-        if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') {
-            thrusting.up = down; e.preventDefault();
-        }
-        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
-            thrusting.left = down; e.preventDefault();
-        }
-        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
-            thrusting.right = down; e.preventDefault();
-        }
-    };
-    document.addEventListener('keydown', keyHandler);
-    document.addEventListener('keyup', keyHandler);
-
-    // --- Touch controls ---
-    // Bottom 40% = main thrust up
-    // Left third = thrust left, Right third = thrust right
-    function getTouchThrust(e) {
-        const rect = canvas.getBoundingClientRect();
-        const touches = e.touches.length ? e.touches : e.changedTouches;
-        thrusting.up = false; thrusting.left = false; thrusting.right = false;
-        for (let i = 0; i < touches.length; i++) {
-            const tx = (touches[i].clientX - rect.left) / rect.width;
-            const ty = (touches[i].clientY - rect.top) / rect.height;
-            if (ty > 0.55) thrusting.up = true;
-            if (tx < 0.33) thrusting.left = true;
-            if (tx > 0.67) thrusting.right = true;
-        }
+        activeGameFrame = requestAnimationFrame(gameLoop);
     }
-    function clearThrust() { thrusting.up = false; thrusting.left = false; thrusting.right = false; }
 
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); getTouchThrust(e); }, { passive: false });
-    canvas.addEventListener('touchmove', e => { e.preventDefault(); getTouchThrust(e); }, { passive: false });
-    canvas.addEventListener('touchend', e => { e.preventDefault(); clearThrust(); }, { passive: false });
+    drawScene();
+    activeGameFrame = requestAnimationFrame(gameLoop);
 
     activeGameCleanup = () => {
         document.removeEventListener('keydown', keyHandler);
         document.removeEventListener('keyup', keyHandler);
-        canvas.removeEventListener('touchstart', getTouchThrust);
-        canvas.removeEventListener('touchmove', getTouchThrust);
-        canvas.removeEventListener('touchend', clearThrust);
+        canvas.removeEventListener('touchstart', touchStartHandler);
+        canvas.removeEventListener('touchmove', touchMoveHandler);
+        canvas.removeEventListener('touchend', touchEndHandler);
     };
 }
 
@@ -4948,16 +5048,23 @@ function runLander(mission, target, gameData) {
         }
     }
 
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); applyTouches(e); }, { passive: false });
-    canvas.addEventListener('touchmove', e => { e.preventDefault(); applyTouches(e); }, { passive: false });
-    canvas.addEventListener('touchend', e => {
+    const touchStartHandler = e => { e.preventDefault(); applyTouches(e); };
+    const touchMoveHandler = e => { e.preventDefault(); applyTouches(e); };
+    const touchEndHandler = e => {
         e.preventDefault();
         thrusting.up = false; thrusting.left = false; thrusting.right = false;
-    }, { passive: false });
+    };
+
+    canvas.addEventListener('touchstart', touchStartHandler, { passive: false });
+    canvas.addEventListener('touchmove', touchMoveHandler, { passive: false });
+    canvas.addEventListener('touchend', touchEndHandler, { passive: false });
 
     activeGameCleanup = () => {
         document.removeEventListener('keydown', keyHandler);
         document.removeEventListener('keyup', keyHandler);
+        canvas.removeEventListener('touchstart', touchStartHandler);
+        canvas.removeEventListener('touchmove', touchMoveHandler);
+        canvas.removeEventListener('touchend', touchEndHandler);
     };
 }
 
@@ -5255,6 +5362,7 @@ function setScaleMode(mode) {
 
 document.getElementById('reset-pos').addEventListener('click', () => {
     clock = 0;
+    computeRealPhaseOffsets(); // place planets at real positions for current time
     isFocusing = false;
     focusTarget = null;
     lockedTarget = null;
@@ -5352,7 +5460,7 @@ function animate() {
         sunMaterial.uniforms.time.value += 0.016 * simSpeed;
 
         planets.forEach(p => {
-            const M = clock * p.data.speed; // mean anomaly
+            const M = clock * p.data.speed + (p.phaseOffset || 0);
             const ecc = p.data.eccentricity || 0;
             const dist = p._activeDistance ?? p.data.distance;
             if (ecc > 0.001) {
@@ -5369,12 +5477,13 @@ function animate() {
             }
 
             p.moons.forEach(m => {
-                m.pivot.rotation.y = clock * m.data.speed;
+                const moonAngle = clock * m.data.speed + (m.phaseOffset || 0);
+                m.pivot.rotation.y = moonAngle;
                 if (m.data.isSyncFocus) {
                     if (isSynchronous) {
                         m.mesh.rotation.y = -Math.PI / 2;
                     } else {
-                        m.mesh.rotation.y = -(clock * m.data.speed) - Math.PI / 2;
+                        m.mesh.rotation.y = -moonAngle - Math.PI / 2;
                     }
                 } else {
                     m.mesh.rotation.y += 0.02 * simSpeed;
@@ -5390,7 +5499,7 @@ function animate() {
         ap.elapsed += dt;
 
         ap.target.mesh.getWorldPosition(ap.to);
-        ap.direction = ap.to.clone().sub(ap.from).normalize();
+        ap.direction.copy(ap.to).sub(ap.from).normalize();
         const orbitDist = (ap.target.size || 10) * 6 + 20;
 
         if (ap.phase === 'liftoff') {
@@ -5407,8 +5516,8 @@ function animate() {
             const t = Math.min(ap.elapsed / ap.duration, 1.0);
             const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
-            const arrivePos = ap.to.clone().add(ap.direction.clone().multiplyScalar(-orbitDist));
-            camera.position.lerpVectors(ap.from, arrivePos, ease);
+            _tmpVec.copy(ap.direction).multiplyScalar(-orbitDist).add(ap.to);
+            camera.position.lerpVectors(ap.from, _tmpVec, ease);
             controls.target.lerpVectors(ap.from, ap.to, ease);
 
             updateStarStreaks(camera.position, ap.direction, 0.9, 4 + Math.sin(ap.elapsed * 3));
@@ -5435,8 +5544,8 @@ function animate() {
                 chromaticPass.uniforms.intensity.value = 0;
                 motionBlurPass.enabled = false;
                 motionBlurPass.uniforms.intensity.value = 0;
-                updateStarStreaks(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
-                updateParticleTunnel(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
+                updateStarStreaks(_zeroVec, _upY, 0, 0);
+                updateParticleTunnel(_zeroVec, _upY, 0, 0);
 
                 controls.enabled = true;
                 focusOn(ap.target);
@@ -5451,28 +5560,26 @@ function animate() {
 
     // --- CONTINUOUS PLANET TRACKING ---
     if (lockedTarget && !cinematicState) {
-        const worldPos = new THREE.Vector3();
-        lockedTarget.mesh.getWorldPosition(worldPos);
+        lockedTarget.mesh.getWorldPosition(_worldPos);
 
         if (isFocusing) {
             // Fly-in phase: lerp camera toward the planet
             if (!lockedTarget._camOffset) {
-                lockedTarget._camOffset = camera.position.clone().sub(worldPos).normalize();
+                lockedTarget._camOffset = camera.position.clone().sub(_worldPos).normalize();
             }
-            const desiredCamPos = worldPos.clone().add(lockedTarget._camOffset.clone().multiplyScalar(focusOrbitDist));
-            camera.position.lerp(desiredCamPos, 0.08);
-            controls.target.copy(worldPos);
+            _tmpVec.copy(lockedTarget._camOffset).multiplyScalar(focusOrbitDist).add(_worldPos);
+            camera.position.lerp(_tmpVec, 0.08);
+            controls.target.copy(_worldPos);
 
-            if (camera.position.distanceTo(worldPos) < focusOrbitDist * 1.1) {
+            if (camera.position.distanceTo(_worldPos) < focusOrbitDist * 1.1) {
                 isFocusing = false;
                 delete lockedTarget._camOffset;
             }
         } else {
             // Tracking phase: move camera to follow the orbiting planet
-            const prevTarget = controls.target.clone();
-            const offset = camera.position.clone().sub(prevTarget);
-            controls.target.copy(worldPos);
-            camera.position.copy(worldPos).add(offset);
+            _tmpVec.copy(camera.position).sub(controls.target);
+            controls.target.copy(_worldPos);
+            camera.position.copy(_worldPos).add(_tmpVec);
         }
     }
 
@@ -5480,10 +5587,9 @@ function animate() {
     if (!cinematicState) {
         for (let i = activeRockets.length - 1; i >= 0; i--) {
             const r = activeRockets[i];
-            const targetPos = new THREE.Vector3();
-            r.target.mesh.getWorldPosition(targetPos);
+            r.target.mesh.getWorldPosition(_worldPos);
 
-            const distToTarget = r.mesh.position.distanceTo(targetPos);
+            const distToTarget = r.mesh.position.distanceTo(_worldPos);
             const moveDist = 1.0 + (simSpeed * 1.5);
 
             if (distToTarget <= (r.target.size + 1.5)) {
@@ -5501,15 +5607,28 @@ function animate() {
                     launchMissionGame(r.mission, r.target);
                 }
             } else {
-                const dir = targetPos.clone().sub(r.mesh.position).normalize();
-                const up = new THREE.Vector3(0, 1, 0);
-                r.mesh.quaternion.slerp(new THREE.Quaternion().setFromUnitVectors(up, dir), 0.15);
-                r.mesh.position.add(dir.clone().multiplyScalar(moveDist));
+                _tmpVec.copy(_worldPos).sub(r.mesh.position).normalize();
+                _tmpQuat.setFromUnitVectors(_tmpVec2.set(0, 1, 0), _tmpVec);
+                r.mesh.quaternion.slerp(_tmpQuat, 0.15);
+                r.mesh.position.addScaledVector(_tmpVec, moveDist);
 
-                // Trail
-                r.points.push(r.mesh.position.clone());
-                if (r.points.length > 200) r.points.shift();
-                r.trailGeo.setFromPoints(r.points);
+                // Trail — pre-allocated ring buffer
+                const trailArr = r.trailPositions;
+                if (r.trailCount < 200) {
+                    const idx = r.trailCount * 3;
+                    trailArr[idx] = r.mesh.position.x;
+                    trailArr[idx + 1] = r.mesh.position.y;
+                    trailArr[idx + 2] = r.mesh.position.z;
+                    r.trailCount++;
+                } else {
+                    trailArr.copyWithin(0, 3);
+                    const idx = 199 * 3;
+                    trailArr[idx] = r.mesh.position.x;
+                    trailArr[idx + 1] = r.mesh.position.y;
+                    trailArr[idx + 2] = r.mesh.position.z;
+                }
+                r.trailGeo.attributes.position.needsUpdate = true;
+                r.trailGeo.setDrawRange(0, r.trailCount);
 
                 // Flickering main flame + booster flames
                 const flicker = 0.7 + Math.random() * 0.6;
