@@ -2439,6 +2439,15 @@ navDots.forEach(dot => {
         // Find the matching clickable entry
         const entry = allClickable.find(c => c.name === planetName);
         if (entry) {
+            // Close info card first on mobile, then navigate
+            if (infoCard && !infoCard.classList.contains('hidden') && window.innerWidth <= 480) {
+                infoCard.classList.add('hidden');
+            }
+            // Close settings panel if open on mobile
+            const uiCont = document.getElementById('ui-container');
+            if (window.innerWidth <= 480 && uiCont && !uiCont.classList.contains('hidden')) {
+                uiCont.classList.add('hidden');
+            }
             if (currentScaleMode === 'realistic') {
                 startAutoPilot(entry);
             } else {
@@ -5200,9 +5209,34 @@ toggleUiBtn.addEventListener('click', () => {
     uiContainer.classList.toggle('hidden');
 });
 
+// Mobile: settings button in tab bar
+const navSettingsBtn = document.getElementById('nav-settings-btn');
+if (navSettingsBtn) {
+    navSettingsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Close info card if open
+        if (infoCard && !infoCard.classList.contains('hidden')) {
+            infoCard.classList.add('hidden');
+        }
+        uiContainer.classList.toggle('hidden');
+    });
+}
+
+// Close settings popup when tapping outside on mobile
+if (window.innerWidth <= 480) {
+    document.addEventListener('click', (e) => {
+        if (!uiContainer.classList.contains('hidden') &&
+            !uiContainer.contains(e.target) &&
+            !navSettingsBtn.contains(e.target)) {
+            uiContainer.classList.add('hidden');
+        }
+    });
+}
+
 // Auto-collapse control panel on mobile and show touch-friendly hint
 if (window.innerWidth <= 480) {
     uiContainer.classList.add('collapsed');
+    uiContainer.classList.add('hidden');
     document.getElementById('toggle-ui-expand').textContent = '▴';
 }
 if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
