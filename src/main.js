@@ -1470,13 +1470,25 @@ planetData.forEach((data) => {
     const orbitPivot = new THREE.Group();
     inclinationGroup.add(orbitPivot);
 
+    const materialOptions = {
+        map: textureLoader.load(data.texture),
+        roughness: data.roughness ?? 0.8,
+        metalness: 0.0,
+    };
+    if (data.normalMap) {
+        materialOptions.normalMap = textureLoader.load(data.normalMap);
+        materialOptions.normalScale = new THREE.Vector2(1.0, 1.0);
+    }
+    if (data.specularMap) {
+        const specTex = textureLoader.load(data.specularMap);
+        materialOptions.roughnessMap = specTex;
+        materialOptions.roughness = 1.0;
+        materialOptions.metalness = 0.1;
+    }
+
     const planetMesh = new THREE.Mesh(
-        new THREE.SphereGeometry(data.size, 64, 64),
-        new THREE.MeshStandardMaterial({ 
-            map: textureLoader.load(data.texture),
-            roughness: 0.8,
-            metalness: 0.0,
-        })
+        new THREE.SphereGeometry(data.size, 128, 128),
+        new THREE.MeshStandardMaterial(materialOptions)
     );
     planetMesh.position.x = data.distance;
     planetMesh.userData = { name: data.name, size: data.size };
@@ -1547,9 +1559,18 @@ planetData.forEach((data) => {
             const moonPivot = new THREE.Group();
             planetMesh.add(moonPivot);
 
+            const moonMatOptions = {
+                map: textureLoader.load(m.texture),
+                roughness: 0.85,
+                metalness: 0.0,
+            };
+            if (m.normalMap) {
+                moonMatOptions.normalMap = textureLoader.load(m.normalMap);
+                moonMatOptions.normalScale = new THREE.Vector2(1.0, 1.0);
+            }
             const mMesh = new THREE.Mesh(
-                new THREE.SphereGeometry(m.size, 32, 32),
-                new THREE.MeshStandardMaterial({ map: textureLoader.load(m.texture) })
+                new THREE.SphereGeometry(m.size, 64, 64),
+                new THREE.MeshStandardMaterial(moonMatOptions)
             );
             mMesh.position.x = m.distance + data.size;
             mMesh.userData = { name: m.name, size: m.size };
