@@ -1,11 +1,14 @@
 import './style.css';
-import * as THREE from 'three';
+import * as THREE from 'three/webgpu';
+import { pass, uniform, vec2, vec4, uv, color,
+         texture, mix, pow, sin, dot,
+         float, attribute, positionLocal,
+         modelViewPosition, normalView, positionViewDirection } from 'three/tsl';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { bloom } from 'three/examples/jsm/tsl/display/BloomNode.js';
+import { chromaticAberration } from 'three/examples/jsm/tsl/display/ChromaticAberrationNode.js';
+import { gaussianBlur } from 'three/examples/jsm/tsl/display/GaussianBlurNode.js';
 import { registerLocale, setLang, getLang, t, tf, tm, applyLocaleToDOM, onLangChange } from './i18n/index.js';
 import enData from './i18n/en.js';
 import zhData from './i18n/zh.js';
@@ -1125,9 +1128,9 @@ function getMissionsForTarget(targetName) {
 // --- SCENE SETUP ---
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 200000);
-const renderer = new THREE.WebGLRenderer({ antialias: !isMobile });
+const renderer = new THREE.WebGPURenderer({ antialias: !isMobile });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
 renderer.toneMapping = THREE.NoToneMapping;
 renderer.toneMappingExposure = 1.0;
 document.getElementById('app').appendChild(renderer.domElement);
@@ -1140,89 +1143,30 @@ renderer.domElement.addEventListener('webglcontextlost', (e) => {
 renderer.domElement.addEventListener('webglcontextrestored', () => {
     console.log('WebGL context restored');
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isMobile ? Math.min(window.devicePixelRatio, 1.5) : Math.min(window.devicePixelRatio, 2));
 });
 
-// --- POST-PROCESSING ---
-const composer = new EffectComposer(renderer);
-composer.addPass(new RenderPass(scene, camera));
-const bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(window.innerWidth, window.innerHeight),
-    0.15,  // strength — subtle, avoids blowing out the sun
-    0.4,   // radius
-    0.9    // threshold — only the brightest pixels bloom
-);
-composer.addPass(bloomPass);
+// --- POST-PROCESSING (TSL node-based) ---
+const renderPipeline = new THREE.RenderPipeline(renderer);
+const scenePass = pass(scene, camera);
+const scenePassColor = scenePass.getTextureNode('output');
 
-// --- CINEMATIC POST-PROCESSING ---
-const chromaticAberrationShader = {
-    uniforms: {
-        tDiffuse: { value: null },
-        intensity: { value: 0.0 },
-    },
-    vertexShader: `
-        varying vec2 vUv;
-        void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    `,
-    fragmentShader: `
-        uniform sampler2D tDiffuse;
-        uniform float intensity;
-        varying vec2 vUv;
-        void main() {
-            vec2 dir = vUv - vec2(0.5);
-            float dist = length(dir);
-            vec2 offset = dir * dist * intensity;
-            float r = texture2D(tDiffuse, vUv + offset).r;
-            float g = texture2D(tDiffuse, vUv).g;
-            float b = texture2D(tDiffuse, vUv - offset).b;
-            gl_FragColor = vec4(r, g, b, 1.0);
-        }
-    `,
-};
-const chromaticPass = new ShaderPass(chromaticAberrationShader);
-chromaticPass.enabled = false;
-composer.addPass(chromaticPass);
+// Bloom — always on (subtle)
+const bloomNode = bloom(scenePassColor, 0.15, 0.4, 0.9);
 
-const motionBlurShader = {
-    uniforms: {
-        tDiffuse: { value: null },
-        intensity: { value: 0.0 },
-        direction: { value: new THREE.Vector2(0.0, 0.0) },
-    },
-    vertexShader: `
-        varying vec2 vUv;
-        void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    `,
-    fragmentShader: `
-        uniform sampler2D tDiffuse;
-        uniform float intensity;
-        uniform vec2 direction;
-        varying vec2 vUv;
-        void main() {
-            vec2 dir = direction * intensity;
-            vec4 color = vec4(0.0);
-            color += texture2D(tDiffuse, vUv - 4.0 * dir) * 0.05;
-            color += texture2D(tDiffuse, vUv - 3.0 * dir) * 0.09;
-            color += texture2D(tDiffuse, vUv - 2.0 * dir) * 0.12;
-            color += texture2D(tDiffuse, vUv - 1.0 * dir) * 0.15;
-            color += texture2D(tDiffuse, vUv) * 0.18;
-            color += texture2D(tDiffuse, vUv + 1.0 * dir) * 0.15;
-            color += texture2D(tDiffuse, vUv + 2.0 * dir) * 0.12;
-            color += texture2D(tDiffuse, vUv + 3.0 * dir) * 0.09;
-            color += texture2D(tDiffuse, vUv + 4.0 * dir) * 0.05;
-            gl_FragColor = color;
-        }
-    `,
-};
-const motionBlurPass = new ShaderPass(motionBlurShader);
-motionBlurPass.enabled = false;
-composer.addPass(motionBlurPass);
+// Chromatic aberration — intensity 0 = no effect
+const chromaticIntensity = uniform(0.0);
+
+// Motion blur — directional gaussian blur via TSL
+const motionBlurIntensity = uniform(0.0);
+const motionBlurDirection = uniform(new THREE.Vector2(0.5, 0.0));
+
+// Scene pass + bloom + chromatic aberration + motion blur
+let ppOutput = scenePassColor.add(bloomNode);
+ppOutput = chromaticAberration(ppOutput, chromaticIntensity, vec2(0.5, 0.5), 1.1);
+const blurDir = vec2(motionBlurDirection.mul(motionBlurIntensity.mul(50.0)));
+ppOutput = gaussianBlur(ppOutput, blurDir, 4);
+renderPipeline.outputNode = ppOutput;
 
 // --- CINEMATIC STAR STREAKS ---
 const STREAK_COUNT = 120;
@@ -1346,35 +1290,20 @@ tunnelGeo.setAttribute('position', new THREE.BufferAttribute(tunnelPositions, 3)
 tunnelGeo.setAttribute('size', new THREE.BufferAttribute(tunnelSizes, 1));
 tunnelGeo.setAttribute('alpha', new THREE.BufferAttribute(tunnelAlphas, 1));
 
-const tunnelMat = new THREE.ShaderMaterial({
-    uniforms: {
-        color: { value: new THREE.Color(0x4488ff) },
-        pointTexture: { value: starSpriteTex },
-    },
-    vertexShader: `
-        attribute float size;
-        attribute float alpha;
-        varying float vAlpha;
-        void main() {
-            vAlpha = alpha;
-            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-            gl_PointSize = size * (200.0 / -mvPosition.z);
-            gl_Position = projectionMatrix * mvPosition;
-        }
-    `,
-    fragmentShader: `
-        uniform vec3 color;
-        uniform sampler2D pointTexture;
-        varying float vAlpha;
-        void main() {
-            vec4 texColor = texture2D(pointTexture, gl_PointCoord);
-            gl_FragColor = vec4(color, texColor.a * vAlpha);
-        }
-    `,
+const tunnelColor = uniform(new THREE.Color(0x4488ff));
+const tunnelMat = new THREE.PointsNodeMaterial({
     transparent: true,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
 });
+// TSL vertex: point size from 'size' attribute, scaled by distance
+const sizeAttr = attribute('size');
+const alphaAttr = attribute('alpha');
+tunnelMat.positionNode = positionLocal;
+tunnelMat.sizeNode = sizeAttr.mul(200.0).div(modelViewPosition.z.negate());
+// TSL fragment: sample sprite texture, tint with color, modulate alpha
+const tunnelTex = texture(starSpriteTex);
+tunnelMat.colorNode = vec4(tunnelColor, tunnelTex.a.mul(alphaAttr));
 
 const tunnelParticles = new THREE.Points(tunnelGeo, tunnelMat);
 tunnelParticles.frustumCulled = false;
@@ -1591,10 +1520,8 @@ function endCinematic(skipToGame) {
     updateStarStreaks(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
     updateParticleTunnel(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
     clearEnergyWaves();
-    chromaticPass.enabled = false;
-    chromaticPass.uniforms.intensity.value = 0;
-    motionBlurPass.enabled = false;
-    motionBlurPass.uniforms.intensity.value = 0;
+    chromaticIntensity.value = 0;
+    motionBlurIntensity.value = 0;
     cinematicFlash.style.opacity = '0';
     cinematicFlash.style.background = 'white';
 
@@ -1647,10 +1574,8 @@ function endCinematic(skipToGame) {
 cinematicSkipBtn.addEventListener('click', () => endCinematic(true));
 document.addEventListener('keydown', (e) => {
     if (autoPilotState && (e.key === 'Escape' || e.key === ' ')) {
-        chromaticPass.enabled = false;
-        chromaticPass.uniforms.intensity.value = 0;
-        motionBlurPass.enabled = false;
-        motionBlurPass.uniforms.intensity.value = 0;
+        chromaticIntensity.value = 0;
+        motionBlurIntensity.value = 0;
         updateStarStreaks(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
         updateParticleTunnel(new THREE.Vector3(), new THREE.Vector3(0, 1, 0), 0, 0);
         cinematicFlash.style.opacity = '0';
@@ -1760,8 +1685,7 @@ function updateCinematicAscent(dt) {
         camera.position.x += (Math.random() - 0.5) * shakeAmt;
         camera.position.y += (Math.random() - 0.5) * shakeAmt;
         updateStarStreaks(rocket.position, cs.direction, warpProgress * 0.5, 0.5 + warpProgress * 2);
-        chromaticPass.enabled = true;
-        chromaticPass.uniforms.intensity.value = warpProgress * 0.01;
+        chromaticIntensity.value = warpProgress * 0.01;
         cs.rocketObj.fireMesh.material.color.lerp(new THREE.Color(0x4488ff), warpProgress * 0.5);
     }
 
@@ -1798,10 +1722,9 @@ function updateCinematicWarp(dt) {
 
     updateStarStreaks(rocket.position, cs.direction, 0.9, 4 + Math.sin(cs.elapsed * 3) * 1);
     updateParticleTunnel(rocket.position, cs.direction, 0.8, dt);
-    chromaticPass.uniforms.intensity.value = 0.012 + Math.sin(cs.elapsed * 4) * 0.003;
-    motionBlurPass.enabled = true;
-    motionBlurPass.uniforms.intensity.value = 0.003;
-    motionBlurPass.uniforms.direction.value.set(0.5, 0.0);
+    chromaticIntensity.value = 0.012 + Math.sin(cs.elapsed * 4) * 0.003;
+    motionBlurIntensity.value = 0.003;
+    motionBlurDirection.value.set(0.5, 0.0);
 
     waveSpawnTimer += dt;
     if (waveSpawnTimer >= 0.3) {
@@ -1811,7 +1734,7 @@ function updateCinematicWarp(dt) {
     updateEnergyWaves(dt);
 
     const purpleShift = Math.sin(progress * Math.PI) * 0.3;
-    tunnelMat.uniforms.color.value.setRGB(0.27 + purpleShift, 0.33, 1.0);
+    tunnelColor.value.setRGB(0.27 + purpleShift, 0.33, 1.0);
 
     // Scene-wide blue/purple tint via overlay
     const tintIntensity = Math.sin(progress * Math.PI) * 0.15;
@@ -1863,8 +1786,8 @@ function updateCinematicWarpExit(dt) {
     const fadeOut = 1 - progress;
     updateStarStreaks(rocket.position, cs.direction, fadeOut * 0.9, 4 * fadeOut);
     updateParticleTunnel(rocket.position, cs.direction, fadeOut * 0.8, dt);
-    chromaticPass.uniforms.intensity.value = 0.012 * fadeOut;
-    motionBlurPass.uniforms.intensity.value = 0.003 * fadeOut;
+    chromaticIntensity.value = 0.012 * fadeOut;
+    motionBlurIntensity.value = 0.003 * fadeOut;
     updateEnergyWaves(dt);
 
     // Fade out color tint
@@ -1878,8 +1801,8 @@ function updateCinematicWarpExit(dt) {
     if (progress >= 1) {
         cs.phase = 'deceleration';
         cs.elapsed = 0;
-        chromaticPass.enabled = false;
-        motionBlurPass.enabled = false;
+        chromaticIntensity.value = 0;
+        motionBlurIntensity.value = 0;
     }
 }
 
@@ -1984,7 +1907,7 @@ scene.add(sunLight);
 
 // --- BACKGROUND STARS ---
 
-const starCount = isMobile ? 1500 : 4000;
+const starCount = isMobile ? 2500 : 4000;
 const starPos   = new Float32Array(starCount * 3);
 const starCol   = new Float32Array(starCount * 3);
 const starColors = [
@@ -2045,7 +1968,7 @@ const _origLoad = textureLoader.load.bind(textureLoader);
 if (isMobile) {
     textureLoader.load = function(url, onLoad, onProgress, onError) {
         return _origLoad(url, (tex) => {
-            downscaleTexture(tex, 1024);
+            downscaleTexture(tex, 2048);
             if (onLoad) onLoad(tex);
         }, onProgress, onError);
     };
@@ -2062,36 +1985,20 @@ _origLoad('/textures/background/stars_milky_way_8k.jpg', (texture) => {
 });
 
 // --- SUN ---
-const sunMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-        sunMap: { value: sunTex },
-        time: { value: 0.0 },
-    },
-    vertexShader: `
-        varying vec2 vUv;
-        void main() {
-            vUv = uv;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-        }
-    `,
-    fragmentShader: `
-        uniform sampler2D sunMap;
-        uniform float time;
-        varying vec2 vUv;
-        void main() {
-            vec2 uv1 = vUv + vec2(time * 0.02, time * 0.005);
-            vec2 uv2 = vUv + vec2(-time * 0.012, time * 0.008);
-            vec4 color1 = texture2D(sunMap, uv1);
-            vec4 color2 = texture2D(sunMap, uv2);
-            vec4 color = mix(color1, color2, 0.3);
-            float pulse = 1.0 + 0.05 * sin(time * 2.0);
-            gl_FragColor = color * pulse;
-        }
-    `,
-});
 sunTex.wrapS = THREE.RepeatWrapping;
 sunTex.wrapT = THREE.RepeatWrapping;
-const sun = new THREE.Mesh(new THREE.SphereGeometry(35, isMobile ? 32 : 64, isMobile ? 32 : 64), sunMaterial);
+const sunTimeUniform = uniform(0.0);
+const sunMaterial = new THREE.NodeMaterial();
+// TSL: animated UV scrolling + pulse
+const sunUv = uv();
+const sunUv1 = sunUv.add(vec2(sunTimeUniform.mul(0.02), sunTimeUniform.mul(0.005)));
+const sunUv2 = sunUv.add(vec2(sunTimeUniform.mul(-0.012), sunTimeUniform.mul(0.008)));
+const sunColor1 = texture(sunTex, sunUv1);
+const sunColor2 = texture(sunTex, sunUv2);
+const sunMixed = mix(sunColor1, sunColor2, 0.3);
+const sunPulse = float(1.0).add(float(0.05).mul(sin(sunTimeUniform.mul(2.0))));
+sunMaterial.colorNode = sunMixed.mul(sunPulse);
+const sun = new THREE.Mesh(new THREE.SphereGeometry(35, isMobile ? 48 : 64, isMobile ? 48 : 64), sunMaterial);
 scene.add(sun);
 let sunCurrentSize = 35;
 let sunTargetSize = 35;
@@ -2219,22 +2126,12 @@ planetData.forEach((data) => {
     }
     if (data.specularMap) {
         // Specular map: bright = reflective. Roughness map: bright = rough.
-        // We need to invert the specular map via onBeforeCompile.
+        // Invert via TSL: bright specular = low roughness (shiny oceans)
         materialOptions.roughness = 0.8;
         materialOptions.metalness = 0.1;
         const specTex = textureLoader.load(data.specularMap);
         materialOptions.roughnessMap = specTex;
-        materialOptions.onBeforeCompile = (shader) => {
-            // Invert roughness map sample so bright specular = low roughness (shiny oceans)
-            shader.fragmentShader = shader.fragmentShader.replace(
-                '#include <roughnessmap_fragment>',
-                `float roughnessFactor = roughness;
-                 #ifdef USE_ROUGHNESSMAP
-                   vec4 texelRoughness = texture2D( roughnessMap, vRoughnessMapUv );
-                   roughnessFactor *= (1.0 - texelRoughness.g);
-                 #endif`
-            );
-        };
+        materialOptions._invertRoughness = true;
     }
     if (data.nightMap) {
         materialOptions.emissiveMap = textureLoader.load(data.nightMap);
@@ -2242,10 +2139,18 @@ planetData.forEach((data) => {
         materialOptions.emissiveIntensity = 0.3;
     }
 
-    const segments = isMobile ? 32 : (data.size >= 7 ? 128 : 64);
+    const segments = isMobile ? 48 : (data.size >= 7 ? 128 : 64);
+    const needsInvertRoughness = materialOptions._invertRoughness;
+    delete materialOptions._invertRoughness;
+    const planetMaterial = new THREE.MeshStandardNodeMaterial(materialOptions);
+    if (needsInvertRoughness) {
+        // TSL: invert roughness map so bright specular = low roughness
+        const roughnessMapTex = texture(materialOptions.roughnessMap);
+        planetMaterial.roughnessNode = float(materialOptions.roughness).mul(float(1.0).sub(roughnessMapTex.g));
+    }
     const planetMesh = new THREE.Mesh(
         new THREE.SphereGeometry(data.size, segments, segments),
-        new THREE.MeshStandardMaterial(materialOptions)
+        planetMaterial
     );
     planetMesh.position.x = data.distance;
     planetMesh.userData = { name: data.name, size: data.size };
@@ -2278,37 +2183,17 @@ planetData.forEach((data) => {
     // Atmosphere glow (Fresnel-based)
     if (data.hasAtmosphere) {
         const atmosphereGeo = new THREE.SphereGeometry(data.size * 1.025, 32, 32);
-        const atmosphereMat = new THREE.ShaderMaterial({
-            vertexShader: `
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                void main() {
-                    vNormal = normalize(normalMatrix * normal);
-                    vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `,
-            fragmentShader: `
-                uniform vec3 glowColor;
-                uniform float intensity;
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                void main() {
-                    vec3 viewDir = normalize(-vPosition);
-                    float fresnel = 1.0 - dot(viewDir, vNormal);
-                    fresnel = pow(fresnel, 3.0) * intensity;
-                    gl_FragColor = vec4(glowColor, fresnel);
-                }
-            `,
-            uniforms: {
-                glowColor: { value: new THREE.Color(data.atmosphereColor) },
-                intensity: { value: 1.2 },
-            },
-            transparent: true,
-            side: THREE.FrontSide,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-        });
+        const atmosphereMat = new THREE.NodeMaterial();
+        atmosphereMat.transparent = true;
+        atmosphereMat.side = THREE.FrontSide;
+        atmosphereMat.depthWrite = false;
+        atmosphereMat.blending = THREE.AdditiveBlending;
+        // TSL Fresnel glow
+        const atmColor = color(new THREE.Color(data.atmosphereColor));
+        const atmIntensity = float(1.2);
+        const viewDir = positionViewDirection.normalize();
+        const fresnel = pow(float(1.0).sub(dot(viewDir, normalView)), 3.0).mul(atmIntensity);
+        atmosphereMat.colorNode = vec4(atmColor, fresnel);
         planetMesh.add(new THREE.Mesh(atmosphereGeo, atmosphereMat));
     }
 
@@ -2409,7 +2294,7 @@ planetData.forEach((data) => {
                 moonMatOptions.bumpScale = 0.5;
             }
             const mMesh = new THREE.Mesh(
-                new THREE.SphereGeometry(m.size, isMobile ? 24 : 64, isMobile ? 24 : 64),
+                new THREE.SphereGeometry(m.size, isMobile ? 32 : 64, isMobile ? 32 : 64),
                 new THREE.MeshStandardMaterial(moonMatOptions)
             );
             mMesh.position.x = m.distance + data.size;
@@ -5571,7 +5456,7 @@ function animate() {
 
         clock += simSpeed;
         sun.rotation.y += 0.005 * simSpeed;
-        sunMaterial.uniforms.time.value += 0.016 * simSpeed;
+        sunTimeUniform.value += 0.016 * simSpeed;
 
         planets.forEach(p => {
             const M = clock * p.data.speed + (p.phaseOffset || 0);
@@ -5619,8 +5504,7 @@ function animate() {
         if (ap.phase === 'liftoff') {
             const t = Math.min(ap.elapsed / ap.liftoffDuration, 1.0);
             updateStarStreaks(camera.position, ap.direction, t * 0.5, 0.5 + t);
-            motionBlurPass.enabled = true;
-            motionBlurPass.uniforms.intensity.value = t * 0.3;
+            motionBlurIntensity.value = t * 0.3;
 
             if (t >= 1.0) {
                 ap.phase = 'warp';
@@ -5636,9 +5520,8 @@ function animate() {
 
             updateStarStreaks(camera.position, ap.direction, 0.9, 4 + Math.sin(ap.elapsed * 3));
             updateParticleTunnel(camera.position, ap.direction, 0.8, dt);
-            chromaticPass.enabled = true;
-            chromaticPass.uniforms.intensity.value = 0.012;
-            motionBlurPass.uniforms.intensity.value = 0.5;
+            chromaticIntensity.value = 0.012;
+            motionBlurIntensity.value = 0.5;
 
             if (t >= 1.0) {
                 ap.phase = 'arrival';
@@ -5650,14 +5533,12 @@ function animate() {
             const t = Math.min(ap.elapsed / ap.arrivalDuration, 1.0);
             updateStarStreaks(camera.position, ap.direction, (1 - t) * 0.9, 4 * (1 - t));
             updateParticleTunnel(camera.position, ap.direction, (1 - t) * 0.8, dt);
-            chromaticPass.uniforms.intensity.value = 0.012 * (1 - t);
-            motionBlurPass.uniforms.intensity.value = 0.5 * (1 - t);
+            chromaticIntensity.value = 0.012 * (1 - t);
+            motionBlurIntensity.value = 0.5 * (1 - t);
 
             if (t >= 1.0) {
-                chromaticPass.enabled = false;
-                chromaticPass.uniforms.intensity.value = 0;
-                motionBlurPass.enabled = false;
-                motionBlurPass.uniforms.intensity.value = 0;
+                chromaticIntensity.value = 0;
+                motionBlurIntensity.value = 0;
                 updateStarStreaks(_zeroVec, _upY, 0, 0);
                 updateParticleTunnel(_zeroVec, _upY, 0, 0);
 
@@ -5793,19 +5674,14 @@ function animate() {
     }
 
     controls.update();
-    if (isMobile) {
-        renderer.render(scene, camera);
-    } else {
-        composer.render();
-    }
+    renderPipeline.render();
     labelRenderer.render(scene, camera);
 }
-animate();
+renderer.init().then(() => animate());
 
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    composer.setSize(window.innerWidth, window.innerHeight);
     labelRenderer.setSize(window.innerWidth, window.innerHeight);
 });
