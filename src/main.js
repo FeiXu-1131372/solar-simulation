@@ -5650,7 +5650,7 @@ function animate() {
         // On mobile, offset the orbit target upward so the planet sits
         // in the top portion of the screen, leaving room for the info card.
         const mobileYOffset = isMobile && !infoCard.classList.contains('hidden')
-            ? -focusOrbitDist * 0.55 : 0;
+            ? -focusOrbitDist * 0.2 : 0;
 
         // Shift the look-at target below the planet so the planet renders
         // in the upper viewport, above the info card.
