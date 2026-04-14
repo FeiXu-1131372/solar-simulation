@@ -5652,15 +5652,18 @@ function animate() {
         const mobileYOffset = isMobile && !infoCard.classList.contains('hidden')
             ? -focusOrbitDist * 0.55 : 0;
 
+        // Shift the look-at target below the planet so the planet renders
+        // in the upper viewport, above the info card.
+        _worldPos.y += mobileYOffset;
+
         if (isFocusing) {
             // Fly-in phase: lerp camera toward the planet
             if (!lockedTarget._camOffset) {
                 lockedTarget._camOffset = camera.position.clone().sub(_worldPos).normalize();
             }
             _tmpVec.copy(lockedTarget._camOffset).multiplyScalar(focusOrbitDist).add(_worldPos);
-            _tmpVec.y += mobileYOffset;
             camera.position.lerp(_tmpVec, 0.08);
-            controls.target.copy(_worldPos);
+            controls.target.lerp(_worldPos, 0.08);
 
             if (camera.position.distanceTo(_worldPos) < focusOrbitDist * 1.1) {
                 isFocusing = false;
