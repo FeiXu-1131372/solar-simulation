@@ -5225,6 +5225,24 @@ onLangChange(() => {
     }
 });
 
+// Mobile floating language button — cycles through available languages
+const mobileLangBtn = document.getElementById('mobile-lang-btn');
+const langCodes = ['en', 'zh', 'ta', 'si'];
+const langLabels = { en: '🌐 EN', zh: '🌐 中', ta: '🌐 த', si: '🌐 සි' };
+function updateMobileLangBtn() {
+    if (mobileLangBtn) mobileLangBtn.textContent = langLabels[getLang()] || langLabels.en;
+}
+if (mobileLangBtn) {
+    updateMobileLangBtn();
+    mobileLangBtn.addEventListener('click', () => {
+        const cur = getLang();
+        const next = langCodes[(langCodes.indexOf(cur) + 1) % langCodes.length];
+        document.getElementById('lang-select').value = next;
+        document.getElementById('lang-select').dispatchEvent(new Event('change'));
+        updateMobileLangBtn();
+    });
+}
+
 // Apply translations to DOM on initial load (needed when default lang is not English)
 if (getLang() !== 'en') {
     applyLocaleToDOM();

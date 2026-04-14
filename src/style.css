@@ -238,6 +238,38 @@ button:active {
 }
 
 /* Fullscreen Toggle */
+/* Mobile language button - hidden on desktop */
+.mobile-lang-btn {
+    display: none;
+}
+@media (max-width: 480px) {
+    .mobile-lang-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 120;
+        background: rgba(10, 14, 30, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        border-radius: 20px;
+        padding: 6px 12px;
+        color: #c4b5fd;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        transition: background 0.2s, border-color 0.2s;
+        font-family: var(--font-ui);
+    }
+    .mobile-lang-btn:active {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.5);
+    }
+}
+
 .fullscreen-btn {
     position: fixed;
     bottom: 20px;
