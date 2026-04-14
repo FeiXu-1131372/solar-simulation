@@ -2832,61 +2832,83 @@ function hideMissionGame() {
 }
 
 // --- HOW TO PLAY DEFINITIONS ---
-const HOW_TO_PLAY = {
-    slingshot: {
-        icon: '🌌',
-        title: 'Gravity Slingshot',
-        steps: [
-            { icon: '👆', text: '<strong>Drag from the yellow probe</strong> — pull back like a slingshot to set direction and power.' },
-            { icon: '🪐', text: '<strong>Use planet gravity</strong> — fly near the glowing planets to curve your trajectory.' },
-            { icon: '🎯', text: '<strong>Hit the green target</strong> on the right edge. You have 3 attempts.' },
-            { icon: '💡', text: 'The dotted line shows your predicted path — adjust your aim before releasing!' },
-        ],
-    },
-    docking: {
-        icon: '🛸',
-        title: 'Space Docking',
-        steps: [
-            { icon: '🚀', text: '<strong>Your ship is drifting in zero-g</strong> — gravity pulls it down toward the planet.' },
-            { icon: '🔼', text: '<strong>Thrust UP</strong>: hold the bottom half of the screen, or press <strong>Space / ↑</strong>.' },
-            { icon: '◀▶', text: '<strong>Steer left/right</strong>: tap the left or right edge of the screen, or press <strong>← →</strong>.' },
-            { icon: '🟢', text: '<strong>Dock gently</strong> — align with the blinking port on the station and arrive slowly. Too fast = crash!' },
-        ],
-    },
-    asteroidNav: {
-        icon: '☄️',
-        title: 'Asteroid Field',
-        steps: [
-            { icon: '🛸', text: 'Your ship flies <strong>automatically</strong> through 5 lanes. Asteroids come from the right.' },
-            { icon: '👆', text: '<strong>Tap the top half</strong> to move up, <strong>tap the bottom half</strong> to move down. Or swipe up/down.' },
-            { icon: '⌨️', text: 'On desktop use <strong>↑ ↓ arrow keys</strong> or <strong>W / S</strong>.' },
-            { icon: '⭐', text: 'Collect <strong>stars</strong> for bonus points. You have 3 shields — survive 25 seconds to win!' },
-        ],
-    },
-    memory: {
-        icon: '🧠',
-        title: 'Orbital Memory',
-        steps: [
-            { icon: '🔄', text: '10 cards orbit around the center — they keep <strong>moving while you play!</strong>' },
-            { icon: '👆', text: '<strong>Tap a card</strong> to flip it and reveal its symbol.' },
-            { icon: '🎯', text: 'Tap a <strong>second card</strong> — if symbols match, they stay revealed. If not, both flip back.' },
-            { icon: '⏱️', text: 'Match all <strong>5 pairs</strong> before the timer runs out. Track the cards as they orbit!' },
-        ],
-    },
-    lander: {
-        icon: '🚀',
-        title: 'Lunar Lander',
-        steps: [
-            { icon: '🌍', text: 'Your lander falls under <strong>planet gravity</strong> — each world pulls differently!' },
-            { icon: '🔥', text: '<strong>Thrust UP</strong>: hold the bottom half of the screen, or hold <strong>Space / ↑</strong>.' },
-            { icon: '◀▶', text: '<strong>Steer</strong>: tap left/right edges of screen, or press <strong>← →</strong> keys.' },
-            { icon: '🟢', text: 'Land <strong>gently on the green zone</strong>. Watch your speed — if you hit too fast, you crash!' },
-        ],
-    },
-};
+function getHowToPlay() {
+    return {
+        slingshot: {
+            icon: '🌌',
+            title: t('ui.htpSlingshotTitle'),
+            steps: [
+                { icon: '👆', text: t('ui.htpSlingshotS1') },
+                { icon: '🪐', text: t('ui.htpSlingshotS2') },
+                { icon: '🎯', text: t('ui.htpSlingshotS3') },
+                { icon: '💡', text: t('ui.htpSlingshotS4') },
+            ],
+        },
+        docking: {
+            icon: '🛸',
+            title: t('ui.htpDockingTitle'),
+            steps: [
+                { icon: '🚀', text: t('ui.htpDockingS1') },
+                { icon: '🔼', text: t('ui.htpDockingS2') },
+                { icon: '◀▶', text: t('ui.htpDockingS3') },
+                { icon: '🟢', text: t('ui.htpDockingS4') },
+            ],
+        },
+        asteroidNav: {
+            icon: '☄️',
+            title: t('ui.htpAsteroidTitle'),
+            steps: [
+                { icon: '🛸', text: t('ui.htpAsteroidS1') },
+                { icon: '👆', text: t('ui.htpAsteroidS2') },
+                { icon: '⌨️', text: t('ui.htpAsteroidS3') },
+                { icon: '⭐', text: t('ui.htpAsteroidS4') },
+            ],
+        },
+        memory: {
+            icon: '🧠',
+            title: t('ui.htpMemoryTitle'),
+            steps: [
+                { icon: '🔄', text: t('ui.htpMemoryS1') },
+                { icon: '👆', text: t('ui.htpMemoryS2') },
+                { icon: '🎯', text: t('ui.htpMemoryS3') },
+                { icon: '⏱️', text: t('ui.htpMemoryS4') },
+            ],
+        },
+        lander: {
+            icon: '🚀',
+            title: t('ui.htpLanderTitle'),
+            steps: [
+                { icon: '🌍', text: t('ui.htpLanderS1') },
+                { icon: '🔥', text: t('ui.htpLanderS2') },
+                { icon: '◀▶', text: t('ui.htpLanderS3') },
+                { icon: '🟢', text: t('ui.htpLanderS4') },
+            ],
+        },
+        hazard: {
+            icon: '🔥',
+            title: t('ui.htpHazardTitle'),
+            steps: [
+                { icon: '🛸', text: t('ui.htpHazardS1') },
+                { icon: '👆', text: t('ui.htpHazardS2') },
+                { icon: '⌨️', text: t('ui.htpHazardS3') },
+                { icon: '❤️', text: t('ui.htpHazardS4') },
+            ],
+        },
+        control: {
+            icon: '🎛️',
+            title: t('ui.htpControlTitle'),
+            steps: [
+                { icon: '⚡', text: t('ui.htpControlS1') },
+                { icon: '📉', text: t('ui.htpControlS2') },
+                { icon: '🚨', text: t('ui.htpControlS3') },
+                { icon: '⏱️', text: t('ui.htpControlS4') },
+            ],
+        },
+    };
+}
 
 function showHowToPlay(type, onStart) {
-    const htp = HOW_TO_PLAY[type];
+    const htp = getHowToPlay()[type];
     if (!htp) { onStart(); return; }
 
     const el = document.getElementById('mg-howtoplay');
@@ -2958,17 +2980,11 @@ function launchMissionGame(mission, target) {
 
     document.getElementById('mg-mission-label').textContent = `${mission.emoji} ${mission.name} → ${t(`bodies.${target.name}`) || target.name}`;
 
-    const types = ['slingshot', 'docking', 'asteroidNav', 'memory', 'lander'];
+    const types = ['slingshot', 'docking', 'asteroidNav', 'memory', 'lander', 'hazard', 'control'];
     const type = types[Math.floor(Math.random() * types.length)];
 
-    const badges = {
-        slingshot: '🌌 Gravity Slingshot',
-        docking: '🛸 Space Docking',
-        asteroidNav: '☄️ Asteroid Field',
-        memory: '🧠 Orbital Memory',
-        lander: '🚀 Lunar Lander',
-    };
-    document.getElementById('mg-type-badge').textContent = badges[type] || type;
+    const htpData = getHowToPlay()[type];
+    document.getElementById('mg-type-badge').textContent = htpData ? `${htpData.icon} ${htpData.title}` : type;
 
     document.getElementById('mission-game-overlay').classList.remove('hidden');
 
@@ -2977,6 +2993,8 @@ function launchMissionGame(mission, target) {
         else if (type === 'docking')     runDocking(mission, target, gameData);
         else if (type === 'asteroidNav') runAsteroidNav(mission, target, gameData);
         else if (type === 'memory')      runOrbitalMemory(mission, target, gameData);
+        else if (type === 'hazard')      runHazardRun(mission, target, gameData);
+        else if (type === 'control')     runMissionControl(mission, target, gameData);
         else                             runLander(mission, target, gameData);
     }
 
@@ -3000,6 +3018,8 @@ function onGameFail(mission, target, gameData) {
         'mg-asteroid-nav':  () => runAsteroidNav(mission, target, gameData),
         'mg-memory':        () => runOrbitalMemory(mission, target, gameData),
         'mg-lander':        () => runLander(mission, target, gameData),
+        'mg-hazard':        () => runHazardRun(mission, target, gameData),
+        'mg-control':       () => runMissionControl(mission, target, gameData),
     };
     const activeKey = Object.keys(runnerMap).find(id => !document.getElementById(id).classList.contains('hidden'));
     const runner = runnerMap[activeKey];
@@ -5237,6 +5257,11 @@ if (navSettingsBtn) {
             infoCard.classList.add('hidden');
         }
         uiContainer.classList.toggle('hidden');
+        // On mobile, auto-expand the panel body when opening
+        if (window.innerWidth <= 480 && !uiContainer.classList.contains('hidden')) {
+            uiContainer.classList.remove('collapsed');
+            document.getElementById('toggle-ui-expand').textContent = '▾';
+        }
     });
 }
 
@@ -5625,7 +5650,7 @@ function animate() {
         // On mobile, offset the orbit target upward so the planet sits
         // in the top portion of the screen, leaving room for the info card.
         const mobileYOffset = isMobile && !infoCard.classList.contains('hidden')
-            ? -focusOrbitDist * 0.35 : 0;
+            ? -focusOrbitDist * 0.55 : 0;
 
         if (isFocusing) {
             // Fly-in phase: lerp camera toward the planet

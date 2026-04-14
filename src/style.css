@@ -380,27 +380,8 @@ button:active {
 
 /* ---- Mobile Responsiveness ---- */
 @media (max-width: 480px) {
-    #ui-container {
-        position: fixed;
-        top: auto;
-        bottom: 58px;
-        bottom: calc(58px + env(safe-area-inset-bottom, 0px));
-        left: 8px;
-        right: 8px;
-        width: auto;
-        max-width: none;
-        border-radius: 16px;
-        border-top: none;
-        z-index: 110;
-    }
-    #ui-container.hidden {
-        transform: translateY(20px);
-        opacity: 0;
-        pointer-events: none;
-    }
-    .cp-body {
-        max-height: 45vh;
-    }
+    /* #ui-container, #ui-container.hidden, .cp-body overrides
+       are at end of file (after base styles) so they actually apply */
 
     .floating-btn {
         display: none;
@@ -2036,4 +2017,31 @@ button:active {
     pointer-events: none;
     z-index: 999;
     transition: none;
+}
+
+/* ==============================
+   MOBILE OVERRIDES (must come after all base styles)
+   ============================== */
+@media (max-width: 480px) {
+    #ui-container {
+        position: fixed;
+        top: auto;
+        bottom: 58px;
+        bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-width: none;
+        border-radius: 16px;
+        border-top: none;
+        z-index: 110;
+    }
+    #ui-container.hidden {
+        transform: translateY(20px);
+        opacity: 0;
+        pointer-events: none;
+    }
+    .cp-body {
+        max-height: 45vh;
+    }
 }
