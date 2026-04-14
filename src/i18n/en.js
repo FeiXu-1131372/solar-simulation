@@ -138,7 +138,7 @@ bodies: {
 
 celestialFacts: {
     'Sun': {
-        type: '⭐ G-Type Star',
+        type: 'G-Type Star',
         fact: 'Our GIANT star! The Sun is so huge that ONE MILLION Earths could fit inside it! It\'s a giant ball of super-hot gas that\'s been shining for 4.6 billion years — and it\'ll keep going for another 5 billion!',
         gravity: '274 m/s² (28x Earth!)',
         day: '27 Earth Days',
@@ -177,7 +177,7 @@ celestialFacts: {
         },
     },
     'Mercury': {
-        type: '🪨 Terrestrial Planet',
+        type: 'Terrestrial Planet',
         fact: 'The speed champion! Mercury zips around the Sun in just 88 days — but a single day takes 59 Earth days! It\'s only a little bigger than our Moon and has no atmosphere to hold heat.',
         gravity: '3.7 m/s² (you\'d weigh 62% less!)',
         day: '59 Earth Days',
@@ -216,7 +216,7 @@ celestialFacts: {
         },
     },
     'Venus': {
-        type: '🔥 Terrestrial Planet',
+        type: 'Terrestrial Planet',
         fact: 'The scorching rebel! Venus is the HOTTEST planet — even hotter than Mercury! It spins BACKWARDS compared to most planets, and a single day here lasts longer than its whole year. It also rains sulfuric acid!',
         gravity: '8.87 m/s² (similar to Earth)',
         day: '243 Earth Days',
@@ -255,7 +255,7 @@ celestialFacts: {
         },
     },
     'Earth': {
-        type: '🌍 Terrestrial Planet',
+        type: 'Terrestrial Planet',
         fact: 'Our amazing home! Earth is the only planet with oceans, rainforests, and YOU! It sits perfectly in the "Goldilocks zone" — not too hot, not too cold — just right for life. It\'s the densest planet in the solar system!',
         gravity: '9.81 m/s² (that\'s you, normal!)',
         day: '24 Hours',
@@ -281,7 +281,7 @@ celestialFacts: {
         },
     },
     'Moon': {
-        type: '🌕 Earth\'s Moon',
+        type: 'Earth\'s Moon',
         fact: 'Earth\'s loyal companion! The Moon always shows us the same face — the far side is hidden forever! It\'s slowly drifting away from Earth at 3.8 cm per year. Its gravity pulls our oceans to create tides!',
         gravity: '1.62 m/s² (you\'d jump 6x higher!)',
         day: '27.3 Earth Days',
@@ -320,7 +320,7 @@ celestialFacts: {
         },
     },
     'Mars': {
-        type: '🔴 Terrestrial Planet',
+        type: 'Terrestrial Planet',
         fact: 'The Rusty Red Planet! Mars is red because it\'s literally covered in rust (iron oxide). It has the tallest volcano in the solar system — Olympus Mons is 3 times taller than Mount Everest! A Martian day is only 37 minutes longer than Earth\'s.',
         gravity: '3.72 m/s² (you\'d weigh 63% less!)',
         day: '24.6 Hours',
@@ -359,7 +359,7 @@ celestialFacts: {
         },
     },
     'Phobos': {
-        type: '🪨 Martian Moon',
+        type: 'Martian Moon',
         fact: 'The speed demon moon! Phobos orbits Mars so fast it laps the planet 3 times every Martian day. It\'s also doomed — in about 50 million years, gravity will tear it apart into a ring around Mars!',
         gravity: '0.005 m/s² (you\'d float off easily!)',
         day: '8 Hours',
@@ -398,7 +398,7 @@ celestialFacts: {
         },
     },
     'Deimos': {
-        type: '🪨 Martian Moon',
+        type: 'Martian Moon',
         fact: 'The tiny wanderer! Deimos is so small it would fit inside most cities. From Mars, it looks like a star, not a moon. It\'s shaped like a lumpy potato and takes 30 hours to orbit Mars once.',
         gravity: '0.003 m/s² (a gentle push = escape!)',
         day: '30.3 Hours',
@@ -437,7 +437,7 @@ celestialFacts: {
         },
     },
     'Jupiter': {
-        type: '🪐 Gas Giant',
+        type: 'Gas Giant',
         fact: 'The King of Planets! Jupiter is SO BIG that 1,300 Earths could fit inside it! Its famous Great Red Spot is a STORM bigger than Earth that has been raging for nearly 200 years! It has over 100 moons — a mini solar system!',
         gravity: '24.79 m/s² (you\'d weigh 2.5x more!)',
         day: '9.9 Hours',
@@ -476,7 +476,7 @@ celestialFacts: {
         },
     },
     'Io': {
-        type: '🌋 Jovian Moon',
+        type: 'Jovian Moon',
         fact: 'The volcanic pizza moon! Io is the most volcanically active place in the entire solar system — hundreds of volcanoes constantly erupting! Jupiter\'s huge gravity squeezes and stretches Io like a stress ball, generating all that heat.',
         gravity: '1.79 m/s²',
         day: '1.77 Earth Days',
@@ -515,7 +515,7 @@ celestialFacts: {
         },
     },
     'Europa': {
-        type: '🧊 Jovian Moon',
+        type: 'Jovian Moon',
         fact: 'The hidden ocean world! Under Europa\'s cracked icy shell lies a massive liquid ocean — possibly twice as much water as ALL of Earth\'s oceans combined! This makes it one of the best candidates for alien life in our solar system!',
         gravity: '1.31 m/s²',
         day: '3.55 Earth Days',
@@ -554,7 +554,7 @@ celestialFacts: {
         },
     },
     'Ganymede': {
-        type: '🌕 Jovian Moon',
+        type: 'Jovian Moon',
         fact: 'The giant among moons! Ganymede is the largest moon in the entire solar system — bigger than the planet Mercury! It\'s the only moon with its own magnetic field, which means it has its own Northern Lights!',
         gravity: '1.42 m/s²',
         day: '7.15 Earth Days',
@@ -593,7 +593,7 @@ celestialFacts: {
         },
     },
     'Callisto': {
-        type: '☄️ Jovian Moon',
+        type: 'Jovian Moon',
         fact: 'The ancient solar system fossil! Callisto\'s surface hasn\'t changed in billions of years — it\'s covered in so many craters it can\'t fit any more! Scientists call it the most "beat up" world in the solar system.',
         gravity: '1.23 m/s²',
         day: '16.7 Earth Days',
@@ -632,7 +632,7 @@ celestialFacts: {
         },
     },
     'Saturn': {
-        type: '💍 Gas Giant',
+        type: 'Gas Giant',
         fact: 'The Ringed Superstar! Saturn\'s rings stretch 282,000 km wide — almost the distance from Earth to the Moon — but they\'re thinner than a 10-story building! Saturn is so light that it could FLOAT in a giant bathtub!',
         gravity: '10.44 m/s² (slightly more than Earth)',
         day: '10.7 Hours',
@@ -671,7 +671,7 @@ celestialFacts: {
         },
     },
     'Titan': {
-        type: '🌧️ Saturnian Moon',
+        type: 'Saturnian Moon',
         fact: 'Alien Earth! Titan is the only moon with a thick atmosphere and has rivers, lakes, and rain — but instead of water, it\'s all liquid methane! With its thick air, you could actually fly with giant wings like a bird!',
         gravity: '1.35 m/s²',
         day: '15.9 Earth Days',
@@ -710,7 +710,7 @@ celestialFacts: {
         },
     },
     'Uranus': {
-        type: '🔵 Ice Giant',
+        type: 'Ice Giant',
         fact: 'The sideways planet! A giant collision long ago knocked Uranus completely on its side. Now it spins like a rolling ball around the Sun! Each pole gets 42 years of non-stop sunlight, then 42 years of complete darkness.',
         gravity: '8.69 m/s²',
         day: '17.2 Hours',
@@ -749,7 +749,7 @@ celestialFacts: {
         },
     },
     'Titania': {
-        type: '🌑 Uranian Moon',
+        type: 'Uranian Moon',
         fact: 'The canyon world! Titania is Uranus\'s biggest moon and has enormous canyons slicing across its surface — some longer than the entire United States! It has both ancient craters and fresh rocky cliffs.',
         gravity: '0.38 m/s²',
         day: '8.7 Earth Days',
@@ -788,7 +788,7 @@ celestialFacts: {
         },
     },
     'Neptune': {
-        type: '💨 Ice Giant',
+        type: 'Ice Giant',
         fact: 'The Wild Wind World! Neptune has the STRONGEST winds in the entire solar system — up to 2,100 km/h! That\'s 5 times faster than Earth\'s worst hurricanes. It\'s so far away that one year here equals 165 Earth years!',
         gravity: '11.15 m/s² (slightly more than Earth)',
         day: '16.1 Hours',
@@ -827,7 +827,7 @@ celestialFacts: {
         },
     },
     'Triton': {
-        type: '🔄 Neptunian Moon',
+        type: 'Neptunian Moon',
         fact: 'The backwards rebel! Triton is the only large moon that orbits BACKWARDS — opposite to Neptune\'s spin. Scientists think Neptune captured it from the outer solar system long ago. It\'s also slowly spiraling inward and will eventually shatter!',
         gravity: '0.78 m/s²',
         day: '5.8 Earth Days',
